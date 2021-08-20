@@ -19,4 +19,5 @@ from django.conf.urls import url, include
 urlpatterns = [
     url('admin/', admin.site.urls),
     url(r'^visioAdmin/', include(('visioAdmin.urls', 'visioAdmin'), namespace='visioAdmin')),
+    url(r'^visioServer/', include(('visioServer.urls', 'visioServer'), namespace='visioServer')),
 ]

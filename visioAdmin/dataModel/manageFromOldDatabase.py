@@ -5,7 +5,7 @@ from datetime import datetime
 import mysql.connector as db
 import pytz
 # from django.db.models import fields
-from visio.models import Pdv, Drv, Agent, Dep, Bassin, Ville, AgentFinitions, SegmentCommercial, SegmentMarketing, Enseigne, Ensemble, \
+from visioServer.models import Pdv, Drv, Agent, Dep, Bassin, Ville, AgentFinitions, SegmentCommercial, SegmentMarketing, Enseigne, Ensemble, \
   SousEnsemble, Site, Produit, Industrie, Ventes
 
 class ManageFromOldDatabase:
@@ -59,7 +59,7 @@ class ManageFromOldDatabase:
       ManageFromOldDatabase.connection = db.connect(
       user = "external",
       password = "qXOSPFDrNugm4Ubs",
-      host = "https://all.fantasiapp.com/",
+      host = "46.105.115.10",
       database = "visio.3.1.1.prod"
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
