@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+
+    {% load static %}
+    <meta charset="utf-8">
+    <link rel="icon" href="{% static 'visioAdmin/images/header.ico' %}" type="image/x-icon">
+    <title>Visio Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100;0,300;0,400;0,700;1,100;1,300;1,900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'visioAdmin/css/general.css' %}" />
+
+    
+    <body class="backgroundImage">
+      <section class="loginSection">
+        <article class="loginArticle">
+          <h1 class="colorSiniat">Visio Admin</h1>
+          <form class="loginBox" method=post action="{% url 'visioAdmin:performances' %}" accept-charset="utf-8">
+            {% csrf_token %}
+            <div class="loginInput">
+              <img class="iconStandard" src= "{% static 'visioAdmin/images/user.png' %}" alt="speudo" title="Entrer votre pseudo"/>
+              <input class="loginInput" name="userName" type=text placeholder="Saisir votre pseudo" value="{{ userName }}"></input>
+            </div>
+            <div class="loginInput">
+              <img class="iconStandard" src= "{% static 'visioAdmin/images/password.png' %}" alt="speudo" title="Entrer votre pseudo"/>
+              <input class="loginInput" name="password" type=password placeholder="Saisir votre mot de passe"></input>
+            </div>
+            <input class="loginButton" type="submit" name="login" value="Se connecter"></input>
+            <p class="loginMessage">{{ message }}</p>
+        </article>
+      </section>
+      <img class="logo" src="{% static 'visioAdmin/images/logoAppli.png' %}" alt="Logo Visio" title="Logo Visio"/>
+    </body>

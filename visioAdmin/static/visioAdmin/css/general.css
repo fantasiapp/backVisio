@@ -1,0 +1,131 @@
+html {
+  margin: 0px;
+}
+body {
+  font-family: 'Raleway', sans-serif;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  display:flex;
+  flex-direction:column;
+  flex-grow:1;
+}
+
+h1 {
+  margin:0.0em 0.0em 0.0em 0.5em;
+  font-size:2em;
+}
+
+.colorSiniat {
+  color:rgb(181,23,124)
+}
+
+.iconStandard {
+  margin:0 10px 0 10px;
+  height: 50px;
+  width: 50px
+}
+
+.backgroundImage {
+  min-height:100%;
+  width: 100%;
+  background-image:url('../images/siniat.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+.logo {
+  /* float:left; */
+  position:absolute;
+  right:0;
+  top:0;
+  margin:2%;
+  width:6%;
+  height:auto;
+}
+
+.loginSection {
+  background-color: white;
+  position:absolute;
+  display:flex;
+  justify-content:center;
+  align-items: center;
+  right: 0;
+  width: 40%;
+  height: 100%;
+}
+
+.loginArticle {
+  display:flex;
+  flex-direction:column;
+  width:500px;
+  height:350px;
+}
+
+.loginBox{
+  display:flex;
+  flex-direction:column;
+  flex: 1 1 auto;
+  border:1px solid rgb(181,23,124);
+}
+
+p.loginBoxP {
+  margin:30px;
+  text-align: center;
+  font-size: 2em;
+}
+
+a.loginBoxLink{
+  margin-top:30px;
+  margin:auto;
+  text-align: center;
+  margin:30px;
+  color: rgb(181,23,124);
+  font-size:2.5em
+}
+
+div.loginInput{
+  display:flex;
+  height: 70px;
+  flex-direction:row;
+  justify-content:space-between;
+  align-items:center
+}
+
+input.loginInput{
+  margin:10px;
+  padding-left:5px;
+  height: 30px;
+  width: 400px;
+  border:1px solid rgb(181,23,124);
+}
+input.loginInput:focus{
+  outline-width: 2px;
+  outline-color:rgb(181,23,124);
+  border-radius:2px;
+}
+
+.loginButton{
+  border-radius: 10px;
+  width:450px;
+  height:40px;
+  color:white;
+  margin:auto;
+  background-color: rgb(181,23,124);
+  font-size:1.5em;
+  border:0px
+}
+.loginButton:hover{
+  background-color: rgb(124,3,80);
+}
+.loginButton:active{
+  background-color: white;
+  color:rgb(181,23,124);
+  border:2px solid rgb(181,23,124);
+}
+
+.loginMessage{
+  margin:0 10px 10px 10px;
+  height:40px;
+  text-align: center;
+  color:rgb(181,23,124);
+}

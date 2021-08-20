@@ -1,0 +1,30 @@
+{% extends 'visioAdmin/base.html' %}
+<!-- {% load static %} -->
+
+{% block content %}
+  <aside class="dataLogin">
+    <p>{{ userName }}</p>
+    <form method=get action="{% url 'visioAdmin:performances' %}">
+      {% csrf_token %}
+      <input type="submit" name="action" value="disconnect"/>
+    </form>
+  </aside>
+  <header>
+    <div class="loader"></div>
+  </header>
+  <main class="performancesMain">
+    <nav class="performancesNav">
+      <p>Performances</p>
+      {% csrf_token %}
+      <button id="PerfEmtpyBase" class="buttonNav">Vider la base de données</button>
+      <button id="PerfPopulateBase" class="buttonNav">Remplir la base de données</button>
+      <button id="VisualizePdv" class="buttonNav">Visualiser le référentiel</button>
+      <button id="VisualizePdvXlsx" class="buttonNav">Visualiser le nouveau référentiel</button>
+      <button id="VisualizeVentes" class="buttonNav">Visualiser les Ventes Siniat</button>
+      <button id="VisualizeVentesXlsx" class="buttonNav">Visualiser les nouvelles Ventes Siniat</button>
+    </nav>
+    <section>
+    </section>
+    <div id="marginRight"></div>
+  </main>
+{% endblock %}
