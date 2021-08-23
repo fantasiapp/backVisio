@@ -1,1 +1,2 @@
-settings.py
+mysite/settings.py
+visioAdmin/dataModel/manageFromOldDatabase.py
