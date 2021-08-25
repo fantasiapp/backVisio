@@ -1,0 +1,20 @@
+{
+    "regularModels" : [
+        "Drv", 
+        "Agent", 
+        "AgentFinitions", 
+        "Dep", 
+        "Bassin", 
+        "Ville", 
+        "SegmentMarketing", 
+        "SegmentCommercial", 
+        "Enseigne", 
+        "Ensemble", 
+        "SousEnsemble", 
+        "Site", 
+        "Produit", 
+        "Industrie"
+    ],
+    "geoTreeStructure" : [2,3,4,5],
+    "brandTreeStructure" : [11, 12, 13]
+}

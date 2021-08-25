@@ -1,2 +1,4 @@
 mysite/settings.py
 visioAdmin/dataModel/manageFromOldDatabase.py
+visioServer/salesDict.json
+test.json
