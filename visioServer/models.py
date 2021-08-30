@@ -121,11 +121,11 @@ class Pdv(models.Model):
   ville = models.ForeignKey("ville", on_delete=models.PROTECT, blank=False)
   latitude = models.FloatField('Latitude', unique=False, blank=False, default=0.0)
   longitude = models.FloatField('Longitude', unique=False, blank=False, default=0.0)
-  segmentCommercial = models.ForeignKey("segmentcommercial", on_delete=models.PROTECT, blank=False, default=1)
-  segmentMarketing = models.ForeignKey("segmentmarketing", on_delete=models.PROTECT, blank=False, default=1)
+  segmentCommercial = models.ForeignKey("segmentCommercial", on_delete=models.PROTECT, blank=False, default=1)
+  segmentMarketing = models.ForeignKey("segmentMarketing", on_delete=models.PROTECT, blank=False, default=1)
   enseigne = models.ForeignKey('enseigne', on_delete=models.PROTECT, blank=False, default=7)
   ensemble = models.ForeignKey('ensemble', on_delete=models.PROTECT, blank=False, default=43)
-  sous_ensemble = models.ForeignKey('sousensemble', on_delete=models.PROTECT, blank=False, default=1)
+  sousEnsemble = models.ForeignKey('sousEnsemble', on_delete=models.PROTECT, blank=False, default=1)
   site = models.ForeignKey('site', on_delete=models.PROTECT, blank=False, default=1)
   available = models.BooleanField(default=True)
   sale = models.BooleanField("Ne vend pas de plaque", default=True)
@@ -175,4 +175,20 @@ class Ventes(models.Model):
 
   def __str__(self) ->str:
     return str(self.pdv) + " " + str(self.industry) + " " + str(self.product)
+
+
+# Modèles pour la navigation
+
+class TreeNavigation(models.Model):
+  level = models.CharField(max_length=32, unique=True, blank=False, default=None)
+  name = models.CharField(max_length=32, unique=True, blank=False, default=None)
+  father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+
+class Dashboard(models.Model):
+  name = models.CharField(max_length=64, unique=True, blank=False, default=None)
+
+class DashboardTree(models.Model):
+  profile = models.CharField(max_length=32, blank=False, default=None)
+  level = models.ForeignKey("TreeNavigation", on_delete=models.PROTECT, blank=False, default=None)
+  dashboards = models.ManyToManyField("Dashboard")
 

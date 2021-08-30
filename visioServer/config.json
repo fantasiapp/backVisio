@@ -16,5 +16,5 @@
         "Industrie"
     ],
     "geoTreeStructure" : [2,3,4,5],
-    "brandTreeStructure" : [11, 12, 13]
+    "tradeTreeStructure" : [11, 12, 13]
 }

@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from .dataStructure import buildTree, formatSales
 import json
 from django.db.models.fields.related import ForeignKey
+from .utils import camel
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -26,12 +27,14 @@ class Data(DefaultView):
 
     def get(self, request):
         data = {}
-        formatedPdvs, data['Pdv'] = self.__formatPdv([model_to_dict(object) for object in Pdv.objects.all()])
+        formatedPdvs, data['pdv'] = self.__formatPdv([model_to_dict(object) for object in Pdv.objects.all()])
         regularModels = [eval(modelName) for modelName in self.config["regularModels"]]
         for model in regularModels:
-            data.update({model.__name__.lower(): {object.id: object.name for object in model.objects.all()}})
+            data.update({camel(model.__name__): {object.id: object.name for object in model.objects.all()}})
         data['geoTree'] = buildTree('root', self.config["geoTreeStructure"], formatedPdvs)
-        data['brandTree'] = buildTree('root', self.config["brandTreeStructure"], formatedPdvs)
+        data['tradeTree'] = buildTree('root', self.config["tradeTreeStructure"], formatedPdvs)
+        data['geoTreeStructure'] = [data['pdv']['fields'][id] for id in self.config["geoTreeStructure"]]
+        data['tradeTreeStructure'] = [data['pdv']['fields'][id] for id in self.config["tradeTreeStructure"]]
         return Response(data)
     
     def __formatPdv(self, pdvs:list):

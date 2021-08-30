@@ -3,3 +3,5 @@ visioAdmin/dataModel/manageFromOldDatabase.py
 visioServer/salesDict.json
 test.json
 .DS_Store
+structure.json
+.env
