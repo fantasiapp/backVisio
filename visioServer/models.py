@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models.expressions import F
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)

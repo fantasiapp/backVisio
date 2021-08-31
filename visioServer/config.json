@@ -15,6 +15,12 @@
         "Produit", 
         "Industrie"
     ],
+    "navModels": [
+        "Drv", 
+        "Agent",
+        "Dep", 
+        "Bassin"
+    ],
     "geoTreeStructure" : [2,3,4,5],
     "tradeTreeStructure" : [11, 12, 13]
 }
