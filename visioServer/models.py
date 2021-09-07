@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.expressions import F
+from django.contrib.auth.models import User
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
@@ -179,7 +179,6 @@ class Ventes(models.Model):
 
 
 # Modèles pour la navigation
-
 class TreeNavigation(models.Model):
   level = models.CharField(max_length=32, unique=True, blank=False, default=None)
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
@@ -193,3 +192,8 @@ class DashboardTree(models.Model):
   level = models.ForeignKey("TreeNavigation", on_delete=models.PROTECT, blank=False, default=None)
   dashboards = models.ManyToManyField("Dashboard")
 
+# Informations complémentaire pour les users profile
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    idGeo = models.IntegerField(blank=True, default=None)

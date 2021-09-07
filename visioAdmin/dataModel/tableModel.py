@@ -23,7 +23,6 @@ class TableModel:
       self.fieldsName:list = self._computeFieldsName()
       self.values:dict = self._computeValues()
       jsonSave = {}
-      print(dir(self))
       for attrName in ["foreignKeyFields", "unusedFields", "interpretBoolean", "interpretRegeX", "fieldsName", "values"]:
         jsonSave[attrName] = getattr(self, attrName)
       with open(pathJson, 'w') as jsonFile:
