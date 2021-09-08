@@ -107,15 +107,51 @@ class Navigation(DataGeneric):
 
   @property
   def dataQuery(self):
-    data = {"structure":self.structure, "levels":self.__levels, "dashboards":self.__dictDashboard}
-    regularModels = [eval(modelName) for modelName in self.config["navModels"]]
-    for model in regularModels:
-        data.update({camel(model.__name__): {object.id: object.name for object in model.objects.all()}})
-    data['geoTree'] = self.__computeGeoTree()
-    data['geoTreeStructure'] = self.__computeGeoTreeStructure()
+    data = {
+      "structure":self.structure,
+      "levels":self.__levels,
+      "dashboards":self.__dictDashboard,
+      "geoTree":self.__computeGeoTree(),
+      "geoTreeStructure":self.__computeGeoTreeStructure()
+      }
+    self.__createModels(data)
     with open("visioServer/modelStructure/Navigation.json", 'w') as jsonFile:
         json.dump(data, jsonFile)
     return data
+
+  def __createModels(self, data):
+    models = self.config["navModels"]
+    if self.__userGroup != "root":
+      del models[0]
+    if self.__userGroup == "agent":
+      del models[0]
+    regularModels = [eval(modelName) for modelName in models]
+    dictSelectedId = self.__computeSelectedId(data["geoTree"], models)
+    for model in regularModels:
+      key = camel(model.__name__)
+      if key in dictSelectedId:
+         data.update({key: {object.id: self.__formatObjectName(object.name, key) for object in model.objects.all() if object.id in dictSelectedId[key]}})
+      else:
+        data.update({key: {object.id: self.__formatObjectName(object.name, key) for object in model.objects.all()}})
+
+  def __formatObjectName(self, name, modelName):
+    if modelName == "bassin":
+      return name.replace("Négoce_", "")
+    return name
+
+  def __computeSelectedId(self, tree, models)->dict:
+    listLevel = [camel(name) for name in models]
+    dictSelectedId = {}
+    if tree[0] != "root":
+      currentIds = tree[1]
+      for level in listLevel:
+        listIds, nextIds = [], []
+        for listCouple in currentIds:
+          listIds.append(listCouple[0])
+          nextIds += listCouple[1]
+        dictSelectedId[level] = listIds
+        currentIds = nextIds
+    return dictSelectedId 
 
   def __computeLocalLevels(self, selectedLevel):
     if selectedLevel[1] == self.__userGroup:
