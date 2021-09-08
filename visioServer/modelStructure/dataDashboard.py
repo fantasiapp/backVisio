@@ -84,8 +84,8 @@ class DataDashboard(DataGeneric):
     regularModels = [eval(modelName) for modelName in self.config["regularModels"]]
     for model in regularModels:
         data.update({camel(model.__name__): {object.id: object.name for object in model.objects.all()}})
-    data['geoTree'] = self._buildTree('root', self.config["geoTreeStructure"], formatedPdvs)
-    data['tradeTree'] = self._buildTree('root', self.config["tradeTreeStructure"], formatedPdvs)
+    data['geoTree'] = self._buildTree(0, self.config["geoTreeStructure"], formatedPdvs)
+    data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
     data['geoTreeStructure'] = [data['pdv']['fields'][id] for id in self.config["geoTreeStructure"]]
     data['tradeTreeStructure'] = [data['pdv']['fields'][id] for id in self.config["tradeTreeStructure"]]
     jsonData = {"geoTree":data['geoTree'], 'geoTreeStructure':data['geoTreeStructure']}
@@ -95,7 +95,7 @@ class DataDashboard(DataGeneric):
 
 
 class Navigation(DataGeneric):
-  structure = ['id', 'levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
+  structure = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   levels = None
 
   def __init__(self, userGeoId:int, userGroup:str):
@@ -112,8 +112,7 @@ class Navigation(DataGeneric):
       "structure":self.structure,
       "levels":self.__levels,
       "dashboards":self.__dictDashboard,
-      "geoTree":self.__computeGeoTree(),
-      "geoTreeStructure":self.__computeGeoTreeStructure()
+      "geoTree":self.__computeGeoTree()
       }
     self.__createModels(data)
     with open("visioServer/modelStructure/Navigation.json", 'w') as jsonFile:
@@ -122,10 +121,17 @@ class Navigation(DataGeneric):
 
   def __createModels(self, data):
     models = list(self.config["navModels"])
-    if self.__userGroup != "root":
+    if self.__userGroup == "root":
+      data["root"] = {0:""}
+    else:
       del models[0]
-    if self.__userGroup == "agent":
-      del models[0]
+      if self.__userGroup == "drv":
+        drvId = data["geoTree"][0]
+        data["drv"] = {drvId:Drv.objects.get(id=drvId).name}
+      else:
+        del models[0]
+        agentId = data["geoTree"][0]
+        data["agent"] = {agentId:Agent.objects.get(id=agentId).name}
     regularModels = [eval(modelName) for modelName in models]
     dictSelectedId = self.__computeSelectedId(data["geoTree"], models)
     for model in regularModels:
@@ -141,23 +147,25 @@ class Navigation(DataGeneric):
     return name
 
   def __computeSelectedId(self, tree, models)->dict:
+    """compute ids for object selected"""
     listLevel = [camel(name) for name in models]
     dictSelectedId = {}
-    if tree[0] != "root":
+    if self.__userGroup != "root":
       currentIds = tree[1]
       for level in listLevel:
         listIds, nextIds = [], []
-        for listCouple in currentIds:
-          listIds.append(listCouple[0])
-          nextIds += listCouple[1]
-        dictSelectedId[level] = listIds
-        currentIds = nextIds
+        if isinstance(currentIds[0], list):
+          for listCouple in currentIds:
+            listIds.append(listCouple[0])
+            nextIds += listCouple[1]
+          dictSelectedId[level] = listIds
+          currentIds = nextIds
     return dictSelectedId 
 
   def __computeLocalLevels(self, selectedLevel):
-    if selectedLevel[1] == self.__userGroup:
+    if selectedLevel[0] == self.__userGroup:
       return selectedLevel
-    return self.__computeLocalLevels(selectedLevel[4])
+    return self.__computeLocalLevels(selectedLevel[3])
 
   def __computeGeoTree(self):
     """Return a geoTree adapted to the profile of user"""
@@ -166,20 +174,14 @@ class Navigation(DataGeneric):
     if self.__userGroup == "drv":
       for drv in Navigation.geoTree[1]:
         if drv[0] == self.__userGeoId:
-          return ["drv", drv[1]]
+          return drv
     hierarchy = self.__computeHierarchy()
     drvId = [couple[0] for couple in hierarchy if couple[1] == self.__userGeoId][0]
     for drv in Navigation.geoTree[1]:
         if drv[0] == drvId:
           for agent in drv[1]:
             if agent[0] == self.__userGeoId:
-              return ["agent", agent[1]]
-
-  def __computeGeoTreeStructure(self):
-    if self.__userGroup in Navigation.geoTreeStructure:
-      index = Navigation.geoTreeStructure.index(self.__userGroup)
-      return Navigation.geoTreeStructure[index + 1:]
-    return Navigation.geoTreeStructure
+              return agent
 
   def __computeHierarchy(self) -> list:
     """Hierachy is a list of couples containing drvId dans agentId"""
@@ -204,7 +206,7 @@ class Navigation(DataGeneric):
   def __initialiseClass(cls):
     Navigation.levels = Navigation.__computeLevels()
     formatedPdvs, Navigation.listPdv = cls._formatPdv()
-    Navigation.geoTree = cls._buildTree('root', cls.config["geoTreeStructure"], formatedPdvs)
+    Navigation.geoTree = cls._buildTree(0, cls.config["geoTreeStructure"], formatedPdvs)
     Navigation.geoTreeStructure = [Navigation.listPdv['fields'][id] for id in cls.config["geoTreeStructure"]]
 
   @classmethod
@@ -213,11 +215,12 @@ class Navigation(DataGeneric):
     dictLevelWithDashBoard = {}
     for object in listLevel.values():
       dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
+      del dictLevelWithDashBoard[object.id][0]
       dashBoardTree = DashboardTree.objects.filter(level=object).first()
-      dictLevelWithDashBoard[object.id].insert(3, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
+      dictLevelWithDashBoard[object.id].insert(2, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
     for level in dictLevelWithDashBoard.values():
-      if level[4]:
-        dictLevelWithDashBoard[level[4]][4] = level
+      if level[3]:
+        dictLevelWithDashBoard[level[3]][3] = level
     level.pop()
     return dictLevelWithDashBoard[1]
 
