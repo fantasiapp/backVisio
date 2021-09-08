@@ -4,9 +4,11 @@ from django.conf import settings
 from django.forms.models import model_to_dict
 from django.db.models.fields.related import ForeignKey
 from ..utils import camel
+import os
 
 class DataGeneric:
   cacheFile = 'visioServer/modelStructure/salesDict.json'
+  print(os.getcwd(), os.path.isfile('visioServer/config.json'))
   with open('visioServer/config.json', 'r') as cfgFile:
     config = json.load(cfgFile)
     __salesDict = None
