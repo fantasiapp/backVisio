@@ -122,7 +122,7 @@ class Navigation(DataGeneric):
     return data
 
   def __createModels(self, data):
-    models = self.config["navModels"]
+    models = list(self.config["navModels"])
     print("__createModels", models, self.__userGroup)
     if self.__userGroup != "root":
       del models[0]
