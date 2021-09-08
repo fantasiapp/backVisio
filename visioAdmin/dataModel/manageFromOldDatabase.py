@@ -351,6 +351,8 @@ class ManageFromOldDatabase:
     for username in ["vivian", "jeanluc"]:
       user = User.objects.get(username=username)
       user.groups.clear()
+      if not Group.objects.filter(name="root"):
+        Group.objects.create(name="root")
       user.groups.add(Group.objects.get(name="root"))
     for username, userList in dictUser.items():
       user = User.objects.create_user(username=username, password=userList[2])
