@@ -8,7 +8,6 @@ import os
 
 class DataGeneric:
   cacheFile = 'visioServer/modelStructure/salesDict.json'
-  print(os.getcwd(), os.path.isfile('visioServer/config.json'))
   with open('visioServer/config.json', 'r') as cfgFile:
     config = json.load(cfgFile)
     __salesDict = None
@@ -40,7 +39,8 @@ class DataGeneric:
       try:
         with open(cls.cacheFile, 'r') as jsonFile:
           cls.__salesDict = json.load(jsonFile)
-      except: pass
+      except:
+        print('Formating sales...')
     if not cls.__salesDict:
       cls.__salesDict = cls.__formatSales()
       with open(cls.cacheFile, 'w') as jsonFile:
@@ -49,7 +49,6 @@ class DataGeneric:
 
   @classmethod
   def __formatSales(cls):
-    print('Formating sales...')
     sales = Ventes.objects.all()
     salesDict = {}
     for sale in sales:
@@ -123,7 +122,6 @@ class Navigation(DataGeneric):
 
   def __createModels(self, data):
     models = list(self.config["navModels"])
-    print("__createModels", models, self.__userGroup)
     if self.__userGroup != "root":
       del models[0]
     if self.__userGroup == "agent":
