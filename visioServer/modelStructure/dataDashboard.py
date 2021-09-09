@@ -12,6 +12,11 @@ class DataGeneric:
     config = json.load(cfgFile)
     __salesDict = None
 
+  def _formatObjectName(self, name, modelName):
+    if modelName == "bassin":
+      return name.replace("Négoce_", "")
+    return name
+
   @classmethod
   def _buildTree(cls, name, steps:list, pdvs:dict):
     """name = name of first node, root for instance
@@ -73,7 +78,6 @@ class DataGeneric:
     return formatedPdvs, dataPdv
 
 class DataDashboard(DataGeneric):
-
   def __init__(self):
     pass
 
@@ -83,14 +87,10 @@ class DataDashboard(DataGeneric):
     formatedPdvs, data['pdv'] = self._formatPdv()
     regularModels = [eval(modelName) for modelName in self.config["regularModels"]]
     for model in regularModels:
-        data.update({camel(model.__name__): {object.id: object.name for object in model.objects.all()}})
+        key = camel(model.__name__)
+        data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
     data['geoTree'] = self._buildTree(0, self.config["geoTreeStructure"], formatedPdvs)
     data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
-    data['geoTreeStructure'] = [data['pdv']['fields'][id] for id in self.config["geoTreeStructure"]]
-    data['tradeTreeStructure'] = [data['pdv']['fields'][id] for id in self.config["tradeTreeStructure"]]
-    jsonData = {"geoTree":data['geoTree'], 'geoTreeStructure':data['geoTreeStructure']}
-    with open("visioServer/modelStructure/Dashboards.json", 'w') as jsonFile:
-        json.dump(jsonData, jsonFile)
     return data
 
 
@@ -137,14 +137,9 @@ class Navigation(DataGeneric):
     for model in regularModels:
       key = camel(model.__name__)
       if key in dictSelectedId:
-         data.update({key: {object.id: self.__formatObjectName(object.name, key) for object in model.objects.all() if object.id in dictSelectedId[key]}})
+         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all() if object.id in dictSelectedId[key]}})
       else:
-        data.update({key: {object.id: self.__formatObjectName(object.name, key) for object in model.objects.all()}})
-
-  def __formatObjectName(self, name, modelName):
-    if modelName == "bassin":
-      return name.replace("Négoce_", "")
-    return name
+        data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
 
   def __computeSelectedId(self, tree, models)->dict:
     """compute ids for object selected"""
@@ -204,14 +199,22 @@ class Navigation(DataGeneric):
 
   @classmethod
   def __initialiseClass(cls):
-    Navigation.levels = Navigation.__computeLevels()
+    Navigation.levels = Navigation._computeLevels(TreeNavigation)
     formatedPdvs, Navigation.listPdv = cls._formatPdv()
     Navigation.geoTree = cls._buildTree(0, cls.config["geoTreeStructure"], formatedPdvs)
     Navigation.geoTreeStructure = [Navigation.listPdv['fields'][id] for id in cls.config["geoTreeStructure"]]
 
+  def __computeDashboards(self):
+    return {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all()}
+
+  def __computeDashboard(self, object):
+    dictDb = model_to_dict(object)
+    del dictDb["id"]
+    return dictDb
+
   @classmethod
-  def __computeLevels(cls):
-    listLevel = {object.id:object for object in TreeNavigation.objects.all()}
+  def _computeLevels(cls, classObject):
+    listLevel = {object.id:object for object in classObject.objects.all()}
     dictLevelWithDashBoard = {}
     for object in listLevel.values():
       dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
@@ -223,13 +226,5 @@ class Navigation(DataGeneric):
         dictLevelWithDashBoard[level[3]][3] = level
     level.pop()
     return dictLevelWithDashBoard[1]
-
-  def __computeDashboards(self):
-    return {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all()}
-
-  def __computeDashboard(self, object):
-    dictDb = model_to_dict(object)
-    del dictDb["id"]
-    return dictDb
 
 
