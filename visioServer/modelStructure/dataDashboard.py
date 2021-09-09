@@ -79,7 +79,8 @@ class DataGeneric:
 
 class DataDashboard(DataGeneric):
   def __init__(self):
-    pass
+    if not Navigation.levels:
+      Navigation.initialiseClass()
 
   @property
   def dataQuery(self):
@@ -117,7 +118,7 @@ class Navigation(DataGeneric):
 
   def __init__(self, userGeoId:int, userGroup:str):
     if not Navigation.levels:
-      Navigation.__initialiseClass()
+      Navigation.initialiseClass()
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     self.__levels = self.__computeLocalLevels(Navigation.levels)
@@ -215,7 +216,7 @@ class Navigation(DataGeneric):
 
 
   @classmethod
-  def __initialiseClass(cls):
+  def initialiseClass(cls):
     Navigation.levels = Navigation._computeLevels(TreeNavigation)
     formatedPdvs, Navigation.listPdv = cls._formatPdv()
     Navigation.geoTree = cls._buildTree(0, cls.config["geoTreeStructure"], formatedPdvs)
