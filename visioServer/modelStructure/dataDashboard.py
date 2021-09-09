@@ -86,12 +86,29 @@ class DataDashboard(DataGeneric):
     data = {}
     formatedPdvs, data['pdv'] = self._formatPdv()
     regularModels = [eval(modelName) for modelName in self.config["regularModels"]]
+    data["root"] = {0:""}
     for model in regularModels:
         key = camel(model.__name__)
         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
     data['geoTree'] = self._buildTree(0, self.config["geoTreeStructure"], formatedPdvs)
     data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
+    data['levels'] = Navigation.levels
     return data
+
+  @classmethod
+  def _computeLevels(cls, classObject):
+    listLevel = {object.id:object for object in classObject.objects.all()}
+    dictLevelWithDashBoard = {}
+    for object in listLevel.values():
+      dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
+      del dictLevelWithDashBoard[object.id][0]
+      dashBoardTree = DashboardTree.objects.filter(level=object).first()
+      dictLevelWithDashBoard[object.id].insert(2, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
+    for level in dictLevelWithDashBoard.values():
+      if level[3]:
+        dictLevelWithDashBoard[level[3]][3] = level
+    level.pop()
+    return dictLevelWithDashBoard[1]
 
 
 class Navigation(DataGeneric):
