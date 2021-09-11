@@ -1,14 +1,13 @@
-from os import name
-from re import I, M
 from dateutil import tz
 from datetime import datetime
 import mysql.connector as db
-import pytz
-# from django.db.models import fields
-from visioServer.models import Pdv, Drv, Agent, Dep, Bassin, Ville, AgentFinitions, SegmentCommercial, SegmentMarketing, Enseigne, Ensemble, \
-  SousEnsemble, Site, Produit, Industrie, Ventes, TreeNavigation, Dashboard, DashboardTree, UserProfile
-
+import json
+import os
+from dotenv import load_dotenv
+from visioServer.models import *
 from django.contrib.auth.models import User, Group
+
+load_dotenv()
 
 class ManageFromOldDatabase:
   fieldsPdv = []
@@ -29,7 +28,8 @@ class ManageFromOldDatabase:
   typeObject = {
      "ventes":Ventes, "pdv":Pdv, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
-    "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "Tableaux de Bord":Dashboard, "user":UserProfile
+    "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "Tableaux de Bord":Dashboard, "user":UserProfile,
+    "dashBoard":Dashboard, "layout":Layout, "widget":Widget,  "widgetParams":WidgetParams
     }
   connection = None
   cursor = None
@@ -38,10 +38,10 @@ class ManageFromOldDatabase:
   def emptyDatabase(self, start:bool) -> dict:
     if start:
       self.connectionNew = db.connect(
-        user = "vivian",
-        password = '1234',
-        host = "localhost",
-        database = "visioWork"
+        user = os.getenv('DB_USERNAME'),
+        password = os.getenv('DB_PASSWORD'),
+        host = os.getenv('DB_HOST'),
+        database = os.getenv('DB_NAME'),
       )
       self.cursorNew = self.connectionNew.cursor()
       self.typeObjectList = list(self.typeObject.values())
@@ -55,6 +55,8 @@ class ManageFromOldDatabase:
       # Le cas d'une table Many to Many
       if model == DashboardTree:
         self.cursorNew.execute(f"ALTER TABLE `visioServer_dashboardtree_dashboards` AUTO_INCREMENT=1;")
+      if model == Dashboard:
+        self.cursorNew.execute(f"ALTER TABLE `visioServer_dashboard_widgetParams` AUTO_INCREMENT=1;")
       return {'query':'emptyDatabase', 'message':f"la table {table} a été vidée.", 'end':False, 'errors':[]}
     
     for user in User.objects.all():
@@ -68,10 +70,10 @@ class ManageFromOldDatabase:
   def populateDatabase(self, start:bool, method:str) -> 'list(str)':
     if start:
       ManageFromOldDatabase.connection = db.connect(
-      user = "external",
-      password = "qXOSPFDrNugm4Ubs",
-      host = "46.105.115.10",
-      database = "visio.3.1.1.test"
+      user = os.getenv('DB_USERNAME_ORI'),
+      password = os.getenv('DB_PASSWORD_ORI'),
+      host = os.getenv('DB_HOST_ORI'),
+      database = os.getenv('DB_NAME_ORI')
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
@@ -274,17 +276,38 @@ class ManageFromOldDatabase:
       return (False, f"Error getObject {type} {repr(e)}")
     return (type, False)
 
+# Création des données de navigation
   def getTreeNavigation(self):
-    object = TreeNavigation.objects.create(level="root", name="Vue Org. Commerciale")
-    for level, name in [("drv", "Direction Régionale des Ventes"), ("agent", "Secteur"), ("dep", "Département"), ("bassin", "Bassin")]:
+    object = TreeNavigation.objects.create(level="root", name="France")
+    for level, name in [("drv", "Région"), ("agent", "Secteur"), ("dep", "Département"), ("bassin", "Bassin")]:
       object = TreeNavigation.objects.create(level=level, name=name, father=object)
-    dashboards = ["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
-      "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
-      "Synthèse P2CD Simulation", "Synthèse Enduit Simulation", "Suivi AD", "Suivi des Visites", "Marché P2CD Enseigne", "Marché Enduit Enseigne",
-      "PdM P2CD Enseigne", "PdM Enduit Enseigne"
-      ]
-    for name in dashboards:
-      object = Dashboard.objects.create(name=name)
+    dashboardsLevel = self.createDashboards()
+    for level, listDashBoard in dashboardsLevel.items():
+      levelObject = TreeNavigation.objects.filter(level=level)
+      if levelObject.exists():
+        dashboards = [Dashboard.objects.filter(name=name).first() for name in listDashBoard]
+        object = DashboardTree.objects.create(profile="root", level=levelObject.first())
+        for dashboard in dashboards:
+          object.dashboards.add(dashboard)
+      else:
+        return (False, f"Error getTreeNavigation {level} does not exist")
+    return ("TreeNavigation", False)
+
+  def createDashboards(self):
+    dashboards = {"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
+    "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
+      "DN P2CD Simulation":"column:2:1", "DN Enduit Simulation":"column:2:1", "Points de Vente P2CD":"column:2:1",
+      "Points de Vente Enduit":"column:2:1", "Synthèse P2CD":"column:2:1", "Synthèse Enduit":"column:2:1",
+      "Synthèse P2CD Simulation":"column:2:1", "Synthèse Enduit Simulation":"column:2:1", "Suivi AD":"column:2:1",
+      "Suivi des Visites":"column:2:1", "Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
+      "PdM P2CD Enseigne":"column:2:1", "PdM Enduit Enseigne":"column:2:1"
+    }
+    dictLayout = self.createLayout()
+    dictWidget = self.createWidget()
+    for name, layoutName in dashboards.items():
+      object = Dashboard.objects.create(name=name, layout=dictLayout[layoutName])
+      for widgetParam in self.createWidgetParams(name, dictWidget):
+        object.widgetParams.add(widgetParam)
     dashboardsLevel = {"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
       "Synthèse P2CD Simulation", "Synthèse Enduit Simulation", "Suivi AD", "Suivi des Visites"],
@@ -297,26 +320,32 @@ class ManageFromOldDatabase:
       "bassin":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"]
       }
-    for level, listDashBoard in dashboardsLevel.items():
-      levelObject = TreeNavigation.objects.filter(level=level)
-      if levelObject.exists():
-        dashboards = [Dashboard.objects.filter(name=name).first() for name in listDashBoard]
-        object = DashboardTree.objects.create(profile="root", level=levelObject.first())
-        for dashboard in dashboards:
-          object.dashboards.add(dashboard)
-      else:
-        return (False, f"Error getTreeNavigation {level} does not exist")
-    return ("TreeNavigation", False)
+    return dashboardsLevel
 
+  def createLayout(self):
+    dictLayout = {}
+    data = {
+      "column:2:1":[["1","3"],["2","3"]],
+      "mono":[["1"]],
+      "row:1:1:1":[["1"],["2"],["3"]],
+      "row:1I:1:1I":[["1"],["2"],["3"]],
+      "row:2:1":[["1", "2"], ["3", "3"]],
+      "row:2:2":[["1","2"], ["3", "4"]]
+    }
+    for name, jsonLayout in data.items():
+      object = Layout.objects.create(name=name, template=json.dumps(jsonLayout))
+      dictLayout[name] = object
+    return dictLayout
 
-  def unProtect(self, string):
-    if type(string) == str:
-      protectDict = {"@":"<£arobase>", "\n":"<£newLine>", "&":"<£andCommercial>", "'":"<£quote>", "\t":"<£tab>", "\\":"<£backSlash>", "\"":"<£doubleQuote>", ".":"<£dot>", "/":"<£slash>", "?":"<£questionMark>", "`":"<£backQuote>", ";":"<£semicolon>", ",":"<£coma>"}
-      for (symbol, protect) in protectDict.items():
-        string = string.replace(protect, symbol)
-      string = string.replace("  ", " ")
-      return string.strip()
-    return string
+  def createWidget(self):
+    dictWidget = {}
+    for name in ["pie", "donut", "image"]:
+      dictWidget[name] = Widget.objects.create(name=name)
+    return dictWidget
+
+  def createWidgetParams(self, name:str, dictWidget:str):
+    kwargs = {"title":"image", "subTitle":"", "widget":dictWidget["image"], "kwargs":json.dumps("empty")}
+    return [WidgetParams.objects.create(**kwargs)]
 
 # Chargement de la table des ventes
   def getVentes(self):
@@ -348,7 +377,7 @@ class ManageFromOldDatabase:
 
   def getUsers(self):
     dictUser = self.__computeListUser()
-    for username in ["vivian", "jeanluc"]:
+    for username in ["vivian", "jlw"]:
       user = User.objects.get(username=username)
       user.groups.clear()
       if not Group.objects.filter(name="root"):
@@ -401,5 +430,19 @@ class ManageFromOldDatabase:
 
   def test(self):
     return {"values":"Le test est fonctionnel"}
+
+
+# Utilitaires
+
+  def unProtect(self, string):
+    if type(string) == str:
+      protectDict = {"@":"<£arobase>", "\n":"<£newLine>", "&":"<£andCommercial>", "'":"<£quote>", "\t":"<£tab>", "\\":"<£backSlash>", "\"":"<£doubleQuote>", ".":"<£dot>", "/":"<£slash>", "?":"<£questionMark>", "`":"<£backQuote>", ";":"<£semicolon>", ",":"<£coma>"}
+      for (symbol, protect) in protectDict.items():
+        string = string.replace(protect, symbol)
+      string = string.replace("  ", " ")
+      return string.strip()
+    return string
+
+
 
 manageFromOldDatabase = ManageFromOldDatabase()

@@ -15,27 +15,19 @@ token = dictResponse['token']
 print(f"Token : {token}")
 headers = {'Authorization': f'Token {token}'}
 
-outputFile = 'test.json'
+fileName = 'test.json'
 url = f'{address}/visioServer/data/'
 
 start = time.time()
-response = requests.get(url, headers=headers) 
-print(f"Durée : {time.time() - start} s")
-try:
-    data = json.loads(response.text)
-except:
-    data = response.text
-
-with open(outputFile, 'w') as outputFile:
-    json.dump(data, outputFile, indent=4)
-
+# response = requests.get(url, headers=headers, params={"action":"dashboard"})
 response = requests.get(url, headers=headers, params={"action":"navigation"})
 
 try:
     data = json.loads(response.text)
 except:
     data = response.text
-
+print(f"Durée : {time.time() - start} s")
 print(data)
 
-print("Done.")
+with open(fileName, 'w') as outputFile:
+    json.dump(data, outputFile, indent=4)

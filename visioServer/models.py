@@ -184,8 +184,24 @@ class TreeNavigation(models.Model):
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
   father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
+class Layout(models.Model):
+  name = models.CharField(max_length=64, unique=True, blank=False, default=None)
+  template = models.CharField(max_length=2048, unique=False, blank=False, default=None)
+
+class Widget(models.Model):
+  name = models.CharField(max_length=32, unique=True, blank=False, default=None)
+  
+class WidgetParams(models.Model):
+  title = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  subTitle = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  widget = models.ForeignKey('Widget', on_delete=models.CASCADE, blank=False, null=False)
+  kwargs = models.CharField(max_length=64, unique=False, blank=False, default=None)
+
+
 class Dashboard(models.Model):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
+  layout = models.ForeignKey('Layout', on_delete=models.PROTECT, blank=False, default=1)
+  widgetParams = models.ManyToManyField("WidgetParams")
 
 class DashboardTree(models.Model):
   profile = models.CharField(max_length=32, blank=False, default=None)

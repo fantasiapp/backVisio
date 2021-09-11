@@ -5,9 +5,12 @@ from django.forms.models import model_to_dict
 from django.db.models.fields.related import ForeignKey
 from ..utils import camel
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 class DataGeneric:
-  cacheFile = 'visioServer/modelStructure/salesDict.json'
+  cacheFile = os.getenv('SALES_DICT')
+  testReg = json.loads(os.getenv('REGULAR_MODELS'))
   with open('visioServer/config.json', 'r') as cfgFile:
     config = json.load(cfgFile)
     __salesDict = None
@@ -79,8 +82,7 @@ class DataGeneric:
 
 class DataDashboard(DataGeneric):
   def __init__(self):
-    if not Navigation.levels:
-      Navigation.initialiseClass()
+    pass
 
   @property
   def dataQuery(self):
@@ -227,6 +229,7 @@ class Navigation(DataGeneric):
 
   def __computeDashboard(self, object):
     dictDb = model_to_dict(object)
+    dictDb["widgetParams"] = [widgetParams.id for widgetParams in dictDb["widgetParams"]]
     del dictDb["id"]
     return dictDb
 
