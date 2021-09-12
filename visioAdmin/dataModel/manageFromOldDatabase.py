@@ -60,7 +60,7 @@ class ManageFromOldDatabase:
       return {'query':'emptyDatabase', 'message':f"la table {table} a été vidée.", 'end':False, 'errors':[]}
     
     for user in User.objects.all():
-      if not user.username in ["vivian", "jeanluc"]:
+      if not user.username in ["vivian", "jlw"]:
         user.delete()
     self.cursorNew.execute("ALTER TABLE `auth_user` AUTO_INCREMENT=3;")
     self.connectionNew.close()
