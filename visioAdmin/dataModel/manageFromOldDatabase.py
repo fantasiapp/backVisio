@@ -377,8 +377,7 @@ class ManageFromOldDatabase:
 
   def getUsers(self):
     dictUser = self.__computeListUser()
-    for username in ["vivian", "jlw"]:
-      user = User.objects.get(username=username)
+    for user in User.objects.all():
       user.groups.clear()
       if not Group.objects.filter(name="root"):
         Group.objects.create(name="root")
