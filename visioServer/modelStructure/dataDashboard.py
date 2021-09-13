@@ -99,7 +99,7 @@ class DataDashboard(DataGeneric):
     data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
     if not DataDashboard.levels:
       DataDashboard.levels = DataDashboard._computeLevels(TreeNavigation)
-    data['levels'] = Navigation.levels
+    data['levels'] = DataDashboard.levels
     return data
 
   @classmethod
