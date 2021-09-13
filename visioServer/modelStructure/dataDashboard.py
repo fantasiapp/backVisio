@@ -81,6 +81,8 @@ class DataGeneric:
     return formatedPdvs, dataPdv
 
 class DataDashboard(DataGeneric):
+  levels = None
+
   def __init__(self):
     pass
 
@@ -95,6 +97,8 @@ class DataDashboard(DataGeneric):
         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
     data['geoTree'] = self._buildTree(0, self.config["geoTreeStructure"], formatedPdvs)
     data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
+    if not DataDashboard.levels:
+    DataDashboard.levels = DataDashboard._computeLevels(TreeNavigation)
     data['levels'] = Navigation.levels
     return data
 
