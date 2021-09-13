@@ -4,14 +4,13 @@ import time
 
 username, password = "t", "pwd"
 # address = 'http://localhost:8000'
-address = 'http://visio.fantasiapp.tech:2438'
+address = 'http://visio.fantasiapp.tech:2439'
 tokenUrl = f'{address}/visioServer/api-token-auth/'
 print("Url:", tokenUrl)
 headers = {'Content-Type': 'application/json'}
 data = json.dumps({"username": username, "password": password})
 response = requests.post(tokenUrl, headers=headers, data=data)
 dictResponse = json.loads(response.text)
-print(dictResponse)
 token = dictResponse['token']
 print(f"Token : {token}")
 headers = {'Authorization': f'Token {token}'}

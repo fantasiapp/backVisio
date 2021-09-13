@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 class DataGeneric:
+  structure = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   cacheFile = os.getenv('SALES_DICT')
   testReg = json.loads(os.getenv('REGULAR_MODELS'))
   with open('visioServer/config.json', 'r') as cfgFile:
@@ -84,11 +85,11 @@ class DataDashboard(DataGeneric):
   levels = None
 
   def __init__(self):
-    pass
+    self.__dictDashboard = self.__computeDashboards ()
 
   @property
   def dataQuery(self):
-    data = {}
+    data = {"structure":DataGeneric.structure}
     formatedPdvs, data['pdv'] = self._formatPdv()
     regularModels = [eval(modelName) for modelName in self.config["regularModels"]]
     data["root"] = {0:""}
@@ -99,6 +100,7 @@ class DataDashboard(DataGeneric):
     data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
     if not DataDashboard.levels:
       DataDashboard.levels = DataDashboard._computeLevels(TreeNavigation)
+    data['dashboards'] = self.__dictDashboard
     data['levels'] = DataDashboard.levels
     return data
 
@@ -116,6 +118,15 @@ class DataDashboard(DataGeneric):
         dictLevelWithDashBoard[level[3]][3] = level
     level.pop()
     return dictLevelWithDashBoard[1]
+
+  def __computeDashboards(self):
+    return {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all()}
+
+  def __computeDashboard(self, object):
+    dictDb = model_to_dict(object)
+    dictDb["widgetParams"] = [widgetParams.id for widgetParams in dictDb["widgetParams"]]
+    del dictDb["id"]
+    return dictDb
 
 
 class Navigation(DataGeneric):
