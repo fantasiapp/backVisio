@@ -8,119 +8,79 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-class DataGeneric:
-  structure = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
-  cacheFile = os.getenv('SALES_DICT')
-  testReg = json.loads(os.getenv('REGULAR_MODELS'))
-  with open('visioServer/config.json', 'r') as cfgFile:
-    config = json.load(cfgFile)
-    __salesDict = None
 
-  def _formatObjectName(self, name, modelName):
-    if modelName == "bassin":
-      return name.replace("Négoce_", "")
-    return name
+class DataDashboard:
+  __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
+  __levelGeo = None
+  __salesDict = None
+  __formatedPdvs = None
+  __dataPdvs = None
+  __cacheSalesDict = os.getenv('SALES_DICT')
+  __structureLayout = None
+  __structureWidgetParam = None
 
-  @classmethod
-  def _buildTree(cls, name, steps:list, pdvs:dict):
-    """name = name of first node, root for instance
-    step = the list of stepId following the root node
-    pdvs is a dictionary with keys : the ids and the list of values with dataSales"""
-    if not steps:
-        return [name, list(pdvs.keys())]
-    nextKey = steps[0]
-    children = [cls._buildTree(name, steps[1:], associatedPdvs) for name, associatedPdvs in cls._diceByKey(nextKey, pdvs).items()]
-    return [name, children]
-
-  @classmethod
-  def _diceByKey(cls, index:int, pdvs:dict):
-    dicedBykey = {}
-    for id, pdv in pdvs.items():
-        if pdv[index] not in dicedBykey:
-            dicedBykey[pdv[index]] = {}
-        dicedBykey[pdv[index]][id] = pdv
-    return dicedBykey
-
-  @classmethod
-  def salesDict(cls):
-    if cls.__salesDict: return cls.__salesDict
-    if settings.DEBUG:
-      try:
-        with open(cls.cacheFile, 'r') as jsonFile:
-          cls.__salesDict = json.load(jsonFile)
-      except:
-        print('Formating sales...')
-    if not cls.__salesDict:
-      cls.__salesDict = cls.__formatSales()
-      with open(cls.cacheFile, 'w') as jsonFile:
-        json.dump(cls.__salesDict, jsonFile)
-    return cls.__salesDict
-
-  @classmethod
-  def __formatSales(cls):
-    sales = Ventes.objects.all()
-    salesDict = {}
-    for sale in sales:
-        id = str(sale.pdv.id)
-        if id not in salesDict:
-            salesDict[id] = []
-        salesDict[id].append([sale.industry.id, sale.product.id, sale.volume])
-    return salesDict
-
-  @classmethod
-  def _formatPdv(cls):
-    listPdv = [model_to_dict(object) for object in Pdv.objects.all()]
-    formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] + [cls.salesDict().get(str(pdv['id']), [])] for pdv in listPdv}
-    fields = list(listPdv[0].keys())[1:]
-    indexes = []
-    for fieldName in fields:
-        if type(Pdv._meta.get_field(fieldName)) is ForeignKey:
-            indexes.append(fields.index(fieldName))
-    fields += ['sales']
-    dataPdv = {'fields' : fields, 'indexes': indexes}
-    dataPdv.update(formatedPdvs)
-    return formatedPdvs, dataPdv
-
-class DataDashboard(DataGeneric):
-  levels = None
-
-  def __init__(self):
-    self.__dictDashboard = self.__computeDashboards ()
+  def __init__(self, userGeoId, userGroup):
+    self.__userGeoId = userGeoId
+    self.__userGroup = userGroup
+    if not DataDashboard.__levelGeo:
+      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation)
+      DataDashboard.__layout = DataDashboard._computeLayout()
+      DataDashboard.__widget = DataDashboard._computeWidget()
+      DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
+      DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
+      DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
+      DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
+      DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
+      DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
 
   @property
   def dataQuery(self):
-    data = {"structure":DataGeneric.structure}
-    formatedPdvs, data['pdv'] = self._formatPdv()
-    regularModels = [eval(modelName) for modelName in self.config["regularModels"]]
-    data["root"] = {0:""}
-    for model in regularModels:
-        key = camel(model.__name__)
-        data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
-    data['geoTree'] = self._buildTree(0, self.config["geoTreeStructure"], formatedPdvs)
-    data['tradeTree'] = self._buildTree(0, self.config["tradeTreeStructure"], formatedPdvs)
-    if not DataDashboard.levels:
-      DataDashboard.levels = DataDashboard._computeLevels(TreeNavigation)
-    data['dashboards'] = self.__dictDashboard
-    data['levels'] = DataDashboard.levels
+    levelGeo = self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup)
+    structureDashboard, dashboards = self._computeLocalDashboards(levelGeo)
+    geoTree = self._computeLocalGeoTree()
+    data = {
+      "structureLevel":DataDashboard.__structureLevel,
+      "levelGeo":levelGeo,
+      "structureDashboard":structureDashboard,
+      "indexesDashboard":[1,2],
+      "dashboards": dashboards,
+      "structureLayout":DataDashboard.__structureLayout,
+      "layout":DataDashboard.__layout,
+      "widget":DataDashboard.__widget,
+      "structureWidgetParam":DataDashboard.__structureWidgetParam,
+      "widgetParams":self._computewidgetParams(dashboards),
+      "geoTree":geoTree,
+      "tradeTree":DataDashboard.__tradeTree,
+      "structurePdv":DataDashboard.__dataPdvs["fields"],
+      "indexesPdv":DataDashboard.__dataPdvs["indexes"],
+      "pdvs":self._computeLocalPdvs(geoTree)
+      }
+    self._createModelsForGeo(data)
+    self._createOtherModels(data)
     return data
 
-  @classmethod
-  def _computeLevels(cls, classObject):
-    listLevel = {object.id:object for object in classObject.objects.all()}
-    dictLevelWithDashBoard = {}
-    for object in listLevel.values():
-      dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
-      del dictLevelWithDashBoard[object.id][0]
-      dashBoardTree = DashboardTree.objects.filter(level=object).first()
-      dictLevelWithDashBoard[object.id].insert(2, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
-    for level in dictLevelWithDashBoard.values():
-      if level[3]:
-        dictLevelWithDashBoard[level[3]][3] = level
-    level.pop()
-    return dictLevelWithDashBoard[1]
+  def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
+    if originLevel[0] == selectedLevel:
+      return originLevel
+    return self._computeLocalLevels(originLevel[3], selectedLevel)
 
-  def __computeDashboards(self):
-    return {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all()}
+  def _computeLocalDashboards(self, levelGeo:list) -> dict:
+    listIdDb = self._computelistDashboardId(levelGeo, [])
+    dictDb = {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all() if object.id in listIdDb}
+    structureDashboard, dashboards = [], {}
+    for id, db in dictDb.items():
+      if not structureDashboard:
+        structureDashboard = list(db.keys())
+      dashboards[id] = list(db.values())
+    return structureDashboard, dashboards
+
+  def _computelistDashboardId(self, levelGeo, listId):
+    for id in levelGeo[2]:
+      if not id in listId:
+        listId.append(id)
+    if len(levelGeo) == 4:
+      return self._computelistDashboardId(levelGeo[3], listId)
+    return listId
 
   def __computeDashboard(self, object):
     dictDb = model_to_dict(object)
@@ -128,34 +88,46 @@ class DataDashboard(DataGeneric):
     del dictDb["id"]
     return dictDb
 
+  def _computeLocalGeoTree(self):
+    if self.__userGroup == "root":
+      return DataDashboard.__geoTree
+    if self.__userGroup == "drv":
+      for drv in DataDashboard.__geoTree[1]:
+        if drv[0] == self.__userGeoId:
+          return drv
+    hierarchy = self.__computeHierarchy()
+    drvId = [couple[0] for couple in hierarchy if couple[1] == self.__userGeoId][0]
+    for drv in DataDashboard.__geoTree[1]:
+        if drv[0] == drvId:
+          for agent in drv[1]:
+            if agent[0] == self.__userGeoId:
+              return agent
 
-class Navigation(DataGeneric):
-  structure = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
-  levels = None
+  def __computeHierarchy(self) -> list:
+    """Hierachy is a list of couples containing drvId dans agentId"""
+    hierarchy = []
+    for drv in DataDashboard.__geoTree[1]:
+      drvId = drv[0]
+      for agent in drv[1]:
+        hierarchy.append((drvId, agent[0]))
+    return hierarchy
 
-  def __init__(self, userGeoId:int, userGroup:str):
-    if not Navigation.levels:
-      Navigation.initialiseClass()
-    self.__userGeoId = userGeoId
-    self.__userGroup = userGroup
-    self.__levels = self.__computeLocalLevels(Navigation.levels)
-    self.__dictDashboard = self.__computeDashboards ()
+  def _computeLocalPdvs(self, geoTree):
+    if self.__userGroup == "root":
+      return {key:value for key, value in DataDashboard.__formatedPdvs.items()}
+    listId = self.__computeListIdPdv(geoTree)
+    return {key:value for key, value in DataDashboard.__formatedPdvs.items() if key in listId}
 
-  @property
-  def dataQuery(self):
-    data = {
-      "structure":self.structure,
-      "levels":self.__levels,
-      "dashboards":self.__dictDashboard,
-      "geoTree":self.__computeGeoTree()
-      }
-    self.__createModels(data)
-    with open("visioServer/modelStructure/Navigation.json", 'w') as jsonFile:
-        json.dump(data, jsonFile)
-    return data
+  def __computeListIdPdv(self, geoTree, listId:list = []):
+    if isinstance(geoTree, list):
+      for subLevel in geoTree[1]:
+        self.__computeListIdPdv(subLevel, listId)
+    else:
+      listId.append(geoTree)
+    return listId
 
-  def __createModels(self, data):
-    models = list(self.config["navModels"])
+  def _createModelsForGeo(self, data):
+    models = json.loads(os.getenv('GEO_MODELS'))
     if self.__userGroup == "root":
       data["root"] = {0:""}
     else:
@@ -175,6 +147,25 @@ class Navigation(DataGeneric):
          data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all() if object.id in dictSelectedId[key]}})
       else:
         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
+    data['ville'] = self._createModelVille(data)
+
+  def _createOtherModels(self, data):
+    models = json.loads(os.getenv('REGULAR_MODELS'))
+    regularModels = [eval(modelName) for modelName in models]
+    for model in regularModels:
+        key = camel(model.__name__)
+        data.update({key: {object.id:object.name for object in model.objects.all()}})
+
+  def _createModelVille(self, data):
+    idVille = data['structurePdv'].index("ville")
+    listId = [pdv[idVille] for pdv in data['pdvs'].values()]
+    return {object.id:object.name for object in Ville.objects.all() if object.id in listId}
+    
+
+  def _formatObjectName(self, name, modelName):
+    if modelName == "bassin":
+      return name.replace("Négoce_", "")
+    return name
 
   def __computeSelectedId(self, tree, models)->dict:
     """compute ids for object selected"""
@@ -190,63 +181,13 @@ class Navigation(DataGeneric):
             nextIds += listCouple[1]
           dictSelectedId[level] = listIds
           currentIds = nextIds
-    return dictSelectedId 
+    return dictSelectedId
 
-  def __computeLocalLevels(self, selectedLevel):
-    if selectedLevel[0] == self.__userGroup:
-      return selectedLevel
-    return self.__computeLocalLevels(selectedLevel[3])
-
-  def __computeGeoTree(self):
-    """Return a geoTree adapted to the profile of user"""
-    if self.__userGroup == "root":
-      return Navigation.geoTree
-    if self.__userGroup == "drv":
-      for drv in Navigation.geoTree[1]:
-        if drv[0] == self.__userGeoId:
-          return drv
-    hierarchy = self.__computeHierarchy()
-    drvId = [couple[0] for couple in hierarchy if couple[1] == self.__userGeoId][0]
-    for drv in Navigation.geoTree[1]:
-        if drv[0] == drvId:
-          for agent in drv[1]:
-            if agent[0] == self.__userGeoId:
-              return agent
-
-  def __computeHierarchy(self) -> list:
-    """Hierachy is a list of couples containing drvId dans agentId"""
-    hierarchy = []
-    for drv in Navigation.geoTree[1]:
-      drvId = drv[0]
-      for agent in drv[1]:
-        hierarchy.append((drvId, agent[0]))
-    return hierarchy
-
-  @classmethod
-  def __computeLevelName(cls, source:list, levelsName:list=[]):
-    levelName = source[1]
-    if levelName == "dep":
-      return levelsName[1:]
-    levelsName.append(levelName)
-    return cls.__computeLevelName(source[4], levelsName)
-
-
-
-  @classmethod
-  def initialiseClass(cls):
-    Navigation.levels = Navigation._computeLevels(TreeNavigation)
-    formatedPdvs, Navigation.listPdv = cls._formatPdv()
-    Navigation.geoTree = cls._buildTree(0, cls.config["geoTreeStructure"], formatedPdvs)
-    Navigation.geoTreeStructure = [Navigation.listPdv['fields'][id] for id in cls.config["geoTreeStructure"]]
-
-  def __computeDashboards(self):
-    return {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all()}
-
-  def __computeDashboard(self, object):
-    dictDb = model_to_dict(object)
-    dictDb["widgetParams"] = [widgetParams.id for widgetParams in dictDb["widgetParams"]]
-    del dictDb["id"]
-    return dictDb
+  def _computewidgetParams(self, dashboards):
+    listId = []
+    for db in dashboards.values():
+      listId += db[2]
+    return {key:value for key, value in DataDashboard.__widgetParam.items() if key in listId}
 
   @classmethod
   def _computeLevels(cls, classObject):
@@ -263,4 +204,94 @@ class Navigation(DataGeneric):
     level.pop()
     return dictLevelWithDashBoard[1]
 
+  @classmethod
+  def _formatPdv(cls):
+    listPdv = [model_to_dict(object) for object in Pdv.objects.all()]
+    formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] + [cls.computeSalesDict().get(str(pdv['id']), [])] for pdv in listPdv}
+    fields = list(listPdv[0].keys())[1:]
+    indexes = []
+    for fieldName in fields:
+        if type(Pdv._meta.get_field(fieldName)) is ForeignKey:
+            indexes.append(fields.index(fieldName))
+    fields += ['sales']
+    dataPdv = {'fields' : fields, 'indexes': indexes}
+    dataPdv.update(formatedPdvs)
+    return formatedPdvs, dataPdv
 
+  @classmethod
+  def computeSalesDict(cls):
+    if cls.__salesDict: return cls.__salesDict
+    if settings.DEBUG:
+      try:
+        with open(cls.__cacheSalesDict, 'r') as jsonFile:
+          cls.__salesDict = json.load(jsonFile)
+      except:
+        print('Formating sales...')
+    if not cls.__salesDict:
+      cls.__salesDict = cls.__formatSales()
+      with open(cls.__cacheSalesDict, 'w') as jsonFile:
+        json.dump(cls.__salesDict, jsonFile)
+    return cls.__salesDict
+
+  @classmethod
+  def __formatSales(cls):
+    sales = Ventes.objects.all()
+    salesDict = {}
+    for sale in sales:
+        id = str(sale.pdv.id)
+        if id not in salesDict:
+            salesDict[id] = []
+        salesDict[id].append([sale.industry.id, sale.product.id, sale.volume])
+    return salesDict
+
+  @classmethod
+  def _buildTree(cls, name, steps:list, pdvs:dict):
+    """name = name of first node, root for instance
+    step = the list of stepId following the root node
+    pdvs is a dictionary with keys : the ids and the list of values with dataSales"""
+    if not steps:
+        return [name, list(pdvs.keys())]
+    nextKey = steps[0]
+    children = [cls._buildTree(name, steps[1:], associatedPdvs) for name, associatedPdvs in cls._diceByKey(nextKey, pdvs).items()]
+    return [name, children]
+  
+  @classmethod
+  def _diceByKey(cls, index:int, pdvs:dict):
+    dicedBykey = {}
+    for id, pdv in pdvs.items():
+      if pdv[index] not in dicedBykey:
+        dicedBykey[pdv[index]] = {}
+      dicedBykey[pdv[index]][id] = pdv
+    return dicedBykey
+
+  @classmethod
+  def _computeLayout(cls):
+    return {object.id:cls.__readLayout(object) for object in Layout.objects.all()}
+
+  @classmethod
+  def __readLayout(cls, object):
+    if not cls.__structureLayout:
+      cls.__structureLayout = list(model_to_dict(object).keys())
+      del cls.__structureLayout[0]
+    layout = list(model_to_dict(object).values())
+    del layout[0]
+    layout[1] = json.loads(layout[1])
+    return layout
+
+  @classmethod
+  def _computeWidget(cls):
+    return {object.id:object.name for object in Widget.objects.all()}
+
+  @classmethod
+  def _computeWidgetParam(cls):
+    return {object.id:cls.__readWidgetParam(object) for object in WidgetParams.objects.all()}
+
+  @classmethod
+  def __readWidgetParam(cls, object):
+    if not cls.__structureWidgetParam:
+      cls.__structureWidgetParam = list(model_to_dict(object).keys())
+      del cls.__structureWidgetParam[0]
+    widgetParam = list(model_to_dict(object).values())
+    del widgetParam[0]
+    widgetParam[3] = json.loads(widgetParam[3])
+    return widgetParam

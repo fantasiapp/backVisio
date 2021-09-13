@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from .modelStructure.dataDashboard import DataDashboard, Navigation
+from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile
 
 class DefaultView(APIView):
@@ -20,11 +20,11 @@ class Data(DefaultView):
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if 'action' in request.GET:
             action = request.GET["action"]
-            if action == "navigation":
-                dataNavigation = Navigation(userIdGeo, userGroup[0])
-                return Response(dataNavigation.dataQuery)
+            # if action == "navigation":
+            #     dataNavigation = Navigation(userIdGeo, userGroup[0])
+            #     return Response(dataNavigation.dataQuery)
             if action == "dashboard":
-                dataDashBoard = DataDashboard()
+                dataDashBoard = DataDashboard(userIdGeo, userGroup[0])
                 return Response(dataDashBoard.dataQuery)
             return Response({"error":f"action {action} unknown"})
         return Response({"error":f"no action defined"})
