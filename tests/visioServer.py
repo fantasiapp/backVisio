@@ -3,10 +3,9 @@ import json
 import time
 
 username, password = "t", "pwd"
-address = 'http://localhost:8000'
-# address = 'http://visio.fantasiapp.tech:2439'
+# address = 'http://localhost:8000'
+address = 'http://visio.fantasiapp.tech:2440'
 tokenUrl = f'{address}/visioServer/api-token-auth/'
-print("Url:", tokenUrl)
 headers = {'Content-Type': 'application/json'}
 data = json.dumps({"username": username, "password": password})
 response = requests.post(tokenUrl, headers=headers, data=data)
@@ -26,7 +25,7 @@ try:
 except:
     data = response.text
 print(f"Durée : {time.time() - start} s")
-print(data)
+print("Résultats", data)
 
 with open(fileName, 'w') as outputFile:
     json.dump(data, outputFile, indent=4)

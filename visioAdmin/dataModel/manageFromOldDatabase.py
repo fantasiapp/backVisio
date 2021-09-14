@@ -292,7 +292,7 @@ class ManageFromOldDatabase:
       else:
         return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
-
+#Création des tableaux de bord
   def createDashboards(self):
     dashboards = {"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
     "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
@@ -325,12 +325,12 @@ class ManageFromOldDatabase:
   def createLayout(self):
     dictLayout = {}
     data = {
-      "column:2:1":[["1","3"],["2","3"]],
-      "mono":[["1"]],
-      "row:1:1:1":[["1"],["2"],["3"]],
-      "row:1I:1:1I":[["1"],["2"],["3"]],
-      "row:2:1":[["1", "2"], ["3", "3"]],
-      "row:2:2":[["1","2"], ["3", "4"]]
+      "column:2:1":[["a","c"],["b","c"]],
+      "mono":[["a"]],
+      "row:1:1:1":[["a"],["b"],["c"]],
+      "row:1I:1:1I":[["a"],["b"],["c"]],
+      "row:2:1":[["a", "b"], ["c", "c"]],
+      "row:2:2":[["a","b"], ["c", "d"]]
     }
     for name, jsonLayout in data.items():
       object = Layout.objects.create(name=name, template=json.dumps(jsonLayout))
