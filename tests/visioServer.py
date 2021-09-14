@@ -25,7 +25,7 @@ try:
 except:
     data = response.text
 print(f"Durée : {time.time() - start} s")
-print("Résultats", data)
+print("Résultats", data.keys())
 
 with open(fileName, 'w') as outputFile:
     json.dump(data, outputFile, indent=4)

@@ -296,10 +296,10 @@ class ManageFromOldDatabase:
   def createDashboards(self):
     dashboards = {"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
     "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
-      "DN P2CD Simulation":"column:2:1", "DN Enduit Simulation":"column:2:1", "Points de Vente P2CD":"column:2:1",
-      "Points de Vente Enduit":"column:2:1", "Synthèse P2CD":"column:2:1", "Synthèse Enduit":"column:2:1",
-      "Synthèse P2CD Simulation":"column:2:1", "Synthèse Enduit Simulation":"column:2:1", "Suivi AD":"column:2:1",
-      "Suivi des Visites":"column:2:1", "Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
+      "DN P2CD Simulation":"column:2:1", "DN Enduit Simulation":"column:2:1", "Points de Vente P2CD":"mono",
+      "Points de Vente Enduit":"mono", "Synthèse P2CD":"row:1:1:1", "Synthèse Enduit":"row:1:1:1",
+      "Synthèse P2CD Simulation":"row:1:1:1", "Synthèse Enduit Simulation":"row:1:1:1", "Suivi AD":"row:2:1",
+      "Suivi des Visites":"row:2:2", "Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
       "PdM P2CD Enseigne":"column:2:1", "PdM Enduit Enseigne":"column:2:1"
     }
     dictLayout = self.createLayout()
