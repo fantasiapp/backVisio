@@ -18,6 +18,7 @@ class DataDashboard:
   __cacheSalesDict = os.getenv('SALES_DICT')
   __structureLayout = None
   __structureWidgetParam = None
+  __structureWidgetCompute = None
 
   def __init__(self, userGeoId, userGroup):
     self.__userGeoId = userGeoId
@@ -27,12 +28,12 @@ class DataDashboard:
       DataDashboard.__layout = DataDashboard._computeLayout()
       DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
+      DataDashboard.__widgetCompute = DataDashboard._computeWidgetCompute()
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
-
   @property
   def dataQuery(self):
     levelGeo = self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup)
@@ -49,6 +50,8 @@ class DataDashboard:
       "widget":DataDashboard.__widget,
       "structureWidgetParam":DataDashboard.__structureWidgetParam,
       "widgetParams":self._computewidgetParams(dashboards),
+      "structureWidgetCompute":DataDashboard.__structureWidgetCompute,
+      "widgetCompute":DataDashboard.__widgetCompute,
       "geoTree":geoTree,
       "tradeTree":DataDashboard.__tradeTree,
       "structurePdv":DataDashboard.__dataPdvs["fields"],
@@ -293,5 +296,21 @@ class DataDashboard:
       del cls.__structureWidgetParam[0]
     widgetParam = list(model_to_dict(object).values())
     del widgetParam[0]
-    widgetParam[3] = json.loads(widgetParam[3])
     return widgetParam
+
+  @classmethod
+  def _computeWidgetCompute(cls):
+    return {object.id:cls.__readWidgetCompute(object) for object in WidgetCompute.objects.all()}
+
+  @classmethod
+  def __readWidgetCompute(cls, object):
+    if not cls.__structureWidgetCompute:
+      cls.__structureWidgetCompute = list(model_to_dict(object).keys())
+      del cls.__structureWidgetCompute[0]
+    widgetCompute = list(model_to_dict(object).values())
+    del widgetCompute[0]
+    widgetCompute[3] = json.loads(widgetCompute[3])
+    widgetCompute[4] = json.loads(widgetCompute[4])
+    return widgetCompute
+
+  

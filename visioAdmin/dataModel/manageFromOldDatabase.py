@@ -1,3 +1,4 @@
+from typing import SupportsBytes
 from dateutil import tz
 from datetime import datetime
 import mysql.connector as db
@@ -292,6 +293,7 @@ class ManageFromOldDatabase:
       else:
         return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
+
 #Création des tableaux de bord
   def createDashboards(self):
     dashboards = {"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
@@ -339,12 +341,21 @@ class ManageFromOldDatabase:
 
   def createWidget(self):
     dictWidget = {}
-    for name in ["pie", "donut", "image"]:
+    for name in ["pie", "donut", "image", "histoRow", "histoColumn", "table"]:
       dictWidget[name] = Widget.objects.create(name=name)
     return dictWidget
 
   def createWidgetParams(self, name:str, dictWidget:str):
-    kwargs = {"title":"image", "subTitle":"", "widget":dictWidget["image"], "kwargs":json.dumps("empty")}
+    p2cd_widgetCompute1 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+    p2cd_widgetCompute2 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="dn", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+    p2cd_widgetCompute3 = WidgetCompute.objects.create(axis1="enseigne", axis2="industrie", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
+    p2cd_widget1 = WidgetParams.objects.create(title="Vente en volume", subTitle="", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
+    p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
+    p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
+    return [p2cd_widget1, p2cd_widget2, p2cd_widget3]
+
+    # kwargs = {"title":"image", "subTitle":"", "widget":dictWidget["image"], "kwargs":json.dumps("empty")}
+
     return [WidgetParams.objects.create(**kwargs)]
 
 # Chargement de la table des ventes
@@ -428,7 +439,8 @@ class ManageFromOldDatabase:
       user.append("pwd")
 
   def test(self):
-    return {"values":"Le test est fonctionnel"}
+    self.createDashboards()
+    return {"values":"Dashboards created"}
 
 
 # Utilitaires

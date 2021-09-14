@@ -195,8 +195,15 @@ class WidgetParams(models.Model):
   title = models.CharField(max_length=32, unique=False, blank=False, default=None)
   subTitle = models.CharField(max_length=32, unique=False, blank=False, default=None)
   widget = models.ForeignKey('Widget', on_delete=models.CASCADE, blank=False, null=False)
-  kwargs = models.CharField(max_length=64, unique=False, blank=False, default=None)
+  widgetCompute = models.ForeignKey("WidgetCompute", on_delete=models.CASCADE, blank=False, default=6)
 
+class WidgetCompute(models.Model):
+  axis1 = models.CharField("Axe 1", max_length=32, unique=False, blank=False, default=None)
+  axis2 = models.CharField("Axe 2", max_length=32, unique=False, blank=False, default=None)
+  indicator = models.CharField("Indicateur", max_length=32, unique=False, blank=False, default=None)
+  groupAxis1 = models.CharField("Filtre Axe 1", max_length=4096, unique=False, blank=False, default=None)
+  groupAxis2 = models.CharField("Filtre Axe 2", max_length=4096, unique=False, blank=False, default=None)
+  percent = models.BooleanField("Pourcentage", default=False)
 
 class Dashboard(models.Model):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
