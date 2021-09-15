@@ -25,7 +25,7 @@ class DataDashboard:
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
-      # DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
+      DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__layout = DataDashboard._computeLayout()
       DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
@@ -35,6 +35,7 @@ class DataDashboard:
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
+  
   @property
   def dataQuery(self):
     levelGeo = self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup)
@@ -43,7 +44,7 @@ class DataDashboard:
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,
-      # "levelGeo":DataDashboard.__levelTrade,
+      "levelTrade":DataDashboard.__levelTrade,
       "structureDashboard":structureDashboard,
       "indexesDashboard":[1,2],
       "dashboards": dashboards,

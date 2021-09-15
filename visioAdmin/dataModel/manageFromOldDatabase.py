@@ -285,17 +285,17 @@ class ManageFromOldDatabase:
       object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
       for level, name in self.createNavigationLevelName(geoOrTrade):
         object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
-      if geoOrTrade == "geo":
-        dashboardsLevel = self.createDashboards()
-        for level, listDashBoard in dashboardsLevel.items():
-          levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
-          if levelObject.exists():
-            dashboards = [Dashboard.objects.get(name=name) for name in listDashBoard]
-            object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile="root", level=levelObject.first())
-            for dashboard in dashboards:
-              object.dashboards.add(dashboard)
-          else:
-            return (False, f"Error getTreeNavigation {level} does not exist")
+      dashboardsLevel = self.createDashboards(geoOrTrade)
+      for level, listDashBoard in dashboardsLevel.items():
+        levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
+        if levelObject.exists():
+          dashboards = [Dashboard.objects.get(name=name) for name in listDashBoard]
+          object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
+          for dashboard in dashboards:
+            object.dashboards.add(dashboard)
+        else:
+          print(f"Error getTreeNavigation {level} does not exist")
+          return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
 
   def createNavigationLevelName(self, geoOrTrade:str):
@@ -306,45 +306,58 @@ class ManageFromOldDatabase:
     return listLevelName
 
 #Création des tableaux de bord
-  def createDashboards(self):
-    dashboards = {"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
-    "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
+  def createDashboards(self, geoOrTrade):
+    dashboards = {
+      "geo":{"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
+      "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
       "DN P2CD Simulation":"column:2:1", "DN Enduit Simulation":"column:2:1", "Points de Vente P2CD":"mono",
       "Points de Vente Enduit":"mono", "Synthèse P2CD":"row:1:1:1", "Synthèse Enduit":"row:1:1:1",
       "Synthèse P2CD Simulation":"row:1:1:1", "Synthèse Enduit Simulation":"row:1:1:1", "Suivi AD":"row:2:1",
-      "Suivi des Visites":"row:2:2", "Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
-      "PdM P2CD Enseigne":"column:2:1", "PdM Enduit Enseigne":"column:2:1"
+      "Suivi des Visites":"row:2:2"},
+      "trade":{"Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
+      "PdM P2CD Enseigne":"column:2:1", "PdM Enduit Enseigne":"column:2:1"}
     }
-    dictLayout = self.createLayout()
-    dictWidget = self.createWidget()
-    
-    for name, layoutName in dashboards.items():
-      object = Dashboard.objects.create(name=name, layout=dictLayout[layoutName])
+    if geoOrTrade == "geo":
+      self.dictLayout = self.createLayout()
+      self.dictWidget = self.createWidget()
+    for name, layoutName in dashboards[geoOrTrade].items():
+      object = Dashboard.objects.create(name=name, layout=self.dictLayout[layoutName])
       templateFlat = []
-      for listPos in json.loads(dictLayout[layoutName].template):
+      for listPos in json.loads(self.dictLayout[layoutName].template):
         templateFlat += listPos
-      listWidgetParam = self.createWidgetParams(name, dictWidget)
+      listWidgetParam = self.createWidgetParams(name, self.dictWidget)
       for widgetParam in listWidgetParam[:len(set(templateFlat))]:
         object.widgetParams.add(widgetParam)
     dashboardsLevel = {"geo":{"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
       "Synthèse P2CD Simulation", "Synthèse Enduit Simulation", "Suivi AD", "Suivi des Visites"],
+
       "drv":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Suivi des Visites"],
+
       "agent":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
+
       "dep":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
+
       "bassin":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"]
       },
       "trade":{
-        "rootTrade":["Marché P2CD Enseigne"],
-        "enseigne":["Marché P2CD Enseigne"],
-        "ensemble":["Marché P2CD Enseigne"],
-        "sousEnsemble":["Marché P2CD Enseigne"]}
+        "rootTrade":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
+        "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
+
+        "enseigne":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
+        "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
+
+        "ensemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
+        "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
+
+        "sousEnsemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
+        "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"]}
     }
-    return dashboardsLevel["geo"]
+    return dashboardsLevel[geoOrTrade]
 
   def createLayout(self):
     dictLayout = {}
