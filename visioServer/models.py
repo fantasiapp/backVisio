@@ -15,7 +15,7 @@ class Agent(models.Model):
   drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
 
   class Meta:
-    verbose_name = "Agent"
+    verbose_name = "Secteur"
 
   def __str__(self) ->str:
     return self.name
@@ -115,18 +115,18 @@ class Site(models.Model):
 class Pdv(models.Model):
   code = models.CharField('PDV code', max_length=10, blank=False, default="Inconnu")
   name = models.CharField('PDV', max_length=64, blank=False, default="Inconnu")
-  drv = models.ForeignKey('drv', on_delete=models.PROTECT,  blank=False)
-  agent = models.ForeignKey('agent', on_delete=models.PROTECT, blank=False)
-  dep = models.ForeignKey("dep", on_delete=models.PROTECT, blank=False)
-  bassin = models.ForeignKey("bassin", on_delete=models.PROTECT, blank=False)
+  drv = models.ForeignKey('drv', verbose_name='Région', on_delete=models.PROTECT,  blank=False)
+  agent = models.ForeignKey('agent', verbose_name='Secteur', on_delete=models.PROTECT, blank=False)
+  dep = models.ForeignKey("dep", verbose_name='Département', on_delete=models.PROTECT, blank=False)
+  bassin = models.ForeignKey("bassin", verbose_name='Bassin', on_delete=models.PROTECT, blank=False)
   ville = models.ForeignKey("ville", on_delete=models.PROTECT, blank=False)
   latitude = models.FloatField('Latitude', unique=False, blank=False, default=0.0)
   longitude = models.FloatField('Longitude', unique=False, blank=False, default=0.0)
   segmentCommercial = models.ForeignKey("segmentCommercial", on_delete=models.PROTECT, blank=False, default=1)
   segmentMarketing = models.ForeignKey("segmentMarketing", on_delete=models.PROTECT, blank=False, default=1)
-  enseigne = models.ForeignKey('enseigne', on_delete=models.PROTECT, blank=False, default=7)
-  ensemble = models.ForeignKey('ensemble', on_delete=models.PROTECT, blank=False, default=43)
-  sousEnsemble = models.ForeignKey('sousEnsemble', on_delete=models.PROTECT, blank=False, default=1)
+  enseigne = models.ForeignKey('Enseigne', verbose_name='Enseigne', on_delete=models.PROTECT, blank=False, default=7)
+  ensemble = models.ForeignKey('Ensemble', verbose_name='Ensemble', on_delete=models.PROTECT, blank=False, default=43)
+  sousEnsemble = models.ForeignKey('SousEnsemble', verbose_name='Sous-Ensemble', on_delete=models.PROTECT, blank=False, default=1)
   site = models.ForeignKey('site', on_delete=models.PROTECT, blank=False, default=1)
   available = models.BooleanField(default=True)
   sale = models.BooleanField("Ne vend pas de plaque", default=True)
@@ -179,9 +179,10 @@ class Ventes(models.Model):
 
 
 # Modèles pour la navigation
-class TreeNavigationGeo(models.Model):
+class TreeNavigation(models.Model):
+  geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
   level = models.CharField(max_length=32, unique=True, blank=False, default=None)
-  name = models.CharField(max_length=32, unique=True, blank=False, default=None)
+  name = models.CharField(max_length=32, unique=False, blank=False, default=None)
   father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
 class Layout(models.Model):
@@ -211,6 +212,7 @@ class Dashboard(models.Model):
   widgetParams = models.ManyToManyField("WidgetParams")
 
 class DashboardTree(models.Model):
+  geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
   profile = models.CharField(max_length=32, blank=False, default=None)
   level = models.ForeignKey("TreeNavigation", on_delete=models.PROTECT, blank=False, default=None)
   dashboards = models.ManyToManyField("Dashboard")

@@ -1,3 +1,4 @@
+from logging import exception
 from typing import SupportsBytes
 from dateutil import tz
 from datetime import datetime
@@ -81,7 +82,7 @@ class ManageFromOldDatabase:
         ("PdvOld",[]), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
-        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", []), ("Users", [])]
+        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
       table, error = getattr(self, "get" + tableName)(*variable)
@@ -278,21 +279,33 @@ class ManageFromOldDatabase:
     return (type, False)
 
 # Création des données de navigation
-  def getTreeNavigation(self):
-    object = TreeNavigation.objects.create(level="root", name="France")
-    for level, name in [("drv", "Région"), ("agent", "Secteur"), ("dep", "Département"), ("bassin", "Bassin")]:
-      object = TreeNavigation.objects.create(level=level, name=name, father=object)
-    dashboardsLevel = self.createDashboards()
-    for level, listDashBoard in dashboardsLevel.items():
-      levelObject = TreeNavigation.objects.filter(level=level)
-      if levelObject.exists():
-        dashboards = [Dashboard.objects.filter(name=name).first() for name in listDashBoard]
-        object = DashboardTree.objects.create(profile="root", level=levelObject.first())
-        for dashboard in dashboards:
-          object.dashboards.add(dashboard)
-      else:
-        return (False, f"Error getTreeNavigation {level} does not exist")
-    return ("TreeNavigation", False)
+  def getTreeNavigation(self, geoOrTradeList:list):
+    print(geoOrTradeList)
+    for geoOrTrade in geoOrTradeList:
+      print(geoOrTrade, self.createNavigationLevelName(geoOrTrade))
+      levelRoot = "root" if geoOrTrade == "geo" else "rootTrade"
+      object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
+      for level, name in self.createNavigationLevelName(geoOrTrade):
+        object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
+      if geoOrTrade == "geo":
+        dashboardsLevel = self.createDashboards()
+        for level, listDashBoard in dashboardsLevel.items():
+          levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
+          if levelObject.exists():
+            dashboards = [Dashboard.objects.get(name=name) for name in listDashBoard]
+            object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile="root", level=levelObject.first())
+            for dashboard in dashboards:
+              object.dashboards.add(dashboard)
+          else:
+            return (False, f"Error getTreeNavigation {level} does not exist")
+    return (f"TreeNavigation {geoOrTrade}", False)
+
+  def createNavigationLevelName(self, geoOrTrade:str):
+    geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE')) if geoOrTrade == "geo" else json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
+    fields, listLevelName = Pdv._meta.fields, []
+    for fieldId in geoTreeStructure:
+      listLevelName.append((fields[fieldId + 1].name, fields[fieldId + 1].verbose_name))
+    return listLevelName
 
 #Création des tableaux de bord
   def createDashboards(self):
@@ -306,9 +319,14 @@ class ManageFromOldDatabase:
     }
     dictLayout = self.createLayout()
     dictWidget = self.createWidget()
+    
     for name, layoutName in dashboards.items():
       object = Dashboard.objects.create(name=name, layout=dictLayout[layoutName])
-      for widgetParam in self.createWidgetParams(name, dictWidget):
+      templateFlat = []
+      for listPos in json.loads(dictLayout[layoutName].template):
+        templateFlat += listPos
+      listWidgetParam = self.createWidgetParams(name, dictWidget)
+      for widgetParam in listWidgetParam[:len(set(templateFlat))]:
         object.widgetParams.add(widgetParam)
     dashboardsLevel = {"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
@@ -349,14 +367,12 @@ class ManageFromOldDatabase:
     p2cd_widgetCompute1 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
     p2cd_widgetCompute2 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="dn", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
     p2cd_widgetCompute3 = WidgetCompute.objects.create(axis1="enseigne", axis2="industrie", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
+    p2cd_widgetCompute4 = WidgetCompute.objects.create(axis1="enseigne", axis2="segmentCommercial", indicator="p2cD", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
     p2cd_widget1 = WidgetParams.objects.create(title="Vente en volume", subTitle="", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
     p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
     p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
-    return [p2cd_widget1, p2cd_widget2, p2cd_widget3]
-
-    # kwargs = {"title":"image", "subTitle":"", "widget":dictWidget["image"], "kwargs":json.dumps("empty")}
-
-    return [WidgetParams.objects.create(**kwargs)]
+    p2cd_widget4 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Segment", widget=dictWidget["histoColumn"], widgetCompute=p2cd_widgetCompute4)
+    return [p2cd_widget1, p2cd_widget2, p2cd_widget3, p2cd_widget4]
 
 # Chargement de la table des ventes
   def getVentes(self):
@@ -439,7 +455,21 @@ class ManageFromOldDatabase:
       user.append("pwd")
 
   def test(self):
-    self.createDashboards()
+    for object in TreeNavigation.objects.all():
+      object.delete()
+    for object in DashboardTree.objects.all():
+      object.delete()
+    for object in Dashboard.objects.filter():
+      object.delete()
+    for object in Layout.objects.all():
+      object.delete()
+    for object in Widget.objects.all():
+      object.delete()
+    for object in WidgetParams.objects.all():
+      object.delete()
+    for object in WidgetCompute.objects.all():
+      object.delete()
+    self.getTreeNavigation(["geo", "trade"])
     return {"values":"Dashboards created"}
 
 

@@ -2,9 +2,9 @@ import requests
 import json
 import time
 
-username, password = "t", "pwd"
+username, password = "all", "pwd"
 address = 'http://localhost:8000'
-address = 'http://visio.fantasiapp.tech:2438'
+# address = 'http://visio.fantpythasiapp.tech:2438'
 tokenUrl = f'{address}/visioServer/api-token-auth/'
 headers = {'Content-Type': 'application/json'}
 data = json.dumps({"username": username, "password": password})

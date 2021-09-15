@@ -42,6 +42,8 @@ def performancesAction(action, get):
       return manageFromOldDatabase.emptyDatabase(get['start'] == 'true')
     else:
       return manageFromOldDatabase.populateDatabase(get['start'] == 'true', method=get['method'])
+  elif action == "test":
+    return manageFromOldDatabase.test()
   else:
     return {'titles':[], 'values':[], 'tableIndex':[]}
 
