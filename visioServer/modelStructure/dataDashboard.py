@@ -25,7 +25,7 @@ class DataDashboard:
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
-      DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
+      # DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__layout = DataDashboard._computeLayout()
       DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
@@ -77,6 +77,8 @@ class DataDashboard:
       if not structureDashboard:
         structureDashboard = list(db.keys())
       dashboards[id] = list(db.values())
+      listObjWidgetParam = [WidgetParams.objects.get(id = idWP) for idWP in dashboards[id][2]]
+      dashboards[id][2] = {object.position:object.id for object in listObjWidgetParam}
     return structureDashboard, dashboards
 
   def _computelistDashboardId(self, levelGeo, listId):
@@ -191,26 +193,24 @@ class DataDashboard:
   def _computewidgetParams(self, dashboards):
     listId = []
     for db in dashboards.values():
-      listId += db[2]
+      listId += list(db[2].values())
     return {key:value for key, value in DataDashboard.__widgetParam.items() if key in listId}
 
   @classmethod
   def _computeLevels(cls, classObject, geoOrTrade):
     listLevel = {object.id:object for object in classObject.objects.filter(geoOrTrade=geoOrTrade)}
-    print("_computeLevels", listLevel, geoOrTrade)
     dictLevelWithDashBoard = {}
     for object in listLevel.values():
       dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
       del dictLevelWithDashBoard[object.id][0]
       del dictLevelWithDashBoard[object.id][0]
       dashBoardTree = DashboardTree.objects.filter(geoOrTrade=geoOrTrade, level=object).first()
-      print(object.name, dashBoardTree)
       dictLevelWithDashBoard[object.id].insert(2, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
     for level in dictLevelWithDashBoard.values():
       if level[3]:
         dictLevelWithDashBoard[level[3]][3] = level
     level.pop()
-    return dictLevelWithDashBoard[1]
+    return list(dictLevelWithDashBoard.values())[0]
 
   @classmethod
   def _formatPdv(cls):
@@ -299,8 +299,10 @@ class DataDashboard:
     if not cls.__structureWidgetParam:
       cls.__structureWidgetParam = list(model_to_dict(object).keys())
       del cls.__structureWidgetParam[0]
+      del cls.__structureWidgetParam[1]
     widgetParam = list(model_to_dict(object).values())
     del widgetParam[0]
+    del widgetParam[1]
     return widgetParam
 
   @classmethod

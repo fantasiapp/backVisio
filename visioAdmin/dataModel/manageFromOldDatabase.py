@@ -344,7 +344,7 @@ class ManageFromOldDatabase:
         "ensemble":["Marché P2CD Enseigne"],
         "sousEnsemble":["Marché P2CD Enseigne"]}
     }
-    return dashboardsLevel
+    return dashboardsLevel["geo"]
 
   def createLayout(self):
     dictLayout = {}
@@ -459,9 +459,9 @@ class ManageFromOldDatabase:
       user.append("pwd")
 
   def test(self):
-    for object in TreeNavigation.objects.all():
-      object.delete()
     for object in DashboardTree.objects.all():
+      object.delete()
+    for object in TreeNavigation.objects.all():
       object.delete()
     for object in Dashboard.objects.filter():
       object.delete()

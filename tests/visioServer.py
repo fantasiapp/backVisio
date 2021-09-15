@@ -2,7 +2,7 @@ import requests
 import json
 import time
 
-username, password = "all", "pwd"
+username, password = "t", "pwd"
 address = 'http://localhost:8000'
 # address = 'http://visio.fantasiapp.tech:2438'
 tokenUrl = f'{address}/visioServer/api-token-auth/'
@@ -26,6 +26,7 @@ except:
     data = response.text
 print(f"Durée : {time.time() - start} s")
 print("Résultats", data.keys())
+print(data["widgetParams"])
 
 with open(fileName, 'w') as outputFile:
     json.dump(data, outputFile, indent=4)
