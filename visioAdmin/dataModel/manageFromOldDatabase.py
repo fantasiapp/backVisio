@@ -296,7 +296,7 @@ class ManageFromOldDatabase:
               object.dashboards.add(dashboard)
           else:
             return (False, f"Error getTreeNavigation {level} does not exist")
-    return (f"TreeNavigation {geoOrTrade}", False)
+    return ("TreeNavigation", False)
 
   def createNavigationLevelName(self, geoOrTrade:str):
     geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE')) if geoOrTrade == "geo" else json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
@@ -349,7 +349,7 @@ class ManageFromOldDatabase:
   def createLayout(self):
     dictLayout = {}
     data = {
-      "column:2:1":[["a","b"],["c","b"]],
+      "column:2:1":[["a","c"],["b","c"]],
       "mono":[["a"]],
       "row:1:1:1":[["a"],["b"],["c"]],
       "row:1I:1:1I":[["a"],["b"],["c"]],
