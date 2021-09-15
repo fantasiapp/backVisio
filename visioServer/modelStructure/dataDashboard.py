@@ -25,7 +25,7 @@ class DataDashboard:
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
-      # DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
+      DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__layout = DataDashboard._computeLayout()
       DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
@@ -197,6 +197,7 @@ class DataDashboard:
   @classmethod
   def _computeLevels(cls, classObject, geoOrTrade):
     listLevel = {object.id:object for object in classObject.objects.filter(geoOrTrade=geoOrTrade)}
+    print("_computeLevels", listLevel, geoOrTrade)
     dictLevelWithDashBoard = {}
     for object in listLevel.values():
       dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())

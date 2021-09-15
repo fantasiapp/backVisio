@@ -326,7 +326,7 @@ class ManageFromOldDatabase:
       listWidgetParam = self.createWidgetParams(name, dictWidget)
       for widgetParam in listWidgetParam[:len(set(templateFlat))]:
         object.widgetParams.add(widgetParam)
-    dashboardsLevel = {"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
+    dashboardsLevel = {"geo":{"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
       "Synthèse P2CD Simulation", "Synthèse Enduit Simulation", "Suivi AD", "Suivi des Visites"],
       "drv":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
@@ -337,7 +337,13 @@ class ManageFromOldDatabase:
       "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
       "bassin":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
       "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"]
-      }
+      },
+      "trade":{
+        "rootTrade":["Marché P2CD Enseigne"],
+        "enseigne":["Marché P2CD Enseigne"],
+        "ensemble":["Marché P2CD Enseigne"],
+        "sousEnsemble":["Marché P2CD Enseigne"]}
+    }
     return dashboardsLevel
 
   def createLayout(self):
@@ -366,10 +372,10 @@ class ManageFromOldDatabase:
     p2cd_widgetCompute2 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="dn", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
     p2cd_widgetCompute3 = WidgetCompute.objects.create(axis1="enseigne", axis2="industrie", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
     p2cd_widgetCompute4 = WidgetCompute.objects.create(axis1="enseigne", axis2="segmentCommercial", indicator="p2cD", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
-    p2cd_widget1 = WidgetParams.objects.create(title="Vente en volume", subTitle="", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
-    p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
-    p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
-    p2cd_widget4 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Segment", widget=dictWidget["histoColumn"], widgetCompute=p2cd_widgetCompute4)
+    p2cd_widget1 = WidgetParams.objects.create(title="Vente en volume", subTitle="", position="a", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
+    p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", position="b", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
+    p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", position="c", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
+    p2cd_widget4 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Segment", position="d", widget=dictWidget["histoColumn"], widgetCompute=p2cd_widgetCompute4)
     return [p2cd_widget1, p2cd_widget2, p2cd_widget3, p2cd_widget4]
 
 # Chargement de la table des ventes
