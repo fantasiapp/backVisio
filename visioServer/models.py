@@ -179,7 +179,7 @@ class Ventes(models.Model):
 
 
 # Modèles pour la navigation
-class TreeNavigation(models.Model):
+class TreeNavigationGeo(models.Model):
   level = models.CharField(max_length=32, unique=True, blank=False, default=None)
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
   father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)

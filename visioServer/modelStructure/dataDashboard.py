@@ -24,7 +24,7 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
-      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation)
+      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigationGeo)
       DataDashboard.__layout = DataDashboard._computeLayout()
       DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
