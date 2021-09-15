@@ -24,7 +24,8 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
-      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation)
+      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
+      # DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__layout = DataDashboard._computeLayout()
       DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
@@ -42,6 +43,7 @@ class DataDashboard:
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,
+      # "levelGeo":DataDashboard.__levelTrade,
       "structureDashboard":structureDashboard,
       "indexesDashboard":[1,2],
       "dashboards": dashboards,
@@ -193,14 +195,14 @@ class DataDashboard:
     return {key:value for key, value in DataDashboard.__widgetParam.items() if key in listId}
 
   @classmethod
-  def _computeLevels(cls, classObject):
-    listLevel = {object.id:object for object in classObject.objects.filter(geoOrTrade="Geo")}
+  def _computeLevels(cls, classObject, geoOrTrade):
+    listLevel = {object.id:object for object in classObject.objects.filter(geoOrTrade=geoOrTrade)}
     dictLevelWithDashBoard = {}
     for object in listLevel.values():
       dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
       del dictLevelWithDashBoard[object.id][0]
       del dictLevelWithDashBoard[object.id][0]
-      dashBoardTree = DashboardTree.objects.filter(geoOrTrade="geo", level=object).first()
+      dashBoardTree = DashboardTree.objects.filter(geoOrTrade=geoOrTrade, level=object).first()
       print(object.name, dashBoardTree)
       dictLevelWithDashBoard[object.id].insert(2, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
     for level in dictLevelWithDashBoard.values():

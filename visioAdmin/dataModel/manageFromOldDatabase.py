@@ -280,9 +280,7 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
-    print(geoOrTradeList)
     for geoOrTrade in geoOrTradeList:
-      print(geoOrTrade, self.createNavigationLevelName(geoOrTrade))
       levelRoot = "root" if geoOrTrade == "geo" else "rootTrade"
       object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
       for level, name in self.createNavigationLevelName(geoOrTrade):
@@ -345,7 +343,7 @@ class ManageFromOldDatabase:
   def createLayout(self):
     dictLayout = {}
     data = {
-      "column:2:1":[["a","c"],["b","c"]],
+      "column:2:1":[["a","b"],["c","b"]],
       "mono":[["a"]],
       "row:1:1:1":[["a"],["b"],["c"]],
       "row:1I:1:1I":[["a"],["b"],["c"]],
