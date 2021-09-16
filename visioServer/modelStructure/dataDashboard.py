@@ -230,7 +230,7 @@ class DataDashboard:
   @classmethod
   def computeSalesDict(cls):
     if cls.__salesDict: return cls.__salesDict
-    print(cls.__salesDict)
+    print(cls.__cacheSalesDict)
     if settings.DEBUG:
       try:
         print("no computing sales")
