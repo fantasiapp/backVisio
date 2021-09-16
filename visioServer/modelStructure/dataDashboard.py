@@ -230,8 +230,10 @@ class DataDashboard:
   @classmethod
   def computeSalesDict(cls):
     if cls.__salesDict: return cls.__salesDict
+    print(cls.__salesDict)
     if settings.DEBUG:
       try:
+        print("no computing sales")
         with open(cls.__cacheSalesDict, 'r') as jsonFile:
           cls.__salesDict = json.load(jsonFile)
       except:
