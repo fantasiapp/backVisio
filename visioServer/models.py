@@ -196,8 +196,8 @@ class WidgetParams(models.Model):
   title = models.CharField(max_length=32, unique=False, blank=False, default=None)
   position = models.CharField(max_length=1, unique=False, blank=False, default=None)
   subTitle = models.CharField(max_length=32, unique=False, blank=False, default=None)
-  widget = models.ForeignKey('Widget', on_delete=models.PROTECT, blank=False, null=False)
-  widgetCompute = models.ForeignKey("WidgetCompute", on_delete=models.PROTECT, blank=False, default=None)
+  widget = models.ForeignKey('Widget', on_delete=models.DO_NOTHING, blank=False, null=False)
+  widgetCompute = models.ForeignKey("WidgetCompute", on_delete=models.DO_NOTHING, blank=False, default=None)
 
 class WidgetCompute(models.Model):
   axis1 = models.CharField("Axe 1", max_length=32, unique=False, blank=False, default=None)
