@@ -69,4 +69,5 @@ class CreateWidgetParam:
   @classmethod
   def executeCreation(cls, axis1, axis2, ind, grAx1, grAx2, percent=False, title="Titre", subTitle="", pos="a", widget="pie"):
     widgetCompute = WidgetCompute.objects.create(axis1=axis1, axis2=axis2, indicator=ind, groupAxis1=json.dumps(grAx1), groupAxis2=json.dumps(grAx2), percent=percent)
+    print(axis1, axis2, ind, grAx1, grAx2, percent, title, subTitle, pos, widget, widgetCompute)
     return WidgetParams.objects.create(title=title, subTitle=subTitle, position=pos, widget=cls.__dictWidget[widget], widgetCompute=widgetCompute)

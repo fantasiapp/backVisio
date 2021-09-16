@@ -24,13 +24,13 @@ class ManageFromOldDatabase:
   dictHolding = {}
   dictProduct = {}
   dictIndustry = {}
-
   dictUsers = {}
+
   typeObject = {
      "ventes":Ventes, "pdv":Pdv, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "Tableaux de Bord":Dashboard, "user":UserProfile,
-    "dashBoard":Dashboard, "layout":Layout, "widget":Widget,  "widgetParams":WidgetParams
+    "dashBoard":Dashboard, "layout":Layout, "widget":Widget, "widgetCompute":WidgetCompute,  "widgetParams":WidgetParams
     }
   connection = None
   cursor = None
