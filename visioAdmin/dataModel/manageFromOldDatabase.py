@@ -294,7 +294,6 @@ class ManageFromOldDatabase:
           for dashboard in dashboards:
             object.dashboards.add(dashboard)
         else:
-          print(f"Error getTreeNavigation {level} does not exist")
           return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
 
@@ -390,7 +389,32 @@ class ManageFromOldDatabase:
     p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", position="b", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
     p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", position="c", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
     p2cd_widget4 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Segment", position="d", widget=dictWidget["histoColumn"], widgetCompute=p2cd_widgetCompute4)
-    return [p2cd_widget1, p2cd_widget2, p2cd_widget3, p2cd_widget4]
+    if name == "Marché P2CD":
+      p2cd_widgetCompute1 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+      p2cd_widgetCompute2 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="dn", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+      p2cd_widgetCompute3 = WidgetCompute.objects.create(axis1="enseigne", axis2="industrie", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
+      p2cd_widget1 = WidgetParams.objects.create(title="Vente en volume", subTitle="", position="a", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
+      p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", position="b", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
+      p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", position="c", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
+      return [p2cd_widget1, p2cd_widget2, p2cd_widget3]
+    if name == "Marché Enduit":
+      p2cd_widgetCompute1 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="enduit", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+      p2cd_widgetCompute2 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="dn", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+      p2cd_widgetCompute3 = WidgetCompute.objects.create(axis1="enseigne", axis2="industrie", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
+      p2cd_widget1 = WidgetParams.objects.create(title="Volume Total", subTitle="", position="a", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
+      p2cd_widget2 = WidgetParams.objects.create(title="Nombre de Pdv", subTitle="", position="b", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
+      p2cd_widget3 = WidgetParams.objects.create(title="Volume par enseigne", subTitle="Tous segments", position="c", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
+      return [p2cd_widget1, p2cd_widget2, p2cd_widget3]
+    if name == "PdM P2CD":
+      p2cd_widgetCompute1 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="enduit", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+      p2cd_widgetCompute2 = WidgetCompute.objects.create(axis1="segmentMarketing", axis2="segmentCommercial", indicator="dn", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["@other"]))
+      p2cd_widgetCompute3 = WidgetCompute.objects.create(axis1="enseigne", axis2="industrie", indicator="p2cd", groupAxis1=json.dumps([]), groupAxis2=json.dumps(["Siniat", "Placo", "Knauf", "@other"]))
+      p2cd_widget1 = WidgetParams.objects.create(title="Volume Total", subTitle="", position="a", widget=dictWidget["pie"], widgetCompute=p2cd_widgetCompute1)
+      p2cd_widget2 = WidgetParams.objects.create(title="Volume par segment", subTitle="", position="b", widget=dictWidget["donut"], widgetCompute=p2cd_widgetCompute2)
+      p2cd_widget3 = WidgetParams.objects.create(title="Par Enseigne", subTitle="Tous segments", position="c", widget=dictWidget["histoRow"], widgetCompute=p2cd_widgetCompute3)
+      return [p2cd_widget1, p2cd_widget2, p2cd_widget3]
+    else:
+      return [p2cd_widget1, p2cd_widget2, p2cd_widget3, p2cd_widget4]
 
 # Chargement de la table des ventes
   def getVentes(self):

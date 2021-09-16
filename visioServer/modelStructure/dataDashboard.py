@@ -20,9 +20,10 @@ class DataDashboard:
   __structureWidgetParam = None
   __structureWidgetCompute = None
 
-  def __init__(self, userGeoId, userGroup):
+  def __init__(self, userGeoId, userGroup, isNotOnServer):
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
+    DataDashboard.isNotOnServer = isNotOnServer
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
@@ -230,10 +231,8 @@ class DataDashboard:
   @classmethod
   def computeSalesDict(cls):
     if cls.__salesDict: return cls.__salesDict
-    print(cls.__cacheSalesDict)
-    if settings.DEBUG:
+    if cls.isNotOnServer:
       try:
-        print("no computing sales")
         with open(cls.__cacheSalesDict, 'r') as jsonFile:
           cls.__salesDict = json.load(jsonFile)
       except:

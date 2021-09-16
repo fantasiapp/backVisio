@@ -20,11 +20,8 @@ class Data(DefaultView):
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if 'action' in request.GET:
             action = request.GET["action"]
-            # if action == "navigation":
-            #     dataNavigation = Navigation(userIdGeo, userGroup[0])
-            #     return Response(dataNavigation.dataQuery)
             if action == "dashboard":
-                dataDashBoard = DataDashboard(userIdGeo, userGroup[0])
+                dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
                 return Response(dataDashBoard.dataQuery)
             return Response({"error":f"action {action} unknown"})
         return Response({"error":f"no action defined"})
