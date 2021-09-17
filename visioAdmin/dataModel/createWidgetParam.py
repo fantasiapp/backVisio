@@ -70,7 +70,7 @@ class CreateWidgetParam:
     dictParam = {
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], False, "Vente en volume"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "", "b"],
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "", "b", "donut"],
         ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "histoRow"]
       ], "Marché Enduit":[
         ["enduitIndustrie", "segmentCommercial", "enduit", [], ["@other"], False, "Volume Total"],
