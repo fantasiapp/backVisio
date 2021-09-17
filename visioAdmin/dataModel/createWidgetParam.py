@@ -73,7 +73,7 @@ class CreateWidgetParam:
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "", "b"],
         ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "histoRow"]
       ], "Marché Enduit":[
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], False, "Volume Total"],
+        ["enduitIndustrie", "segmentCommercial", "p2cd", [], ["@other"], False, "Volume Total"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "", "b"],
         ["enseigne", "segmentCommercial", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "histoRow"]
       ], "PdM P2CD":[
