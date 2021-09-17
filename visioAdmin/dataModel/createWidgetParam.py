@@ -122,12 +122,9 @@ class CreateWidgetParam:
     }
     params = dictParam[name] if name in dictParam else dictParam['other']
     paramName = ["axis1", "axis2", "ind", "grAx1", "grAx2", "percent", "title", "subTitle", "pos", "widget"]
-
     return [cls.executeCreation(**{paramName[i]:param[i] for i in range(len(param))}) for param in params]
 
   @classmethod
   def executeCreation(cls, axis1, axis2, ind, grAx1, grAx2, percent=False, title="Titre", subTitle="", pos="a", widget="pie"):
-    print("start", axis1, axis2, ind, grAx1, grAx2, percent, title, subTitle, pos)
     widgetCompute = WidgetCompute.objects.create(axis1=axis1, axis2=axis2, indicator=ind, groupAxis1=json.dumps(grAx1), groupAxis2=json.dumps(grAx2), percent=percent)
-    print(axis1, axis2, ind, grAx1, grAx2, percent, title, subTitle, pos, widgetCompute, widget, cls.__dictWidget[widget])
     return WidgetParams.objects.create(title=title, subTitle=subTitle, position=pos, widget=cls.__dictWidget[widget], widgetCompute=widgetCompute)
