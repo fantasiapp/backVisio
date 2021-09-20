@@ -9,7 +9,6 @@ class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
 
 class Data(DefaultView):
-
     def get(self, request):
         currentUser = request.user
         userGroup = request.user.groups.values_list('name', flat=True)
@@ -21,7 +20,8 @@ class Data(DefaultView):
         if 'action' in request.GET:
             action = request.GET["action"]
             if action == "dashboard":
-                dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+                #request.META['SERVER_PORT'] == '8000' check if query is local
+                dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000') #
                 return Response(dataDashBoard.dataQuery)
-            return Response({"error":f"action {action} unknown"})
+            return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})
