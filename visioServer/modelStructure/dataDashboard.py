@@ -300,11 +300,12 @@ class DataDashboard:
   def __readWidgetParam(cls, object):
     if not cls.__structureWidgetParam:
       cls.__structureWidgetParam = list(model_to_dict(object).keys())
+      print(cls.__structureWidgetParam )
       del cls.__structureWidgetParam[0]
-      del cls.__structureWidgetParam[1]
+      del cls.__structureWidgetParam[2]
     widgetParam = list(model_to_dict(object).values())
     del widgetParam[0]
-    del widgetParam[1]
+    del widgetParam[2]
     return widgetParam
 
   @classmethod
