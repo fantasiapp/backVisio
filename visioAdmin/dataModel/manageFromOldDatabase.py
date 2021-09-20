@@ -30,7 +30,7 @@ class ManageFromOldDatabase:
      "ventes":Ventes, "pdv":Pdv, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
-    "dashBoard":Dashboard, "layout":Layout, "widget":Widget, "widgetCompute":WidgetCompute,  "widgetParams":WidgetParams
+    "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget
     }
   connection = None
   cursor = None
@@ -305,18 +305,7 @@ class ManageFromOldDatabase:
 
 #Création des tableaux de bord
   def createDashboards(self, geoOrTrade):
-    # dashboards = {
-    #   "geo":{"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
-    #   "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
-    #   "DN P2CD Simulation":"column:2:1", "DN Enduit Simulation":"column:2:1", "Points de Vente P2CD":"mono",
-    #   "Points de Vente Enduit":"mono", "Synthèse P2CD":"row:1:1:1", "Synthèse Enduit":"row:1:1:1",
-    #   "Synthèse P2CD Simulation":"row:1:1:1", "Synthèse Enduit Simulation":"row:1:1:1", "Suivi AD":"row:2:1",
-    #   "Suivi des Visites":"row:2:2"},
-    #   "trade":{"Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
-    #   "PdM P2CD Enseigne":"column:2:1", "PdM Enduit Enseigne":"column:2:1"}
-    # }
     if geoOrTrade == "geo":
-      # self.dictLayout = self.createLayout()
       CreateWidgetParam.initialize()
     for name, layoutName in CreateWidgetParam.dashboards[geoOrTrade].items():
       object = Dashboard.objects.create(name=name, layout=CreateWidgetParam.dictLayout[layoutName])
@@ -326,51 +315,7 @@ class ManageFromOldDatabase:
       listWidgetParam = CreateWidgetParam.create(name)
       for widgetParam in listWidgetParam[:len(set(templateFlat))]:
         object.widgetParams.add(widgetParam)
-    # dashboardsLevel = {"geo":{"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
-    #   "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
-    #   "Synthèse P2CD Simulation", "Synthèse Enduit Simulation", "Suivi AD", "Suivi des Visites"],
-
-    #   "drv":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
-    #   "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Suivi des Visites"],
-
-    #   "agent":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
-    #   "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
-
-    #   "dep":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
-    #   "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
-
-    #   "bassin":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
-    #   "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"]
-    #   },
-    #   "trade":{
-    #     "rootTrade":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-    #     "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
-
-    #     "enseigne":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-    #     "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
-
-    #     "ensemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-    #     "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
-
-    #     "sousEnsemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-    #     "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"]}
-    # }
     return CreateWidgetParam.dashboardsLevel[geoOrTrade]
-
-  def createLayout(self):
-    dictLayout = {}
-    data = {
-      "column:2:1":[["a","c"],["b","c"]],
-      "mono":[["a"]],
-      "row:1:1:1":[["a"],["b"],["c"]],
-      "row:1I:1:1I":[["a"],["b"],["c"]],
-      "row:2:1":[["a", "b"], ["c", "c"]],
-      "row:2:2":[["a","b"], ["c", "d"]]
-    }
-    for name, jsonLayout in data.items():
-      object = Layout.objects.create(name=name, template=json.dumps(jsonLayout))
-      dictLayout[name] = object
-    return dictLayout
 
 # Chargement de la table des ventes
   def getVentes(self):

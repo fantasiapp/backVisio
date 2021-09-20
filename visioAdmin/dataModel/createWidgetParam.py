@@ -86,28 +86,28 @@ class CreateWidgetParam:
         ["enseigne", "enduitIndustrie", "Enduit", [], [], True, "Par Enseigne", "", "c", "%", "histoRow"]
       ], "DN P2CD":[
         ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "Volume par segment"],
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], True, "Tous Segment", "", "c", "histoRow"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "km²", "histoColumn"],
+        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], True, "Tous Segment", "", "c", "km²", "histoRow"]
       ], "DN Enduit":[
         ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "Volume par segment"],
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], True, "Tous Segment", "", "c", "histoRow"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "km²", "histoColumn"],
+        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], True, "Tous Segment", "", "c", "km²", "histoRow"]
       ], "Point de Vente P2CD":[
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "table"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "km²", "table"]
       ], "Point de Vente Enduit":[
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "table"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "km²", "table"]
       ], "Synthèse P2CD":[
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Tous Segment", "", "c", "histoColumn"]
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Volume par segment", "", "a", "km²", "histoColumn"],
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "km²", "histoColumn"],
+        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Tous Segment", "", "c", "km²", "histoColumn"]
       ], "Synthèse Enduit":[
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Tous Segment", "", "c", "histoColumn"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Volume par segment", "", "a", "km²", "histoColumn"],
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "km²", "histoColumn"],
+        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Tous Segment", "", "c", "km²", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Tous Segment", "", "c", "histoColumn"]
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Volume par segment", "", "a", "km²", "histoColumn"],
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "km²", "histoColumn"],
+        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], False, "Tous Segment", "", "c", "km²", "histoColumn"]
       ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], False, "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "", "b"],
@@ -116,12 +116,12 @@ class CreateWidgetParam:
       ], 'other':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], False, "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "", "b"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "histoRow"],
-        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par industrie", "", "c", "histoColumn"]
+        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "km²", "histoRow"],
+        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par industrie", "", "c", "km²", "histoColumn"]
       ]
     }
     params = dictParam[name] if name in dictParam else dictParam['other']
-    paramName = ["axis1", "axis2", "ind", "grAx1", "grAx2", "percent", "title", "subTitle", "pos", "widget"]
+    paramName = ["axis1", "axis2", "ind", "grAx1", "grAx2", "percent", "title", "subTitle", "pos", "unity", "widget"]
     return [cls.executeCreation(**{paramName[i]:param[i] for i in range(len(param))}) for param in params]
 
   @classmethod
