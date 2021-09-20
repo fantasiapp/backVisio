@@ -70,20 +70,20 @@ class CreateWidgetParam:
     dictParam = {
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], False, "Vente en volume", "@sum"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "@sum", "b", "donut"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "histoRow"]
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "@sum", "b", "Pdv","donut"],
+        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], False, "Volume par enseigne", "", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
-        ["enduitIndustrie", "segmentCommercial", "enduit", [], ["@other"], False, "Volume Total", "@sum"],
-        ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "@sum", "b", "donut"],
-        ["enseigne", "enduitIndustrie", "enduit", [], [], False, "Volume par enseigne", "Tous segments", "c", "histoRow"]
+        ["enduitIndustrie", "segmentCommercial", "enduit", [], ["@other"], False, "Volume Total", "@sum", "a", "T"],
+        ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], False, "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
+        ["enseigne", "enduitIndustrie", "enduit", [], [], False, "Volume par enseigne", "Tous segments", "c", "T", "histoRow"]
       ], "PdM P2CD":[
-        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "Pdm Total"],
-        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Par segment", "", "b", "histoColumn"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], True, "Par Enseigne", "Tous segments", "c", "histoRow"]
+        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "Pdm Total", "", "a", "%"],
+        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], True, "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit":[
-        ["enduitIndustrie", "segmentCommercial", "Enduit", [], ["@other"], True, "Pdm Total"],
-        ["enduitIndustrie", "segmentMarketing", "Enduit", [], [], True, "Par segment", "", "b", "histoColumn"],
-        ["enseigne", "enduitIndustrie", "Enduit", [], [], True, "Par Enseigne", "", "c", "histoRow"]
+        ["enduitIndustrie", "segmentCommercial", "Enduit", [], ["@other"], True, "Pdm Total", "", "a", "%"],
+        ["enduitIndustrie", "segmentMarketing", "Enduit", [], [], True, "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustrie", "Enduit", [], [], True, "Par Enseigne", "", "c", "%", "histoRow"]
       ], "DN P2CD":[
         ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], True, "Volume par segment"],
         ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], True, "Volume par segment", "", "b", "histoColumn"],
@@ -125,6 +125,6 @@ class CreateWidgetParam:
     return [cls.executeCreation(**{paramName[i]:param[i] for i in range(len(param))}) for param in params]
 
   @classmethod
-  def executeCreation(cls, axis1, axis2, ind, grAx1, grAx2, percent=False, title="Titre", subTitle="", pos="a", widget="pie"):
+  def executeCreation(cls, axis1, axis2, ind, grAx1, grAx2, percent=False, title="Titre", subTitle="", pos="a", unity="km²", widget="pie"):
     widgetCompute = WidgetCompute.objects.create(axis1=axis1, axis2=axis2, indicator=ind, groupAxis1=json.dumps(grAx1), groupAxis2=json.dumps(grAx2), percent=percent)
-    return WidgetParams.objects.create(title=title, subTitle=subTitle, position=pos, widget=cls.__dictWidget[widget], widgetCompute=widgetCompute)
+    return WidgetParams.objects.create(title=title, subTitle=subTitle, position=pos, unity=unity, widget=cls.__dictWidget[widget], widgetCompute=widgetCompute)
