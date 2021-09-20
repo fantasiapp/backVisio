@@ -301,11 +301,11 @@ class DataDashboard:
   def __readWidgetParam(cls, object):
     if not cls.__structureWidgetParam:
       cls.__structureWidgetParam = list(model_to_dict(object).keys())
-      cls__WidgetParamIndexPosition = cls.__structureWidgetParam.index("position")
-      del cls.__structureWidgetParam[cls__WidgetParamIndexPosition]
+      cls.__WidgetParamIndexPosition = cls.__structureWidgetParam.index("position")
+      del cls.__structureWidgetParam[cls.__WidgetParamIndexPosition]
       del cls.__structureWidgetParam[0]
     widgetParam = list(model_to_dict(object).values())
-    del widgetParam[cls__WidgetParamIndexPosition]
+    del widgetParam[cls.__WidgetParamIndexPosition]
     del widgetParam[0]
     return widgetParam
 
