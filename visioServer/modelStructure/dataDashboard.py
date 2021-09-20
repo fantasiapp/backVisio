@@ -230,8 +230,7 @@ class DataDashboard:
 
   @classmethod
   def computeSalesDict(cls):
-    if cls.__salesDict: return cls.__salesDict
-    if cls.isNotOnServer:
+    if cls.isNotOnServer and not cls.__salesDict:
       try:
         with open(cls.__cacheSalesDict, 'r') as jsonFile:
           cls.__salesDict = json.load(jsonFile)
@@ -239,8 +238,9 @@ class DataDashboard:
         print('Formating sales...')
     if not cls.__salesDict:
       cls.__salesDict = cls.__formatSales()
-      with open(cls.__cacheSalesDict, 'w') as jsonFile:
-        json.dump(cls.__salesDict, jsonFile)
+      if cls.isNotOnServer:
+        with open(cls.__cacheSalesDict, 'w') as jsonFile:
+          json.dump(cls.__salesDict, jsonFile)
     return cls.__salesDict
 
   @classmethod
