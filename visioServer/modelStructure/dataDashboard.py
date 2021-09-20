@@ -18,6 +18,7 @@ class DataDashboard:
   __cacheSalesDict = os.getenv('SALES_DICT')
   __structureLayout = None
   __structureWidgetParam = None
+  __WidgetParamIndexPosition = None
   __structureWidgetCompute = None
 
   def __init__(self, userGeoId, userGroup, isNotOnServer):
@@ -300,12 +301,12 @@ class DataDashboard:
   def __readWidgetParam(cls, object):
     if not cls.__structureWidgetParam:
       cls.__structureWidgetParam = list(model_to_dict(object).keys())
-      print(cls.__structureWidgetParam )
+      cls__WidgetParamIndexPosition = cls.__structureWidgetParam.index("position")
+      del cls.__structureWidgetParam[cls__WidgetParamIndexPosition]
       del cls.__structureWidgetParam[0]
-      del cls.__structureWidgetParam[2]
     widgetParam = list(model_to_dict(object).values())
+    del widgetParam[cls__WidgetParamIndexPosition]
     del widgetParam[0]
-    del widgetParam[2]
     return widgetParam
 
   @classmethod
