@@ -35,6 +35,7 @@ class DataDashboard:
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
+      print(DataDashboard.__geoTree)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
   
