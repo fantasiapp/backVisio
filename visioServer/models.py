@@ -206,7 +206,7 @@ class WidgetCompute(models.Model):
   indicator = models.CharField("Indicateur", max_length=32, unique=False, blank=False, default=None)
   groupAxis1 = models.CharField("Filtre Axe 1", max_length=4096, unique=False, blank=False, default=None)
   groupAxis2 = models.CharField("Filtre Axe 2", max_length=4096, unique=False, blank=False, default=None)
-  percent = models.BooleanField("Pourcentage", default=False)
+  percent = models.CharField("Pourcentage", max_length=32, unique=False, blank=False, default="no")
 
 class Dashboard(models.Model):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
