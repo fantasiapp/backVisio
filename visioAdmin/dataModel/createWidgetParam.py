@@ -71,15 +71,15 @@ class CreateWidgetParam:
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "@sum"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], "no", "Volume par enseigne", "", "c", "km²", "histoRow"]
+        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par enseigne", "", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
         ["enduitIndustrie", "segmentCommercial", "enduit", [], ["@other"], "no", "Volume Total", "@sum", "a", "T"],
         ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
         ["enseigne", "enduitIndustrie", "enduit", [], [], "no", "Volume par enseigne", "Tous segments", "c", "T", "histoRow"]
       ], "PdM P2CD":[
-        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], "classic", "Pdm Total", "", "a", "%"],
-        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "@other"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Pdm Total", "", "a", "%"],
+        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "Challengers"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit":[
         ["enduitIndustrie", "segmentCommercial", "Enduit", [], ["@other"], "classic", "Pdm Total", "", "a", "%"],
         ["enduitIndustrie", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
@@ -91,23 +91,23 @@ class CreateWidgetParam:
       ], "DN Enduit":[
         ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], "no", "DN totale", "", "a", "Pdv", "donut"],
         ["segmentDnEnduit", "segmentMarketing", "dn", [], [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
-        ["enseigne", "segmentDnEnduit", "dn", [], [], "no", "Tous Segment", "", "c", "Pdv", "histoRow"]
+        ["enseigne", "segmentDnEnduit", "dn", [], [], "no", "Par Enseigne", "Tous Segment", "c", "Pdv", "histoRow"]
       ], "Point de Vente P2CD":[
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], "classic", "table"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "table"]
       ], "Point de Vente Enduit":[
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], ["@other"], "classic", "table"]
+        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "table"]
       ], "Synthèse P2CD":[
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], "no", "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], "classic", "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], "no", "Tous Segment", "", "c", "histoColumn"]
+        ["industrie", "lg-1", "P2CD", ["Siniat", "Concurrence"], [], "no", "", "", "a", "km²", "histoColumn"],
+        ["industrie", "lg-1", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "cols", "", "", "b", "%", "histoColumn"],
+        ["clientProspect", "lg-1", "dn", [], [], "no", "", "", "c", "Pdv", "histoColumn"]
       ], "Synthèse Enduit":[
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], "no", "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], "classic", "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], "no", "Tous Segment", "", "c", "histoColumn"]
+        ["enduitIndustrie", "lg-1", "enduit", [], [], "no", "", "", "a", "T", "histoColumn"],
+        ["enduitIndustrie", "lg-1", "enduit", [], [], "cols", "", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduit", "lg-1", "dn", [], [], "no", "", "", "c", "Pdv", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], "no", "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "@other"], [], "classic", "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "@other"], [], "no", "Tous Segment", "", "c", "histoColumn"]
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "no", "Volume par segment", "", "a", "histoColumn"],
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "classic", "Volume par segment", "", "b", "histoColumn"],
+        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "Challengers"], [], "no", "Tous Segment", "", "c", "histoColumn"]
       ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
@@ -116,8 +116,8 @@ class CreateWidgetParam:
       ], 'other':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "@other"], "no", "Volume par enseigne", "", "c", "histoRow"],
-        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "@other"], "no", "Volume par industrie", "", "c", "histoColumn"]
+        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par enseigne", "", "c", "histoRow"],
+        ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par industrie", "", "c", "histoColumn"]
       ]
     }
     params = dictParam[name] if name in dictParam else dictParam['other']
