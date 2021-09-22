@@ -29,7 +29,7 @@ class ManageFromOldDatabase:
   dictUsers = {}
 
   typeObject = {
-     "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
+     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
@@ -81,7 +81,7 @@ class ManageFromOldDatabase:
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
-        ("PdvOld",[]), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
+        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
         ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
@@ -459,6 +459,16 @@ class ManageFromOldDatabase:
         else:
           CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD, volFinition=dvFinition, dnFinition=ddFinition)
     return ("CiblageLevel", False)
+
+# Paramètres
+
+  def getParamVisio(self):
+    ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", value="1.0.0", typeValue="str")
+    ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", value="4.0.0", typeValue="str")
+    ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", value="2", typeValue="float")
+    ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", value="0.360", typeValue="float")
+    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", value="0.01", typeValue="float")
+    return ("ParamVisio", False)
 
 # Utilitaires
 
