@@ -224,3 +224,19 @@ class DashboardTree(models.Model):
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     idGeo = models.IntegerField(blank=True, default=None)
+
+# Information ciblage
+
+class Ciblage(models.Model):
+  date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
+  pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
+  redistributed = models.BooleanField("Redistribué", default=True)
+  sale = models.BooleanField("Ne vend pas de plaque", default=True)
+  targetP2CD = models.FloatField('Cible P2CD', unique=False, blank=True, default=0.0)
+  targetFinition = models.BooleanField('Cible Finitions', unique=False, blank=False, default=False)
+  GREEN = 'g'
+  ORANGE = 'o'
+  RED = 'r'
+  COLORS_GREEN_LIGHT_CHOICES = [(GREEN, 'vert'), (ORANGE,'orange'), (RED, 'rouge')] 
+  greenLight = models.CharField("Feu Ciblage P2CD", max_length=1, choices=COLORS_GREEN_LIGHT_CHOICES, blank=True, default=None)
+  commentTargetP2CD = models.TextField("Commentaires ciblage P2CD", blank=True, default=None)
