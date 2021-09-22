@@ -240,3 +240,14 @@ class Ciblage(models.Model):
   COLORS_GREEN_LIGHT_CHOICES = [(GREEN, 'vert'), (ORANGE,'orange'), (RED, 'rouge')] 
   greenLight = models.CharField("Feu Ciblage P2CD", max_length=1, choices=COLORS_GREEN_LIGHT_CHOICES, blank=True, default=None)
   commentTargetP2CD = models.TextField("Commentaires ciblage P2CD", blank=True, default=None)
+
+class CiblageLevel(models.Model):
+  date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
+  agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
+  drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
+  volP2CD = models.FloatField('Cible visée en Volume P2CD', unique=False, blank=False, default=0.0)
+  dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
+  volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
+  dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
+
+
