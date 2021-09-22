@@ -20,6 +20,7 @@ class DataDashboard:
   __structureWidgetParam = None
   __WidgetParamIndexPosition = None
   __structureWidgetCompute = None
+  __structureTarget = None
 
   def __init__(self, userGeoId, userGroup, isNotOnServer):
     self.__userGeoId = userGeoId
@@ -35,15 +36,16 @@ class DataDashboard:
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
-      print(DataDashboard.__geoTree)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
+      DataDashboard.__target = self._computeTarget()
   
   @property
   def dataQuery(self):
     levelGeo = self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup)
     structureDashboard, dashboards = self._computeLocalDashboards(levelGeo)
     geoTree = self._computeLocalGeoTree()
+    pdvs = self._computeLocalPdvs(geoTree)
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,
@@ -62,7 +64,9 @@ class DataDashboard:
       "tradeTree":DataDashboard.__tradeTree,
       "structurePdv":DataDashboard.__dataPdvs["fields"],
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
-      "pdvs":self._computeLocalPdvs(geoTree)
+      "pdvs": pdvs,
+      "structureTarget":self.__structureTarget,
+      "target":self._computeLocalTarget(pdvs)
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)
@@ -136,6 +140,13 @@ class DataDashboard:
     else:
       listId.append(geoTree)
     return listId
+
+  def _computeLocalTarget(self, pdvs):
+    print("target", DataDashboard.__structureTarget)
+    indexPdv = DataDashboard.__structureTarget.index("pdv")
+    print(indexPdv)
+    pdvId = list(pdvs.keys())
+    return {key:value for key, value in DataDashboard.__target.items() if value[1] in pdvId}
 
   def _createModelsForGeo(self, data):
     models = json.loads(os.getenv('GEO_MODELS'))
@@ -324,5 +335,18 @@ class DataDashboard:
     widgetCompute[3] = json.loads(widgetCompute[3])
     widgetCompute[4] = json.loads(widgetCompute[4])
     return widgetCompute
+
+  @classmethod
+  def _computeTarget(cls):
+    return {object.id:cls.__readTarget(object) for object in Ciblage.objects.all()}
+
+  @classmethod
+  def __readTarget(cls, object):
+    if not cls.__structureTarget:
+      cls.__structureTarget = list(model_to_dict(object).keys())
+      del cls.__structureTarget[0]
+    target = list(model_to_dict(object).values())
+    del target[0]
+    return target
 
   
