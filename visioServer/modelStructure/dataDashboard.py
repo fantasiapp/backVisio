@@ -69,13 +69,13 @@ class DataDashboard:
       "structurePdv":DataDashboard.__dataPdvs["fields"],
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
       "pdvs": pdvs,
-      "structureTarget":DataDashboard.__structureTarget,
-      "target":self._computeLocalTarget(pdvs),
-      "params": DataDashboard._createParams()
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)
+    data["structureTarget"] = DataDashboard.__structureTarget
+    data["target"] = self._computeLocalTarget(pdvs)
     self. _computeLocalTargetLevel(data)
+    data["params"] = DataDashboard._createParams()
     return data
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -395,7 +395,7 @@ class DataDashboard:
 
   @classmethod
   def __readParams(cls, object):
-    (float(object.value) if object.value == "float" else object.value, object.prettyPrint)
+    return (float(object.value) if object.typeValue == "float" else object.value, object.prettyPrint)
 
 
   
