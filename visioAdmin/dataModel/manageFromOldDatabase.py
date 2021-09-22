@@ -1,5 +1,7 @@
 from visioAdmin.dataModel.createWidgetParam import CreateWidgetParam
 from dateutil import tz
+from django.utils import timezone
+import pytz
 from datetime import datetime
 import mysql.connector as db
 import json
@@ -27,7 +29,7 @@ class ManageFromOldDatabase:
   dictUsers = {}
 
   typeObject = {
-     "ventes":Ventes, "pdv":Pdv, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
+     "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
@@ -82,7 +84,8 @@ class ManageFromOldDatabase:
         ("PdvOld",[]), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
-        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []), ("Ciblage", [])]
+        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
+        ("Ciblage", []), ("CiblageLevel", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
       table, error = getattr(self, "get" + tableName)(*variable)
@@ -433,6 +436,29 @@ class ManageFromOldDatabase:
     ManageFromOldDatabase.connection.close()
     return ("Ciblage", False)
 
+  def getCiblageLevel(self):
+    volP2CD, dnP2CD, volFinition, dnFinition = 10000.0, 50, 1500, 30
+    dictAgent, now = {}, timezone.now()
+    for agent in Agent.objects.all():
+      drv = agent.drv
+      if not drv in dictAgent:
+        dictAgent[drv] = [agent]
+      else:
+        dictAgent[drv].append(agent)
+    for drv, listAgent in dictAgent.items():
+      CiblageLevel.objects.create(date=now, drv=drv, volP2CD=volP2CD, dnP2CD=dnP2CD, volFinition=volFinition, dnFinition=dnFinition)
+      dvP2CD = volP2CD / len(listAgent)
+      ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
+      dvFinition = volFinition / len(listAgent)
+      ddFinition, rdFinition = dnFinition // len(listAgent), dnFinition % len(listAgent)
+      flagStart = True
+      for agent in listAgent:
+        if flagStart:
+          flagStart = False
+          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD + rdP2CD, volFinition=dvFinition, dnFinition=ddFinition + rdFinition)
+        else:
+          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD, volFinition=dvFinition, dnFinition=ddFinition)
+    return ("CiblageLevel", False)
 
 # Utilitaires
 
@@ -463,17 +489,10 @@ class ManageFromOldDatabase:
       # CreateWidgetParam.__dictWidget = {}
       # CreateWidgetParam.dictLayout = None
       # self.getTreeNavigation(["geo", "trade"])
-      ManageFromOldDatabase.connection = db.connect(
-        user = os.getenv('DB_USERNAME_ORI'),
-        password = os.getenv('DB_PASSWORD_ORI'),
-        host = os.getenv('DB_HOST_ORI'),
-        database = os.getenv('DB_NAME_ORI')
-        )
-      ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-      self.getPdvOld()
-      Ciblage.objects.all().delete()
-      self.getCiblage()
-      ManageFromOldDatabase.connection.close()
+
+      for object in CiblageLevel.objects.all():
+        object.delete()
+      self.getCiblageLevel()
       return {"values":"Dashboards created"}
 
 
