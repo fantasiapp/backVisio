@@ -70,11 +70,12 @@ class DataDashboard:
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
       "pdvs": pdvs,
       "structureTarget":DataDashboard.__structureTarget,
+      "target":self._computeLocalTarget(pdvs),
       "params": DataDashboard._createParams()
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)
-    self._computeLocalTarget(data)
+    self. _computeLocalTargetLevel(data)
     return data
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -214,7 +215,7 @@ class DataDashboard:
       listId += list(db[2].values())
     return {key:value for key, value in DataDashboard.__widgetParam.items() if key in listId}
 
-  def _computeLocalTarget(self, data):
+  def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = self.__targetLevelDrv
