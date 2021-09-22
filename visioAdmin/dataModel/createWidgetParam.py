@@ -48,7 +48,7 @@ class CreateWidgetParam:
   @classmethod
   def initialize(cls):
     if not cls.__dictWidget:
-      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "table"]:
+      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "table", "pieTarget"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
     if not cls.dictLayout:
       cls.dictLayout = {}
@@ -84,14 +84,30 @@ class CreateWidgetParam:
         ["enduitIndustrie", "segmentCommercial", "Enduit", [], ["@other"], "classic", "Pdm Total", "", "a", "%"],
         ["enduitIndustrie", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
         ["enseigne", "enduitIndustrie", "Enduit", [], [], "classic", "Par Enseigne", "", "c", "%", "histoRow"]
+      ], "PdM P2CD Simulation":[
+        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
+        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrieTarget", "p2cd", [], ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+      ], "PdM Enduit Simulation":[
+        ["enduitIndustrieTarget", "segmentCommercial", "Enduit", [], ["@other"], "classic", "Pdm Total", "", "a", "%", "pieTarget"],
+        ["enduitIndustrieTarget", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustrieTarget", "Enduit", [], [], "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "DN P2CD":[
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Par Segment", "Nombre de Pdv Client/Prospect", "a", "Pdv", "donut"],
+        ["clientProspect", "segmentMarketing", "dn", [], ["@other"], "no", "Par Segment", "Nombre de Pdv Client/Prospect", "a", "Pdv", "donut"],
         ["clientProspect", "segmentMarketing", "dn", [], [], "no", "Par Client et Prospect", "", "b", "Pdv", "histoColumn"],
         ["enseigne", "clientProspect", "dn", [], [], "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "DN Enduit":[
         ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], "no", "DN totale", "", "a", "Pdv", "donut"],
         ["segmentDnEnduit", "segmentMarketing", "dn", [], [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
-        ["enseigne", "segmentDnEnduit", "dn", [], [], "no", "Par Enseigne", "Tous Segment", "c", "Pdv", "histoRow"]
+        ["enseigne", "segmentDnEnduit", "dn", [], [], "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
+      ], "DN P2CD Simulation":[
+        ["clientProspectTarget", "segmentCommercial", "dn", [], ["@other"], "no", "Par Client et Prospect", "", "a", "Pdv", "pieTarget"],
+        ["clientProspectTarget", "segmentMarketing", "dn", [], [], "no", "Par Segment", "", "b", "Pdv", "histoColumn"],
+        ["enseigne", "clientProspectTarget", "dn", [], [], "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
+      ], "DN Enduit Simulation":[
+        ["segmentDnEnduitTarget", "segmentCommercial", "dn", [], ["@other"], "no", "DN totale", "", "a", "Pdv", "donut"],
+        ["segmentDnEnduitTarget", "segmentMarketing", "dn", [], [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
+        ["enseigne", "segmentDnEnduitTarget", "dn", [], [], "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "Point de Vente P2CD":[
         ["pdv", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
       ], "Point de Vente Enduit":[
