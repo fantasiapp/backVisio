@@ -30,7 +30,8 @@ class ManageFromOldDatabase:
      "ventes":Ventes, "pdv":Pdv, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
-    "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget
+    "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
+    "ciblage":Ciblage
     }
   connection = None
   cursor = None
@@ -81,7 +82,7 @@ class ManageFromOldDatabase:
         ("PdvOld",[]), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
-        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", [])]
+        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []), ("Ciblage", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
       table, error = getattr(self, "get" + tableName)(*variable)
@@ -397,25 +398,40 @@ class ManageFromOldDatabase:
     for user in listUser.values():
       user.append("pwd")
 
-  def test(self):
-    for object in DashboardTree.objects.all():
-      object.delete()
-    for object in TreeNavigation.objects.all():
-      object.delete()
-    for object in Dashboard.objects.filter():
-      object.delete()
-    for object in Layout.objects.all():
-      object.delete()
-    for object in WidgetParams.objects.all():
-      object.delete()
-    for object in WidgetCompute.objects.all():
-      object.delete()
-    for object in Widget.objects.all():
-      object.delete()
-    CreateWidgetParam.__dictWidget = {}
-    CreateWidgetParam.dictLayout = None
-    self.getTreeNavigation(["geo", "trade"])
-    return {"values":"Dashboards created"}
+# Chargement de la table des ventes
+  def getCiblage(self):
+    ManageFromOldDatabase.connection = db.connect(
+        user = os.getenv('DB_USERNAME_ORI'),
+        password = os.getenv('DB_PASSWORD_ORI'),
+        host = os.getenv('DB_HOST_ORI'),
+        database = os.getenv('DB_NAME_ORI')
+        )
+    ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
+
+    dictPdv = {line[0]:line for line in self.listPdv}
+    indexCode = self.fieldsPdv.index("PDV code")
+    try:
+      query = "SELECT timestamp, id_pdv, depot, sale, targetVolume, targetFinition, greenLight, commentTarget FROM ciblage;"
+      ManageFromOldDatabase.cursor.execute(query)
+      for line in ManageFromOldDatabase.cursor:
+        idOld = line[1]
+        if idOld in dictPdv:
+          kwargs = {}
+          kwargs['date'] = datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris")) if line[0] else None
+          code = dictPdv[idOld][indexCode]
+          kwargs['pdv'] = Pdv.objects.filter(code=code).first()
+          kwargs['redistributed'] = line[2] == "does not exist"
+          kwargs['sale'] = line[3] == "does not exist"
+          kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
+          kwargs['targetFinition'] = line[5] == "yes"
+          kwargs['greenLight'] = line[6][0]
+          kwargs['commentTargetP2CD'] = line[7]
+          Ciblage.objects.create(**kwargs)
+
+    except db.Error as e:
+      return (False, f"Error getCiblage {repr(e)}")
+    ManageFromOldDatabase.connection.close()
+    return ("Ciblage", False)
 
 
 # Utilitaires
@@ -428,6 +444,37 @@ class ManageFromOldDatabase:
       string = string.replace("  ", " ")
       return string.strip()
     return string
+
+  def test(self):
+      # for object in DashboardTree.objects.all():
+      #   object.delete()
+      # for object in TreeNavigation.objects.all():
+      #   object.delete()
+      # for object in Dashboard.objects.filter():
+      #   object.delete()
+      # for object in Layout.objects.all():
+      #   object.delete()
+      # for object in WidgetParams.objects.all():
+      #   object.delete()
+      # for object in WidgetCompute.objects.all():
+      #   object.delete()
+      # for object in Widget.objects.all():
+      #   object.delete()
+      # CreateWidgetParam.__dictWidget = {}
+      # CreateWidgetParam.dictLayout = None
+      # self.getTreeNavigation(["geo", "trade"])
+      ManageFromOldDatabase.connection = db.connect(
+        user = os.getenv('DB_USERNAME_ORI'),
+        password = os.getenv('DB_PASSWORD_ORI'),
+        host = os.getenv('DB_HOST_ORI'),
+        database = os.getenv('DB_NAME_ORI')
+        )
+      ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
+      self.getPdvOld()
+      Ciblage.objects.all().delete()
+      self.getCiblage()
+      ManageFromOldDatabase.connection.close()
+      return {"values":"Dashboards created"}
 
 
 
