@@ -69,6 +69,8 @@ class DataDashboard:
       "structurePdv":DataDashboard.__dataPdvs["fields"],
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
       "pdvs": pdvs,
+      "structureTarget":DataDashboard.__structureTarget,
+      "params": DataDashboard._createParams()
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)
@@ -385,6 +387,14 @@ class DataDashboard:
           cls.__targetLevelAgentP2CD[tlObject.id] = [tlObject.agent.id, tlObject.volP2CD, tlObject.dnP2CD]
         if tlObject.volFinition or tlObject.volFinition:
           cls.__targetLevelAgentFinition[tlObject.id] = [tlObject.agent.id, tlObject.volFinition, tlObject.dnFinition]
+
+  @classmethod
+  def _createParams(cls):
+    return {object.field:cls.__readParams(object) for object in ParamVisio.objects.all()}
+
+  @classmethod
+  def __readParams(cls, object):
+    (float(object.value) if object.value == "float" else object.value, object.prettyPrint)
 
 
   
