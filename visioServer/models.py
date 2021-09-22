@@ -251,3 +251,11 @@ class CiblageLevel(models.Model):
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
 
+# Information Params
+class ParamVisio(models.Model):
+  field = models.CharField(max_length=64, unique=True, blank=False)
+  prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
+  value = models.CharField(max_length=64, unique=False, blank=False)
+  typeValue = models.CharField(max_length=64, unique=False, blank=False)
+
+
