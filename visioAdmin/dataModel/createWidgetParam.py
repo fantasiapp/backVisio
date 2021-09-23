@@ -12,16 +12,16 @@ class CreateWidgetParam:
         "PdM Enduit":["column:2:1", ""],
         "PdM P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
         "PdM Enduit Simulation":["column:2:1", ""],
-        "DN P2CD":["column:2:1", ""],
+        "DN P2CD":["column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],
         "DN Enduit":["column:2:1", ""],
-        "DN P2CD Simulation":["column:2:1", ""],
+        "DN P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
         "DN Enduit Simulation":["column:2:1", ""],
         "Points de Vente P2CD":["mono", ""],
         "Points de Vente Enduit":["mono", ""],
         "Synthèse P2CD":["row:1:1:1", ""],
         "Synthèse Enduit":["row:1:1:1", ""],
-        "Synthèse P2CD Simulation":["column:2:1", ""],
-        "Synthèse Enduit Simulation":["column:2:1", ""],
+        "Synthèse P2CD Simulation":["row:1:1:1", ""],
+        "Synthèse Enduit Simulation":["row:1:1:1", ""],
         "Suivi AD":["row:2:1", ""],
         "Suivi des Visites":["row:2:2", ""]},
       "trade":{
@@ -64,7 +64,7 @@ class CreateWidgetParam:
   @classmethod
   def initialize(cls):
     if not cls.__dictWidget:
-      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "table", "pieTarget"]:
+      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
     if not cls.dictLayout:
       cls.dictLayout = {}
@@ -137,9 +137,13 @@ class CreateWidgetParam:
         ["enduitIndustrie", "lg-1", "enduit", [], [], "cols", "", "", "b", "%", "histoColumn"],
         ["segmentDnEnduit", "lg-1", "dn", [], [], "no", "", "", "c", "Pdv", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "no", "Volume par segment", "", "a", "histoColumn"],
-        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "classic", "Volume par segment", "", "b", "histoColumn"],
-        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "Challengers"], [], "no", "Tous Segment", "", "c", "histoColumn"]
+        ["industrieTarget", "lg-1", "P2CD", ["Siniat", "Potentiel Ciblé", "Concurrence"], [], "no", "", "", "a", "km²", "histoColumnTarget"],
+        ["industrieTarget", "lg-1", "P2CD", ["Siniat", "Potentiel Ciblé", "Placo", "Knauf", "Challengers"], [], "cols", "", "", "b", "%", "histoColumn"],
+        ["clientProspectTarget", "lg-1", "dn", [], [], "no", "", "", "c", "Pdv", "histoColumnTarget"]
+      ], "Synthèse Enduit Simulation":[
+        ["enduitIndustrieTarget", "lg-1", "enduit", [], [], "no", "Volume", "", "a", "T", "histoColumnTarget"],
+        ["enduitIndustrieTarget", "lg-1", "enduit", [], [], "cols", "Pdm", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduitTarget", "lg-1", "dn", [], [], "no", "DN", "", "c", "Pdv", "histoColumn"]
       ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
@@ -153,6 +157,7 @@ class CreateWidgetParam:
       ]
     }
     params = dictParam[name] if name in dictParam else dictParam['other']
+    if params == "Synthèse Enduit Simulation": print("done", params, name)
     paramName = ["axis1", "axis2", "ind", "grAx1", "grAx2", "percent", "title", "subTitle", "pos", "unity", "widget"]
     return [cls.executeCreation(**{paramName[i]:param[i] for i in range(len(param))}) for param in params]
 

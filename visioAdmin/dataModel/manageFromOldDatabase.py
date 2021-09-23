@@ -312,7 +312,6 @@ class ManageFromOldDatabase:
     if geoOrTrade == "geo":
       CreateWidgetParam.initialize()
     for name, value in CreateWidgetParam.dashboards[geoOrTrade].items():
-      print(value)
       layoutName, comment = value[0], value[1]
       object = Dashboard.objects.create(name=name, layout=CreateWidgetParam.dictLayout[layoutName], comment=comment)
       templateFlat = []
