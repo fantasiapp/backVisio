@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
@@ -141,6 +142,16 @@ class Pdv(models.Model):
   def __str__(self) ->str:
     return self.name + " " + self.code
 
+  class Visit(models.Model):
+    date = models.DateField(verbose_name="Mois des visites", default=date.today)
+    nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
+    pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
+
+  class Meta:
+    verbose_name = "Visites Mensuels"
+
+  def __str__(self) ->str:
+    return self.date.strftime("%Y-%m") + " " + self.pdv.code
 
 
 # Modèles pour l'AD
@@ -249,6 +260,7 @@ class CiblageLevel(models.Model):
   dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
+
 
 
 # Information Params
