@@ -2,6 +2,29 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 
+from django.forms.models import model_to_dict
+
+class CommonModel(models.Model):
+  class Meta:
+    abstract = True
+
+  @classmethod
+  def listFields(cls):
+    return [field.name for field in cls._meta.fields][1:]
+
+  @classmethod
+  def listIndexes(cls):
+    listName = cls.listFields()
+    listNameF = [field.name for field in cls._meta.fields if isinstance(field, models.ForeignKey)]
+    return [listName.index(name) for name in listNameF]
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+
+  @property
+  def listValues(self):
+    return list(model_to_dict(self).values())[1:]
+
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
 
@@ -113,7 +136,7 @@ class Site(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Pdv(models.Model):
+class Pdv(CommonModel):
   code = models.CharField('PDV code', max_length=10, blank=False, default="Inconnu")
   name = models.CharField('PDV', max_length=64, blank=False, default="Inconnu")
   drv = models.ForeignKey('drv', verbose_name='Région', on_delete=models.PROTECT,  blank=False)
@@ -136,19 +159,33 @@ class Pdv(models.Model):
   pointFeu = models.BooleanField('Point Feu', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
 
-  class Meta:
-    verbose_name = "Point de Vente"
+  @classmethod
+  def listFields(self): return super().listFields() + ["nbVisits"]
 
-  def __str__(self) ->str:
-    return self.name + " " + self.code
+  @property
+  def listValues(self): return super().listValues + [self.nbVisits]
 
-  class Visit(models.Model):
-    date = models.DateField(verbose_name="Mois des visites", default=date.today)
-    nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
-    pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
+  @property
+  def nbVisits(self):
+    visits=Visit.objects.filter(pdv=self)
+    if visits: return sum([visit.nbVisitCurrentYear for visit in visits])
+    return 0 
+
+  def __str__(self) ->str: return self.name + " " + self.code
+
+class Visit(models.Model):
+  date = models.DateField(verbose_name="Mois des visites", default=date.today)
+  nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
+  pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
 
   class Meta:
     verbose_name = "Visites Mensuels"
+
+  @property
+  def nbVisitCurrentYear(self):
+    if self.date.year == ParamVisio.getValue("currentYear"):
+      return self.nbVisit
+    return 0
 
   def __str__(self) ->str:
     return self.date.strftime("%Y-%m") + " " + self.pdv.code
@@ -222,6 +259,7 @@ class WidgetCompute(models.Model):
 class Dashboard(models.Model):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
   layout = models.ForeignKey('Layout', on_delete=models.PROTECT, blank=False, default=1)
+  comment = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   widgetParams = models.ManyToManyField("WidgetParams")
 
 class DashboardTree(models.Model):
@@ -261,13 +299,27 @@ class CiblageLevel(models.Model):
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
-
-
 # Information Params
 class ParamVisio(models.Model):
   field = models.CharField(max_length=64, unique=True, blank=False)
   prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
   value = models.CharField(max_length=64, unique=False, blank=False)
   typeValue = models.CharField(max_length=64, unique=False, blank=False)
+
+  @classmethod
+  def getValue(cls, field):
+    param = cls.objects.filter(field=field)
+    if param: return param[0].fValue
+    return False
+      
+
+  @property
+  def fValue(self):
+    if self.typeValue == "int":
+      return int(self.value)
+    elif self.typeValue == "float":
+      return float(self.value)
+    return self.value
+
 
 

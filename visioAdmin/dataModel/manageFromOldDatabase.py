@@ -33,7 +33,7 @@ class ManageFromOldDatabase:
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
-    "ciblage":Ciblage
+    "ciblage":Ciblage, "visit":Visit
     }
   connection = None
   cursor = None
@@ -85,7 +85,7 @@ class ManageFromOldDatabase:
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
         ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
-        ("Ciblage", []), ("CiblageLevel", [])]
+        ("Ciblage", []), ("CiblageLevel", []), ("Visit", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
       table, error = getattr(self, "get" + tableName)(*variable)
@@ -311,8 +311,10 @@ class ManageFromOldDatabase:
   def createDashboards(self, geoOrTrade):
     if geoOrTrade == "geo":
       CreateWidgetParam.initialize()
-    for name, layoutName in CreateWidgetParam.dashboards[geoOrTrade].items():
-      object = Dashboard.objects.create(name=name, layout=CreateWidgetParam.dictLayout[layoutName])
+    for name, value in CreateWidgetParam.dashboards[geoOrTrade].items():
+      print(value)
+      layoutName, comment = value[0], value[1]
+      object = Dashboard.objects.create(name=name, layout=CreateWidgetParam.dictLayout[layoutName], comment=comment)
       templateFlat = []
       for listPos in json.loads(CreateWidgetParam.dictLayout[layoutName].template):
         templateFlat += listPos
@@ -392,8 +394,6 @@ class ManageFromOldDatabase:
       oldId = int(listProfile[2])
       listData = [typeTable, table[typeTable][oldId] if typeTable in table and oldId in table[typeTable] else 0]
       listUser[pseudo] = listData
-
-    ManageFromOldDatabase.connection.close()
     self.__addPassword(listUser)
     return listUser
 
@@ -403,14 +403,6 @@ class ManageFromOldDatabase:
 
 # Chargement de la table des ventes
   def getCiblage(self):
-    ManageFromOldDatabase.connection = db.connect(
-        user = os.getenv('DB_USERNAME_ORI'),
-        password = os.getenv('DB_PASSWORD_ORI'),
-        host = os.getenv('DB_HOST_ORI'),
-        database = os.getenv('DB_NAME_ORI')
-        )
-    ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-
     dictPdv = {line[0]:line for line in self.listPdv}
     indexCode = self.fieldsPdv.index("PDV code")
     try:
@@ -433,7 +425,6 @@ class ManageFromOldDatabase:
 
     except db.Error as e:
       return (False, f"Error getCiblage {repr(e)}")
-    ManageFromOldDatabase.connection.close()
     return ("Ciblage", False)
 
   def getCiblageLevel(self):
@@ -460,6 +451,21 @@ class ManageFromOldDatabase:
           CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD, volFinition=dvFinition, dnFinition=ddFinition)
     return ("CiblageLevel", False)
 
+  def getVisit(self):
+    query = "SELECT pdvCode, NbVisit FROM data_visit_1;"
+    ManageFromOldDatabase.cursor.execute(query)
+    for line in ManageFromOldDatabase.cursor:
+      pdv = Pdv.objects.filter(code=line[0])
+      if pdv:
+        for key, nbVisit in json.loads(self.unProtect(line[1])).items():
+          nbVisit = int(nbVisit) if isinstance(nbVisit, str) else nbVisit
+          if nbVisit != 0:
+            year, month = [int(element) for element in key.split(":")]
+            month = 1 if month == 0 else month
+            dateVisit = date(year=year, month=month, day=1)
+            Visit.objects.create(date=dateVisit, nbVisit=nbVisit, pdv=pdv[0])
+    return ("Visit", False)
+
 # Paramètres
 
   def getParamVisio(self):
@@ -467,7 +473,8 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", value="4.0.0", typeValue="str")
     ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", value="2", typeValue="float")
     ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", value="0.360", typeValue="float")
-    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", value="0.01", typeValue="number")
+    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", value="0.01", typeValue="float")
+    ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", value="2021", typeValue="int")
     return ("ParamVisio", False)
 
 # Utilitaires
@@ -484,21 +491,28 @@ class ManageFromOldDatabase:
   def test(self):
       # for object in DashboardTree.objects.all():
       #   object.delete()
-      ManageFromOldDatabase.connection = db.connect(
-      user = os.getenv('DB_USERNAME_ORI'),
-      password = os.getenv('DB_PASSWORD_ORI'),
-      host = os.getenv('DB_HOST_ORI'),
-      database = os.getenv('DB_NAME_ORI')
-      )
-      ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-      query = "SELECT pdvCode, NbVisit FROM data_visit_1;"
-      ManageFromOldDatabase.cursor.execute(query)
-      for line in ManageFromOldDatabase.cursor:
-        value = self.unProtect(line[1])
-        pdvCode = json.loads(line[0])
-        print(value, pdvCode)
-      ManageFromOldDatabase.connection.close()
-      return {"values":"Dashboards created"}
+      # print("start")
+      # ManageFromOldDatabase.connection = db.connect(
+      # user = os.getenv('DB_USERNAME_ORI'),
+      # password = os.getenv('DB_PASSWORD_ORI'),
+      # host = os.getenv('DB_HOST_ORI'),
+      # database = os.getenv('DB_NAME_ORI')
+      # )
+      # Visit.objects.all().delete()
+      # ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
+      # self.getVisit()
+      # ManageFromOldDatabase.connection.close()
+      id = 1
+      while True:
+        pdv = Pdv.objects.filter(id=id)
+        if pdv:
+          pdv = pdv[0]
+          if pdv.nbVisits != 0:
+            print(pdv.listFields())
+            print(pdv.listIndexes())
+            print(pdv.listValues)
+            return {"values":"Dashboards created"}
+        id += id
 
 
 

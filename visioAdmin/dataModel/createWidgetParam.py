@@ -5,14 +5,30 @@ class CreateWidgetParam:
   __dictWidget = {}
   dictLayout = None
   dashboards = {
-      "geo":{"Marché P2CD":"column:2:1", "Marché Enduit":"column:2:1", "PdM P2CD":"column:2:1", "PdM Enduit":"column:2:1",
-      "PdM P2CD Simulation":"column:2:1", "PdM Enduit Simulation":"column:2:1", "DN P2CD":"column:2:1", "DN Enduit":"column:2:1",
-      "DN P2CD Simulation":"column:2:1", "DN Enduit Simulation":"column:2:1", "Points de Vente P2CD":"mono",
-      "Points de Vente Enduit":"mono", "Synthèse P2CD":"row:1:1:1", "Synthèse Enduit":"row:1:1:1",
-      "Synthèse P2CD Simulation":"column:2:1", "Synthèse Enduit Simulation":"column:2:1", "Suivi AD":"row:2:1",
-      "Suivi des Visites":"row:2:2"},
-      "trade":{"Marché P2CD Enseigne":"column:2:1", "Marché Enduit Enseigne":"column:2:1",
-      "PdM P2CD Enseigne":"column:2:1", "PdM Enduit Enseigne":"column:2:1"}
+      "geo":{
+        "Marché P2CD":["column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
+        "Marché Enduit":["column:2:1", "Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."],
+        "PdM P2CD":["column:2:1", ""],
+        "PdM Enduit":["column:2:1", ""],
+        "PdM P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
+        "PdM Enduit Simulation":["column:2:1", ""],
+        "DN P2CD":["column:2:1", ""],
+        "DN Enduit":["column:2:1", ""],
+        "DN P2CD Simulation":["column:2:1", ""],
+        "DN Enduit Simulation":["column:2:1", ""],
+        "Points de Vente P2CD":["mono", ""],
+        "Points de Vente Enduit":["mono", ""],
+        "Synthèse P2CD":["row:1:1:1", ""],
+        "Synthèse Enduit":["row:1:1:1", ""],
+        "Synthèse P2CD Simulation":["column:2:1", ""],
+        "Synthèse Enduit Simulation":["column:2:1", ""],
+        "Suivi AD":["row:2:1", ""],
+        "Suivi des Visites":["row:2:2", ""]},
+      "trade":{
+        "Marché P2CD Enseigne":["column:2:1", ""],
+        "Marché Enduit Enseigne":["column:2:1", ""],
+        "PdM P2CD Enseigne":["column:2:1", ""],
+        "PdM Enduit Enseigne":["column:2:1", ""]}
     }
   dashboardsLevel = {"geo":{"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
     "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
@@ -109,9 +125,9 @@ class CreateWidgetParam:
         ["segmentDnEnduitTarget", "segmentMarketing", "dn", [], [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
         ["enseigne", "segmentDnEnduitTarget", "dn", [], [], "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "Points de Vente P2CD":[
-        ["pdv", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
+        ["pdvs", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
       ], "Points de Vente Enduit":[
-        ["pdv", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
+        ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD":[
         ["industrie", "lg-1", "P2CD", ["Siniat", "Concurrence"], [], "no", "", "", "a", "km²", "histoColumn"],
         ["industrie", "lg-1", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "cols", "", "", "b", "%", "histoColumn"],

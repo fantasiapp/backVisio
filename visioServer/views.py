@@ -22,6 +22,7 @@ class Data(DefaultView):
             if action == "dashboard":
                 #request.META['SERVER_PORT'] == '8000' check if query is local
                 dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000') #
+                # print(dataDashBoard.dataQuery)
                 return Response(dataDashBoard.dataQuery)
             return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})

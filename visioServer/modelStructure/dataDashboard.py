@@ -91,8 +91,8 @@ class DataDashboard:
       if not structureDashboard:
         structureDashboard = list(db.keys())
       dashboards[id] = list(db.values())
-      listObjWidgetParam = [WidgetParams.objects.get(id = idWP) for idWP in dashboards[id][2]]
-      dashboards[id][2] = {object.position:object.id for object in listObjWidgetParam}
+      listObjWidgetParam = [WidgetParams.objects.get(id = idWP) for idWP in dashboards[id][3]]
+      dashboards[id][3] = {object.position:object.id for object in listObjWidgetParam}
     return structureDashboard, dashboards
 
   def _computelistDashboardId(self, levelGeo, listId):
@@ -212,7 +212,7 @@ class DataDashboard:
   def _computewidgetParams(self, dashboards):
     listId = []
     for db in dashboards.values():
-      listId += list(db[2].values())
+      listId += list(db[3].values())
     return {key:value for key, value in DataDashboard.__widgetParam.items() if key in listId}
 
   def _computeLocalTargetLevel(self, data):
@@ -391,11 +391,7 @@ class DataDashboard:
 
   @classmethod
   def _createParams(cls):
-    return {object.field:cls.__readParams(object) for object in ParamVisio.objects.all()}
-
-  @classmethod
-  def __readParams(cls, object):
-    return (float(object.value) if object.typeValue == "float" else object.value, object.prettyPrint)
+    return {param.field:param.fValue for param in ParamVisio.objects.all()}
 
 
   
