@@ -64,7 +64,7 @@ class CreateWidgetParam:
   @classmethod
   def initialize(cls):
     if not cls.__dictWidget:
-      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget"]:
+      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "jauge"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
     if not cls.dictLayout:
       cls.dictLayout = {}
@@ -145,8 +145,8 @@ class CreateWidgetParam:
         ["enduitIndustrieTarget", "lg-1", "enduit", [], [], "cols", "Pdm", "", "b", "%", "histoColumn"],
         ["segmentDnEnduitTarget", "lg-1", "dn", [], [], "no", "DN", "", "c", "Pdv", "histoColumn"]
       ], 'Suivi des Visites':[
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
+        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "a", "", "jauge"],
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b", "jauge"],
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "c"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "d"],
       ], 'other':[

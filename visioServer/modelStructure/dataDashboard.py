@@ -75,7 +75,7 @@ class DataDashboard:
     data["structureTarget"] = DataDashboard.__structureTarget
     data["target"] = self._computeLocalTarget(pdvs)
     self. _computeLocalTargetLevel(data)
-    data["params"] = DataDashboard._createParams()
+    data["params"] = ParamVisio.dictValues()
     return data
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -391,7 +391,7 @@ class DataDashboard:
 
   @classmethod
   def _createParams(cls):
-    return {param.field:param.fValue for param in ParamVisio.objects.all()}
+    return {param.field:param.value for param in ParamVisio.objects.all()}
 
 
   

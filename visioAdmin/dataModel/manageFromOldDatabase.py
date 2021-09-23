@@ -468,12 +468,12 @@ class ManageFromOldDatabase:
 # Paramètres
 
   def getParamVisio(self):
-    ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", value="1.0.0", typeValue="str")
-    ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", value="4.0.0", typeValue="str")
-    ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", value="2", typeValue="float")
-    ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", value="0.360", typeValue="float")
-    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", value="0.01", typeValue="float")
-    ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", value="2021", typeValue="int")
+    ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", fvalue="1.0.0", typeValue="str")
+    ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", fvalue="4.0.0", typeValue="str")
+    ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", fvalue="2", typeValue="float")
+    ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", fvalue="0.360", typeValue="float")
+    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.01", typeValue="float")
+    ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
     return ("ParamVisio", False)
 
 # Utilitaires

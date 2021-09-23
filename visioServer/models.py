@@ -235,7 +235,7 @@ class TreeNavigation(models.Model):
 
 class Layout(models.Model):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
-  template = models.CharField(max_length=2048, unique=False, blank=False, default=None)
+  template = models.JSONField(max_length=2048, unique=False, blank=False, default=None)
 
 class Widget(models.Model):
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
@@ -303,23 +303,26 @@ class CiblageLevel(models.Model):
 class ParamVisio(models.Model):
   field = models.CharField(max_length=64, unique=True, blank=False)
   prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
-  value = models.CharField(max_length=64, unique=False, blank=False)
+  fvalue = models.CharField(max_length=64, unique=False, blank=False)
   typeValue = models.CharField(max_length=64, unique=False, blank=False)
+
+  @classmethod
+  def dictValues(cls):
+    return {param.field:param.value for param in cls.objects.all()}
 
   @classmethod
   def getValue(cls, field):
     param = cls.objects.filter(field=field)
-    if param: return param[0].fValue
+    if param: return param[0].value
     return False
-      
 
   @property
-  def fValue(self):
+  def value(self):
     if self.typeValue == "int":
-      return int(self.value)
+      return int(self.fvalue)
     elif self.typeValue == "float":
-      return float(self.value)
-    return self.value
+      return float(self.fvalue)
+    return self.fvalue
 
 
 
