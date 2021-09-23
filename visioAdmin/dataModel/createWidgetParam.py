@@ -85,9 +85,9 @@ class CreateWidgetParam:
         ["enduitIndustrie", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
         ["enseigne", "enduitIndustrie", "Enduit", [], [], "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "PdM P2CD Simulation":[
-        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel Ciblé", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
-        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel Ciblé", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "industrieTarget", "p2cd", [], ["Siniat", "Potentiel Ciblé", "Placo", "Knauf", "Challengers"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
+        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrieTarget", "p2cd", [], ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit Simulation":[
         ["enduitIndustrieTarget", "segmentCommercial", "Enduit", [], ["@other"], "classic", "Pdm Total", "", "a", "%", "pieTarget"],
         ["enduitIndustrieTarget", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
@@ -121,13 +121,9 @@ class CreateWidgetParam:
         ["enduitIndustrie", "lg-1", "enduit", [], [], "cols", "", "", "b", "%", "histoColumn"],
         ["segmentDnEnduit", "lg-1", "dn", [], [], "no", "", "", "c", "Pdv", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
-        ["industrieTarget", "lg-1", "P2CD", ["Siniat", "Potentiel Ciblé", "Concurrence"], [], "no", "", "", "a", "km²", "histoColumnTarget"],
-        ["industrieTarget", "lg-1", "P2CD", ["Siniat", "Potentiel Ciblé", "Placo", "Knauf", "Challengers"], [], "cols", "", "", "b", "%", "histoColumn"],
-        ["clientProspectTarget", "lg-1", "dn", [], [], "no", "", "", "c", "Pdv", "histoColumnTarget"]
-      ], "Synthèse Enduit Simulation":[
-        ["enduitIndustrieTarget", "lg-1", "enduit", [], [], "no", "Volume", "", "a", "T", "histoColumnTarget"],
-        ["enduitIndustrieTarget", "lg-1", "enduit", [], [], "cols", "Pdm", "", "b", "%", "histoColumn"],
-        ["segmentDnEnduitTarget", "lg-1", "dn", [], [], "no", "DN", "", "c", "Pdv", "histoColumn"]
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "no", "Volume par segment", "", "a", "histoColumn"],
+        ["industrie", "segmentMarketing", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "classic", "Volume par segment", "", "b", "histoColumn"],
+        ["enseigne", "segmentMarketing", "dn", ["Siniat", "Placo", "Knauf", "Challengers"], [], "no", "Tous Segment", "", "c", "histoColumn"]
       ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
