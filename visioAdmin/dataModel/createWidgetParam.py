@@ -109,9 +109,9 @@ class CreateWidgetParam:
         ["segmentDnEnduitTarget", "segmentMarketing", "dn", [], [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
         ["enseigne", "segmentDnEnduitTarget", "dn", [], [], "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "Points de Vente P2CD":[
-        ["pdv", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
+        ["pdvs", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
       ], "Points de Vente Enduit":[
-        ["pdv", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
+        ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD":[
         ["industrie", "lg-1", "P2CD", ["Siniat", "Concurrence"], [], "no", "", "", "a", "km²", "histoColumn"],
         ["industrie", "lg-1", "P2CD", ["Siniat", "Placo", "Knauf", "Challengers"], [], "cols", "", "", "b", "%", "histoColumn"],
