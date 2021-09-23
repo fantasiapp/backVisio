@@ -55,7 +55,7 @@ class DataDashboard:
       "levelGeo":levelGeo,
       "levelTrade":DataDashboard.__levelTrade,
       "structureDashboard":structureDashboard,
-      "indexesDashboard":[1,2],
+      "indexesDashboard":[1,3],
       "dashboards": dashboards,
       "structureLayout":DataDashboard.__structureLayout,
       "layout":DataDashboard.__layout,
