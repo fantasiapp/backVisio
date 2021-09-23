@@ -29,7 +29,7 @@ class ManageFromOldDatabase:
   dictUsers = {}
 
   typeObject = {
-     "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
+     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
@@ -81,7 +81,7 @@ class ManageFromOldDatabase:
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
-        ("PdvOld",[]), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
+        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
         ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
@@ -460,6 +460,16 @@ class ManageFromOldDatabase:
           CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD, volFinition=dvFinition, dnFinition=ddFinition)
     return ("CiblageLevel", False)
 
+# Paramètres
+
+  def getParamVisio(self):
+    ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", value="1.0.0", typeValue="str")
+    ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", value="4.0.0", typeValue="str")
+    ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", value="2", typeValue="float")
+    ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", value="0.360", typeValue="float")
+    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", value="0.01", typeValue="number")
+    return ("ParamVisio", False)
+
 # Utilitaires
 
   def unProtect(self, string):
@@ -474,25 +484,20 @@ class ManageFromOldDatabase:
   def test(self):
       # for object in DashboardTree.objects.all():
       #   object.delete()
-      # for object in TreeNavigation.objects.all():
-      #   object.delete()
-      # for object in Dashboard.objects.filter():
-      #   object.delete()
-      # for object in Layout.objects.all():
-      #   object.delete()
-      # for object in WidgetParams.objects.all():
-      #   object.delete()
-      # for object in WidgetCompute.objects.all():
-      #   object.delete()
-      # for object in Widget.objects.all():
-      #   object.delete()
-      # CreateWidgetParam.__dictWidget = {}
-      # CreateWidgetParam.dictLayout = None
-      # self.getTreeNavigation(["geo", "trade"])
-
-      for object in CiblageLevel.objects.all():
-        object.delete()
-      self.getCiblageLevel()
+      ManageFromOldDatabase.connection = db.connect(
+      user = os.getenv('DB_USERNAME_ORI'),
+      password = os.getenv('DB_PASSWORD_ORI'),
+      host = os.getenv('DB_HOST_ORI'),
+      database = os.getenv('DB_NAME_ORI')
+      )
+      ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
+      query = "SELECT pdvCode, NbVisit FROM data_visit_1;"
+      ManageFromOldDatabase.cursor.execute(query)
+      for line in ManageFromOldDatabase.cursor:
+        value = self.unProtect(line[1])
+        pdvCode = json.loads(line[0])
+        print(value, pdvCode)
+      ManageFromOldDatabase.connection.close()
       return {"values":"Dashboards created"}
 
 
