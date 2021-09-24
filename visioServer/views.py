@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile
+import json
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)

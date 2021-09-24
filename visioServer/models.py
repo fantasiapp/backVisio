@@ -13,7 +13,7 @@ class CommonModel(models.Model):
 
   @classmethod
   def listFields(cls):
-    return [field.name for field in cls._meta.get_fields()][2:]
+    return [field.name for field in cls._meta.get_fields()][1:]
 
   @classmethod
   def listIndexes(cls):
@@ -37,7 +37,6 @@ class CommonModel(models.Model):
     if self.jsonFields:
       for jsonField in self.jsonFields:
         index = self.listFields().index(jsonField)
-        print(listRow[index], type(listRow[index]))
         listRow[index] = json.loads(listRow[index])
     return listRow
 
@@ -175,17 +174,17 @@ class Pdv(CommonModel):
   pointFeu = models.BooleanField('Point Feu', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
 
-  @classmethod
-  def listFields(self): return super().listFields() + ["nbVisits"]
+  # @classmethod
+  # def listFields(self): return super().listFields()
 
-  @property
-  def listValues(self): return super().listValues + [self.nbVisits]
+  # @property
+  # def listValues(self): return super().listValues + [self.nbVisits]
 
-  @property
-  def nbVisits(self):
-    visits=Visit.objects.filter(pdv=self)
-    if visits: return sum([visit.nbVisitCurrentYear for visit in visits])
-    return 0 
+  # @property
+  # def nbVisits(self):
+  #   visits=Visit.objects.filter(pdv=self)
+  #   if visits: return sum([visit.nbVisitCurrentYear for visit in visits])
+  #   return 0 
 
   def __str__(self) ->str: return self.name + " " + self.code
 
