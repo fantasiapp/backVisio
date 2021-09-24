@@ -42,17 +42,25 @@ class DataDashboard:
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__target = self._computeTarget()
+      dictModel = {"layout":Layout, "dashboards":Dashboard}
+      for name, model in dictModel.items():
+         DataDashboard.createFormModel(model, name)
       self._computeTargetLevel()
 
   @classmethod
   def createFromModel(cls, model, name):
     setattr(cls, f"__structure{name.capitalize()}", model.listFields())
-    print("step1")
     indexes = model.listIndexes()
-    print("step1", indexes)
     if len(indexes) != 0: setattr(cls, f"__indexes{name.capitalize()}", indexes)
-    print("step2")
     setattr(cls, f"__{name}", model.dictValues())
+
+  @classmethod
+  def insertModel(cls, data, name):
+    listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
+    for attr in listAttr:
+      print(attr, hasattr(cls, attr))
+      if hasattr(cls, attr):
+        data[attr[2:]] = getattr(cls, attr)
   
   @property
   def dataQuery(self):
@@ -60,9 +68,6 @@ class DataDashboard:
     structureDashboard, dashboards = self._computeLocalDashboards(levelGeo)
     geoTree = self._computeLocalGeoTree()
     pdvs = self._computeLocalPdvs(geoTree)
-    # print("layout start")
-    # DataDashboard.createFromModel(Layout, "layout")
-    # print("layout done")
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,
@@ -70,8 +75,6 @@ class DataDashboard:
       "structureDashboard":structureDashboard,
       "indexesDashboard":[1,3],
       "dashboards": dashboards,
-      "structureLayout":DataDashboard.__structureLayout,
-      "layout":DataDashboard.__layout,
       "widget":DataDashboard.__widget,
       "structureWidgetParam":DataDashboard.__structureWidgetParam,
       "widgetParams":self._computewidgetParams(dashboards),
@@ -87,6 +90,7 @@ class DataDashboard:
       "structureAxislForGraph": AxisForGraph.listFields(),
       "axisForGraph": AxisForGraph.dictValues()
       }
+    self.insertModel(data, "layout")
     self._createModelsForGeo(data)
     self._createOtherModels(data)
     data["structureTarget"] = DataDashboard.__structureTarget
@@ -327,20 +331,6 @@ class DataDashboard:
         dicedBykey[pdv[index]] = {}
       dicedBykey[pdv[index]][id] = pdv
     return dicedBykey
-
-  @classmethod
-  def _computeLayout(cls):
-    return {object.id:cls.__readLayout(object) for object in Layout.objects.all()}
-
-  @classmethod
-  def __readLayout(cls, object):
-    if not cls.__structureLayout:
-      cls.__structureLayout = list(model_to_dict(object).keys())
-      del cls.__structureLayout[0]
-    layout = list(model_to_dict(object).values())
-    del layout[0]
-    layout[1] = json.loads(layout[1])
-    return layout
 
   @classmethod
   def _computeWidget(cls):
