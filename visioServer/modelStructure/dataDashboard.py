@@ -47,8 +47,11 @@ class DataDashboard:
   @classmethod
   def createFromModel(cls, model, name):
     setattr(cls, f"__structure{name.capitalize()}", model.listFields())
+    print("step1")
     indexes = model.listIndexes()
-    if indexes: setattr(cls, f"__indexes{name.capitalize()}", indexes)
+    print("step1", indexes)
+    if len(indexes) != 0: setattr(cls, f"__indexes{name.capitalize()}", indexes)
+    print("step2")
     setattr(cls, f"__{name}", model.dictValues())
   
   @property
@@ -57,6 +60,9 @@ class DataDashboard:
     structureDashboard, dashboards = self._computeLocalDashboards(levelGeo)
     geoTree = self._computeLocalGeoTree()
     pdvs = self._computeLocalPdvs(geoTree)
+    # print("layout start")
+    # DataDashboard.createFromModel(Layout, "layout")
+    # print("layout done")
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,

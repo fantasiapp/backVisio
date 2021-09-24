@@ -13,7 +13,7 @@ class CommonModel(models.Model):
 
   @classmethod
   def listFields(cls):
-    return [field.name for field in cls._meta.get_fields()][1:]
+    return [field.name for field in cls._meta.get_fields()][2:]
 
   @classmethod
   def listIndexes(cls):
@@ -298,6 +298,9 @@ class AxisForGraph(CommonModel):
 
   class Meta:
     verbose_name = "Axes pour les graphiques"
+
+  @classmethod
+  def listFields(csl): return ["name", "labels"]
   
   def __str__(self) ->str:
     return "AxisForGraph " + str(self.name)

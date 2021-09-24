@@ -138,7 +138,7 @@ class ManageFromOldDatabase:
       keyValues["redistributed"] = self.__computeBoolean(line, field="redistributed", valueIfNotExist="y")
       keyValues["redistributedEnduit"] = self.__computeBoolean(line, field="redistributedEnduit", valueIfNotExist="y")
       keyValues["pointFeu"] = self.__computeBoolean(line, field="pointFeu", valueIfNotExist="O", inverse=True)
-      # keyValues["closedAt"] = 0 #self.__computeClosedAt(line)
+      keyValues["closedAt"] = self.__computeClosedAt(line)
 
       for field, object in keyValues.items():
         if object == None and field != "closedAt":
