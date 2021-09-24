@@ -83,7 +83,6 @@ class CreateWidgetParam:
 
   @classmethod
   def create(cls, name):
-    print(name)
     dictParam = {
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "@sum"],
@@ -146,8 +145,8 @@ class CreateWidgetParam:
         ["enduitIndustrieTarget", "lg-1", "enduit", [], [], "cols", "Pdm", "", "b", "%", "histoColumn"],
         ["segmentDnEnduitTarget", "lg-1", "dn", [], [], "no", "DN", "", "c", "Pdv", "histoColumn"]
       ], 'Suivi des Visites':[
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "a", "", "jauge"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "", "b", "jauge"],
+        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "a", "", "gauge"],
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "", "b", "gauge"],
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "c"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "d"],
       ], 'other':[
@@ -157,8 +156,6 @@ class CreateWidgetParam:
         ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par industrie", "", "c", "histoColumn"]
       ]
     }
-    if name == 'Suivi des Visites':
-      print(dictParam[name])
     params = dictParam[name] if name in dictParam else dictParam['other']
     if params == "Synthèse Enduit Simulation": print("done", params, name)
     paramName = ["axis1", "axis2", "ind", "grAx1", "grAx2", "percent", "title", "subTitle", "pos", "unity", "widget"]
