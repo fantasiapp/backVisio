@@ -253,7 +253,7 @@ class Layout(CommonModel):
   template = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   jsonFields = ["template"]
 
-class Widget(models.Model):
+class Widget(CommonModel):
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
   
 class WidgetParams(models.Model):
@@ -272,11 +272,14 @@ class WidgetCompute(models.Model):
   groupAxis2 = models.CharField("Filtre Axe 2", max_length=4096, unique=False, blank=False, default=None)
   percent = models.CharField("Pourcentage", max_length=32, unique=False, blank=False, default="no")
 
-class Dashboard(models.Model):
+class Dashboard(CommonModel):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
   layout = models.ForeignKey('Layout', on_delete=models.PROTECT, blank=False, default=1)
   comment = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   widgetParams = models.ManyToManyField("WidgetParams")
+
+  @classmethod
+  def listFields(csl): return ["name", "layout", "comment", "widgetParams"]
 
 class DashboardTree(models.Model):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")

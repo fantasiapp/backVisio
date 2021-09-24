@@ -32,8 +32,7 @@ class DataDashboard:
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
-      DataDashboard.__layout = DataDashboard._computeLayout()
-      DataDashboard.__widget = DataDashboard._computeWidget()
+      # DataDashboard.__widget = DataDashboard._computeWidget()
       DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
       DataDashboard.__widgetCompute = DataDashboard._computeWidgetCompute()
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
@@ -42,14 +41,15 @@ class DataDashboard:
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__target = self._computeTarget()
-      dictModel = {"layout":Layout, "dashboards":Dashboard}
+      dictModel = {"layout":Layout, "widget":Widget}
       for name, model in dictModel.items():
-         DataDashboard.createFormModel(model, name)
+         DataDashboard.createFromModel(model, name)
       self._computeTargetLevel()
 
   @classmethod
   def createFromModel(cls, model, name):
-    setattr(cls, f"__structure{name.capitalize()}", model.listFields())
+    if len(model.listFields()) > 1:
+      setattr(cls, f"__structure{name.capitalize()}", model.listFields())
     indexes = model.listIndexes()
     if len(indexes) != 0: setattr(cls, f"__indexes{name.capitalize()}", indexes)
     setattr(cls, f"__{name}", model.dictValues())
@@ -75,7 +75,7 @@ class DataDashboard:
       "structureDashboard":structureDashboard,
       "indexesDashboard":[1,3],
       "dashboards": dashboards,
-      "widget":DataDashboard.__widget,
+      # "widget":DataDashboard.__widget,
       "structureWidgetParam":DataDashboard.__structureWidgetParam,
       "widgetParams":self._computewidgetParams(dashboards),
       "structureWidgetCompute":DataDashboard.__structureWidgetCompute,
@@ -90,7 +90,9 @@ class DataDashboard:
       "structureAxislForGraph": AxisForGraph.listFields(),
       "axisForGraph": AxisForGraph.dictValues()
       }
-    self.insertModel(data, "layout")
+    listModel = ["layout", "widget"]
+    for name in listModel:
+      self.insertModel(data, name)
     self._createModelsForGeo(data)
     self._createOtherModels(data)
     data["structureTarget"] = DataDashboard.__structureTarget
