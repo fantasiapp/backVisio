@@ -1,29 +1,45 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
+import json
 
 from django.forms.models import model_to_dict
 
 class CommonModel(models.Model):
+  jsonFields = []
+
   class Meta:
     abstract = True
 
   @classmethod
   def listFields(cls):
-    return [field.name for field in cls._meta.fields][1:]
+    return [field.name for field in cls._meta.get_fields()][2:]
 
   @classmethod
   def listIndexes(cls):
     listName = cls.listFields()
-    listNameF = [field.name for field in cls._meta.fields if isinstance(field, models.ForeignKey)]
+    listNameF = [field.name for field in cls._meta.get_fields() if isinstance(field, models.ForeignKey) or isinstance(field, models.ManyToManyField)]
     return [listName.index(name) for name in listNameF]
+
+  @classmethod
+  def dictValues(cls):
+    return {instance.id:instance.listValues for instance in cls.objects.all()}
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
 
   @property
   def listValues(self):
-    return list(model_to_dict(self).values())[1:]
+    listRow = list(model_to_dict(self).values())[1:]
+    for index in self.listIndexes():
+      if isinstance(listRow[index], list):
+        listRow[index] = [instance.id for instance in listRow[index]]
+    if self.jsonFields:
+      for jsonField in self.jsonFields:
+        index = self.listFields().index(jsonField)
+        print(listRow[index], type(listRow[index]))
+        listRow[index] = json.loads(listRow[index])
+    return listRow
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
@@ -233,9 +249,10 @@ class TreeNavigation(models.Model):
   name = models.CharField(max_length=32, unique=False, blank=False, default=None)
   father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
-class Layout(models.Model):
+class Layout(CommonModel):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
-  template = models.JSONField(max_length=2048, unique=False, blank=False, default=None)
+  template = models.CharField(max_length=2048, unique=False, blank=False, default=None)
+  jsonFields = ["template"]
 
 class Widget(models.Model):
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
@@ -267,6 +284,25 @@ class DashboardTree(models.Model):
   profile = models.CharField(max_length=32, blank=False, default=None)
   level = models.ForeignKey("TreeNavigation", on_delete=models.PROTECT, blank=False, default=None)
   dashboards = models.ManyToManyField("Dashboard")
+
+class LabelForGraph(CommonModel):
+  axisType = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  label = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  color = models.CharField(max_length=32, unique=False, blank=False, default=None)
+
+  def __str__(self) ->str:
+    return "LabelForGraph " + str(self.axisType) + " " + str(self.label) + " " + str(self.color)
+
+class AxisForGraph(CommonModel):
+  name = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  labels = models.ManyToManyField("LabelForGraph")
+
+  class Meta:
+    verbose_name = "Axes pour les graphiques"
+  
+  def __str__(self) ->str:
+    return "AxisForGraph " + str(self.name)
+
 
 # Informations complémentaire pour les users profile
 

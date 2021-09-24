@@ -43,6 +43,13 @@ class DataDashboard:
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__target = self._computeTarget()
       self._computeTargetLevel()
+
+  @classmethod
+  def createFromModel(cls, model, name):
+    setattr(cls, f"__structure{name.capitalize()}", model.listFields())
+    indexes = model.listIndexes()
+    if indexes: setattr(cls, f"__indexes{name.capitalize()}", indexes)
+    setattr(cls, f"__{name}", model.dictValues())
   
   @property
   def dataQuery(self):
@@ -69,6 +76,10 @@ class DataDashboard:
       "structurePdv":DataDashboard.__dataPdvs["fields"],
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
       "pdvs": pdvs,
+      "structureLabelForGraph": LabelForGraph.listFields(),
+      "labelForGraph": LabelForGraph.dictValues(),
+      "structureAxislForGraph": AxisForGraph.listFields(),
+      "axisForGraph": AxisForGraph.dictValues()
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)

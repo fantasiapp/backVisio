@@ -33,7 +33,7 @@ class ManageFromOldDatabase:
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
-    "ciblage":Ciblage, "visit":Visit
+    "ciblage":Ciblage, "visit":Visit, "axisForGraph":AxisForGraph, "labelForGraph":LabelForGraph
     }
   connection = None
   cursor = None
@@ -427,7 +427,7 @@ class ManageFromOldDatabase:
     return ("Ciblage", False)
 
   def getCiblageLevel(self):
-    volP2CD, dnP2CD, volFinition, dnFinition = 10000.0, 50, 1500, 30
+    volP2CD, dnP2CD, volFinition, dnFinition = 1000.0, 50, 150, 30
     dictAgent, now = {}, timezone.now()
     for agent in Agent.objects.all():
       drv = agent.drv
@@ -472,9 +472,10 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", fvalue="4.0.0", typeValue="str")
     ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", fvalue="2", typeValue="float")
     ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", fvalue="0.360", typeValue="float")
-    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.01", typeValue="float")
+    ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.1", typeValue="float")
     ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
     return ("ParamVisio", False)
+
 
 # Utilitaires
 
@@ -488,12 +489,15 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [TreeNavigation, DashboardTree, WidgetParams, WidgetCompute, Widget, Dashboard, Layout]
-    for model in listModel:
-      for element in model.objects.all():
-        element.delete()
+    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    # for model in listModel:
+    #   for element in model.objects.all():
+    #     element.delete()
     print("start")
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    print(Layout.listFields())
+    print(Layout.listIndexes())
+    print(Layout.dictValues())
     print("end")
     return {"test":False}
       

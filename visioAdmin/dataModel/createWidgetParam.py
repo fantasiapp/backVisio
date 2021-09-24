@@ -1,8 +1,10 @@
-from visioServer.models import WidgetCompute, WidgetParams, Widget, Layout
+from visioServer.models import AxisForGraph, WidgetCompute, WidgetParams, Widget, Layout, LabelForGraph
 import json
 
 class CreateWidgetParam:
   __dictWidget = {}
+  __colors = None
+  __axis = None
   dictLayout = None
   dashboards = {
       "geo":{
@@ -79,15 +81,43 @@ class CreateWidgetParam:
       for name, jsonLayout in data.items():
         object = Layout.objects.create(name=name, template=json.dumps(jsonLayout))
         cls.dictLayout[name] = object
+    if not cls.__colors:
+      cls.__colors={}
+      data = [
+        ["segment", "Généraliste", "#888888"],
+        ["segment", "Multi spécialistes", "#E1962A"],
+        ["segment", "Purs spécialistes", "#DEDEDE"],
+        ["segment", "Autres", "#DC6206"],
+        ["industry","Siniat", "#B3007E"],
+        ["industry","Placo", "#0056A6"],
+        ["industry","Knauf", "#67D0FF"],
+        ["industry","Challengers", "#888888"],
+        ["indFinition","Pregy", "#B3007E"],
+        ["indFinition","Salsi", "#D00000"],
+        ["indFinition","Croissance", "#DEDEDE"],
+        ["indFinition","Conquête", "#466A50"],
+      ]
+      for list in data:
+        label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
+        cls.__colors[f"{list[0]}:{list[1]}"] = label
+
+      cls.__axis = {}
+      listTypeAxis = set(listColor[0] for listColor in data)
+      for typeAxis in listTypeAxis:
+        listLabel = LabelForGraph.objects.filter(axisType = typeAxis)
+        axis = AxisForGraph.objects.create(name= typeAxis)
+        for label in listLabel:
+          axis.labels.add(label)
+        cls.__axis[typeAxis] = axis
 
 
   @classmethod
   def create(cls, name):
     dictParam = {
       "Marché P2CD":[
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "@sum"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par enseigne", "", "c", "km²", "histoRow"]
+        ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Vente en volume", "@sum"],
+        ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
+        ["enseigne", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume par enseigne", "", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
         ["enduitIndustrie", "segmentCommercial", "enduit", [], ["@other"], "no", "Volume Total", "@sum", "a", "T"],
         ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
