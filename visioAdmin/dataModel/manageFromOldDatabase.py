@@ -488,30 +488,15 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-      # for object in DashboardTree.objects.all():
-      #   object.delete()
-      # print("start")
-      # ManageFromOldDatabase.connection = db.connect(
-      # user = os.getenv('DB_USERNAME_ORI'),
-      # password = os.getenv('DB_PASSWORD_ORI'),
-      # host = os.getenv('DB_HOST_ORI'),
-      # database = os.getenv('DB_NAME_ORI')
-      # )
-      # Visit.objects.all().delete()
-      # ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-      # self.getVisit()
-      # ManageFromOldDatabase.connection.close()
-      id = 1
-      while True:
-        pdv = Pdv.objects.filter(id=id)
-        if pdv:
-          pdv = pdv[0]
-          if pdv.nbVisits != 0:
-            print(pdv.listFields())
-            print(pdv.listIndexes())
-            print(pdv.listValues)
-            return {"values":"Dashboards created"}
-        id += id
+    listModel = [TreeNavigation, DashboardTree, WidgetParams, WidgetCompute, Widget, Dashboard, Layout]
+    for model in listModel:
+      for element in model.objects.all():
+        element.delete()
+    print("start")
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    print("end")
+    return {"test":False}
+      
 
 
 
