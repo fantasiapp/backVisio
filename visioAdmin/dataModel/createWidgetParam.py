@@ -126,13 +126,13 @@ class CreateWidgetParam:
         ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
         ["enseigne", "enduitIndustrie", "enduit", [], AxisForGraph.objects.get(name="indFinition").id, "no", "Volume par enseigne", "Tous segments", "c", "T", "histoRow"]
       ], "PdM P2CD":[
-        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Pdm Total", "", "a", "%"],
-        ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "Challengers"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["industrie", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "classic", "Pdm Total", "", "a", "%"],
+        ["industrie", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit":[
-        ["enduitIndustrie", "segmentCommercial", "Enduit", [], ["@other"], "classic", "Pdm Total", "", "a", "%"],
-        ["enduitIndustrie", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "enduitIndustrie", "Enduit", [], [], "classic", "Par Enseigne", "", "c", "%", "histoRow"]
+        ["enduitIndustrie", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Pdm Total", "", "a", "%"],
+        ["enduitIndustrie", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustrie", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "PdM P2CD Simulation":[
         ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
         ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
