@@ -66,7 +66,7 @@ class CreateWidgetParam:
   @classmethod
   def initialize(cls):
     if not cls.__dictWidget:
-      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "gauge"]:
+      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "gauge", "unknownGraph"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
     if not cls.dictLayout:
       cls.dictLayout = {}
