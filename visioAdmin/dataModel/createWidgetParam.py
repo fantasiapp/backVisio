@@ -13,7 +13,7 @@ class CreateWidgetParam:
         "PdM P2CD":["column:2:1", ""],
         "PdM Enduit":["column:2:1", ""],
         "PdM P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
-        "PdM Enduit Simulation":["column:2:1", ""],
+        "PdM Enduit Simulation":["column:2:1", "Objectif : @Nb en Tonnes \r\n Ciblage : @Nb2 en Tonnes"],
         "DN P2CD":["column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],
         "DN Enduit":["column:2:1", ""],
         "DN P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
@@ -208,11 +208,15 @@ class CreateWidgetParam:
         ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "no", "Volume", "", "a", "T", "histoColumnTarget"],
         ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "cols", "Pdm", "", "b", "%", "histoColumn"],
         ["segmentDnEnduitTarget", "lg-1", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN", "", "c", "Pdv", "histoColumn"]
-      ], 'Suivi des Visites':[
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "a", "", "gauge"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "", "b", "gauge"],
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "c"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "d"],
+      ], "Suivi AD":[
+        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Evolution de l'AD", "nb de pdv par sem. et cumul en %", "b", "", "histoCurve"],
+        ["industrie", "lg-1", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "cols", "", "", "c", "%", "histoColumn"]
+      ],'Suivi des Visites':[
+        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "gauge"],
+        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Répartition des visites (vol)", "", "c", "T", "unknownGraph"],
+        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Répartition des visites (nb)", "", "d", "visites", "unknownGraph"]
       ], 'other':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
