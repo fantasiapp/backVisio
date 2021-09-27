@@ -96,6 +96,9 @@ class CreateWidgetParam:
         ["indFinition","Salsi", "#D00000"],
         ["indFinition","Croissance", "#DEDEDE"],
         ["indFinition","Conquête", "#466A50"],
+        ["dnFinition","P2CD + Enduit", "#B3007E"],
+        ["dnFinition","Enduit hors P2CD", "#D00000"],
+        ["dnFinition","Pur prospect", "#8B8B8B"]
       ]
       for list in data:
         label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
@@ -119,9 +122,9 @@ class CreateWidgetParam:
         ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
         ["enseigne", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume par enseigne", "", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
-        ["enduitIndustrie", "segmentCommercial", "enduit", [], ["@other"], "no", "Volume Total", "@sum", "a", "T"],
-        ["segmentDnEnduit", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
-        ["enseigne", "enduitIndustrie", "enduit", [], [], "no", "Volume par enseigne", "Tous segments", "c", "T", "histoRow"]
+        ["enduitIndustrie", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volume Total", "@sum", "a", "T"],
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
+        ["enseigne", "enduitIndustrie", "enduit", [], AxisForGraph.objects.get(name="indFinition").id, "no", "Volume par enseigne", "Tous segments", "c", "T", "histoRow"]
       ], "PdM P2CD":[
         ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Pdm Total", "", "a", "%"],
         ["industrie", "segmentMarketing", "p2cd", ["Siniat", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
