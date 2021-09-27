@@ -88,26 +88,48 @@ class CreateWidgetParam:
         ["segment", "Multi Spécialistes", "#E1962A"],
         ["segment", "Purs Spécialistes", "#DEDEDE"],
         ["segment", "Autres", "#DC6206"],
+
         ["industry","Siniat", "#B3007E"],
-        ["industry","Potentiel ciblé", "#CD77E2"],
         ["industry","Placo", "#0056A6"],
         ["industry","Knauf", "#67D0FF"],
         ["industry","Challengers", "#888888"],
+
+        ["industryTarget","Siniat", "#B3007E"],
+        ["industryTarget","Potentiel ciblé", "#CD77E2"],
+        ["industryTarget","Placo", "#0056A6"],
+        ["industryTarget","Knauf", "#67D0FF"],
+        ["industryTarget","Challengers", "#888888"],
+
         ["indFinition","Pregy", "#B3007E"],
         ["indFinition","Salsi", "#D00000"],
         ["indFinition","Croissance", "#DEDEDE"],
-        ["indFinition","Cible Croissance", "#CD77E2"],
         ["indFinition","Conquête", "#466A50"],
-        ["indFinition","Cible Conquête", "#5BB273"],
+
+        ["indFinitionTarget","Pregy", "#B3007E"],
+        ["indFinitionTarget","Salsi", "#D00000"],
+        ["indFinitionTarget","Croissance", "#DEDEDE"],
+        ["indFinitionTarget","Cible Croissance", "#CD77E2"],
+        ["indFinitionTarget","Conquête", "#466A50"],
+        ["indFinitionTarget","Cible Conquête", "#5BB273"],
+
         ["dnFinition","P2CD + Enduit", "#B3007E"],
-        ["dnFinition","Enduit hors P2CD", "#D00000"],
-        ["dnFinition","Cible P2CD", "#AC0000"],
+        ["dnFinition","Enduit hors P2CD", "#AC0000"],
         ["dnFinition","Pur prospect", "#8B8B8B"],
-        ["dnFinition","Cible Pur Prospect", "#DEDEDE"],
+
+        ["dnFinitionTarget","P2CD + Enduit", "#B3007E"],
+        ["dnFinitionTarget","Enduit hors P2CD", "#AC0000"],
+        ["dnFinitionTarget","Cible P2CD", "#D00000"],
+        ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
+        ["dnFinitionTarget","Cible Pur Prospect", "#DEDEDE"],
+
         ["clientProspect","Client", "#B3007E"],
-        ["clientProspect","Potentiel ciblé", "#CD77E2"],
         ["clientProspect","Prospect", "#888888"],
-        ["clientProspect","Non documenté", "#DEDEDE"]
+        ["clientProspect","Non documenté", "#DEDEDE"],
+
+        ["clientProspectTarget","Client", "#B3007E"],
+        ["clientProspectTarget","Potentiel ciblé", "#CD77E2"],
+        ["clientProspectTarget","Prospect", "#888888"],
+        ["clientProspectTarget","Non documenté", "#DEDEDE"]
       ]
       for list in data:
         label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
@@ -143,13 +165,13 @@ class CreateWidgetParam:
         ["enduitIndustrie", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
         ["enseigne", "enduitIndustrie", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "PdM P2CD Simulation":[
-        ["industrieTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
-        ["industrieTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "industrieTarget", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["industrieTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industryTarget").id, ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
+        ["industrieTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industryTarget").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrieTarget", "p2cd", [], AxisForGraph.objects.get(name="industryTarget").id, "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit Simulation":[
-        ["enduitIndustrieTarget", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Pdm Total", "", "a", "%", "pieTarget"],
-        ["enduitIndustrieTarget", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "enduitIndustrieTarget", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
+        ["enduitIndustrieTarget", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, ["@other"], "classic", "Pdm Total", "", "a", "%", "pieTarget"],
+        ["enduitIndustrieTarget", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustrieTarget", "Enduit", [], AxisForGraph.objects.get(name="indFinitionTarget").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "DN P2CD":[
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, ["@other"], "no", "Par Segment", "Nombre de Pdv Client/Prospect", "a", "Pdv", "donut"],
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "Par Client et Prospect", "", "b", "Pdv", "histoColumn"],
@@ -159,13 +181,13 @@ class CreateWidgetParam:
         ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
         ["enseigne", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="dnFinition").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "DN P2CD Simulation":[
-        ["clientProspectTarget", "segmentCommercial", "dn", AxisForGraph.objects.get(name="clientProspect").id, ["@other"], "no", "Par Client et Prospect", "", "a", "Pdv", "pieTarget"],
-        ["clientProspectTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "Par Segment", "", "b", "Pdv", "histoColumn"],
-        ["enseigne", "clientProspectTarget", "dn", [], AxisForGraph.objects.get(name="clientProspect").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
+        ["clientProspectTarget", "segmentCommercial", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, ["@other"], "no", "Par Client et Prospect", "", "a", "Pdv", "pieTarget"],
+        ["clientProspectTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, [], "no", "Par Segment", "", "b", "Pdv", "histoColumn"],
+        ["enseigne", "clientProspectTarget", "dn", [], AxisForGraph.objects.get(name="clientProspectTarget").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "DN Enduit Simulation":[
-        ["segmentDnEnduitTarget", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "DN totale", "", "a", "Pdv", "donut"],
-        ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
-        ["enseigne", "segmentDnEnduitTarget", "dn", [], AxisForGraph.objects.get(name="dnFinition").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
+        ["segmentDnEnduitTarget", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "DN totale", "", "a", "Pdv", "donut"],
+        ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
+        ["enseigne", "segmentDnEnduitTarget", "dn", [], AxisForGraph.objects.get(name="dnFinitionTarget").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
       ], "Points de Vente P2CD":[
         ["pdvs", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
       ], "Points de Vente Enduit":[
@@ -179,13 +201,13 @@ class CreateWidgetParam:
         ["enduitIndustrie", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "", "", "b", "%", "histoColumn"],
         ["segmentDnEnduit", "lg-1", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "", "", "c", "Pdv", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
-        ["industrieTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "", "", "a", "km²", "histoColumnTarget"],
-        ["industrieTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "", "", "b", "%", "histoColumn"],
-        ["clientProspectTarget", "lg-1", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "", "", "c", "Pdv", "histoColumnTarget"]
+        ["industrieTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "no", "", "", "a", "km²", "histoColumnTarget"],
+        ["industrieTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "cols", "", "", "b", "%", "histoColumn"],
+        ["clientProspectTarget", "lg-1", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, [], "no", "", "", "c", "Pdv", "histoColumnTarget"]
       ], "Synthèse Enduit Simulation":[
-        ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "no", "Volume", "", "a", "T", "histoColumnTarget"],
-        ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Pdm", "", "b", "%", "histoColumn"],
-        ["segmentDnEnduitTarget", "lg-1", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN", "", "c", "Pdv", "histoColumn"]
+        ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "no", "Volume", "", "a", "T", "histoColumnTarget"],
+        ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "cols", "Pdm", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduitTarget", "lg-1", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN", "", "c", "Pdv", "histoColumn"]
       ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume", "", "a", "", "gauge"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "", "b", "gauge"],
