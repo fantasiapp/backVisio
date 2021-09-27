@@ -89,13 +89,16 @@ class CreateWidgetParam:
         ["segment", "Purs Spécialistes", "#DEDEDE"],
         ["segment", "Autres", "#DC6206"],
         ["industry","Siniat", "#B3007E"],
+        ["industry","Potentiel ciblé", "#CD77E2"],
         ["industry","Placo", "#0056A6"],
         ["industry","Knauf", "#67D0FF"],
         ["industry","Challengers", "#888888"],
         ["indFinition","Pregy", "#B3007E"],
         ["indFinition","Salsi", "#D00000"],
         ["indFinition","Croissance", "#DEDEDE"],
+        ["indFinition","Cible Croissance", "#CD77E2"],
         ["indFinition","Conquête", "#466A50"],
+        ["indFinition","Cible Conquête", "#5BB273"],
         ["dnFinition","P2CD + Enduit", "#B3007E"],
         ["dnFinition","Enduit hors P2CD", "#D00000"],
         ["dnFinition","Pur prospect", "#8B8B8B"]
@@ -134,13 +137,13 @@ class CreateWidgetParam:
         ["enduitIndustrie", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
         ["enseigne", "enduitIndustrie", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "PdM P2CD Simulation":[
-        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
-        ["industrieTarget", "segmentMarketing", "p2cd", ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "industrieTarget", "p2cd", [], ["Siniat", "Potentiel", "Placo", "Knauf", "Challengers"], "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["industrieTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "classic", "Par Industrie", "", "a", "%", "pieTarget"],
+        ["industrieTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "industrieTarget", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit Simulation":[
-        ["enduitIndustrieTarget", "segmentCommercial", "Enduit", [], ["@other"], "classic", "Pdm Total", "", "a", "%", "pieTarget"],
-        ["enduitIndustrieTarget", "segmentMarketing", "Enduit", [], [], "cols", "Par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "enduitIndustrieTarget", "Enduit", [], [], "classic", "Par Enseigne", "", "c", "%", "histoRow"]
+        ["enduitIndustrieTarget", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Pdm Total", "", "a", "%", "pieTarget"],
+        ["enduitIndustrieTarget", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustrieTarget", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ], "DN P2CD":[
         ["clientProspect", "segmentMarketing", "dn", [], ["@other"], "no", "Par Segment", "Nombre de Pdv Client/Prospect", "a", "Pdv", "donut"],
         ["clientProspect", "segmentMarketing", "dn", [], [], "no", "Par Client et Prospect", "", "b", "Pdv", "histoColumn"],
