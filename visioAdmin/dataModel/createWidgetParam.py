@@ -66,7 +66,7 @@ class CreateWidgetParam:
   @classmethod
   def initialize(cls):
     if not cls.__dictWidget:
-      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "gauge", "histoCurve", "unknownGraph"]:
+      for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "gauge", "histoCurve"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
     if not cls.dictLayout:
       cls.dictLayout = {}
@@ -129,7 +129,11 @@ class CreateWidgetParam:
         ["clientProspectTarget","Client", "#B3007E"],
         ["clientProspectTarget","Potentiel ciblé", "#CD77E2"],
         ["clientProspectTarget","Prospect", "#888888"],
-        ["clientProspectTarget","Non documenté", "#DEDEDE"]
+        ["clientProspectTarget","Non documenté", "#DEDEDE"],
+
+        ["suiviAD","Terminées", "#4AA763"],
+        ["suiviAD","Non renseignées", "#FFE200"],
+        ["suiviAD","Non mises à jour", "#D00000"]
       ]
       for list in data:
         label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
@@ -212,13 +216,13 @@ class CreateWidgetParam:
       "Suivi AD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Evolution de l'AD", "nb de pdv par sem. et cumul en %", "b", "", "histoCurve"],
-        ["industrie", "lg-1", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "cols", "", "", "c", "%", "histoColumn"]
+        ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "", "", "c", "%", "histoColumn"]
       ],
       'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "", "gauge"],
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Répartition des visites (vol)", "", "c", "T", "unknownGraph"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Répartition des visites (nb)", "", "d", "visites", "unknownGraph"]
+        ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (vol)", "@sum", "c", "T"],
+        ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (nb)", "@sum", "d", "v"]
       ], 'other':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
