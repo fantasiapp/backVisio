@@ -54,7 +54,39 @@ class CommonModel(models.Model):
           children = self.__class__.objects.filter(father=self)
           for child in children:
             listRow[index].append(child.listValues)
-          print(listRow)
+
+# Information Params
+class ParamVisio(CommonModel):
+  field = models.CharField(max_length=64, unique=True, blank=False)
+  prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
+  fvalue = models.CharField(max_length=64, unique=False, blank=False)
+  typeValue = models.CharField(max_length=64, unique=False, blank=False)
+
+  @classmethod
+  def listFields(cls):
+    return ["value"]
+
+  @classmethod
+  def listIndexes(cls):
+    return []
+
+  @classmethod
+  def dictValues(cls):
+    return {param.field:param.value for param in cls.objects.all()}
+
+  @classmethod
+  def getValue(cls, field):
+    param = cls.objects.filter(field=field)
+    if param: return param[0].value
+    return False
+
+  @property
+  def value(self):
+    if self.typeValue == "int":
+      return int(self.fvalue)
+    elif self.typeValue == "float":
+      return float(self.fvalue)
+    return self.fvalue
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
@@ -204,22 +236,31 @@ class Pdv(CommonModel):
 
   def __str__(self) ->str: return self.name + " " + self.code
 
-class Visit(models.Model):
+class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
   nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
+  currentYear = ParamVisio.objects.filter(field="currentYear")
+  currentYear = currentYear[0].value if currentYear else None
 
   class Meta:
     verbose_name = "Visites Mensuels"
 
   @property
   def nbVisitCurrentYear(self):
-    if self.date.year == ParamVisio.getValue("currentYear"):
+    if self.date.year == self.currentYear:
       return self.nbVisit
     return 0
 
   def __str__(self) ->str:
     return self.date.strftime("%Y-%m") + " " + self.pdv.code
+
+  @property
+  def listValues(self):
+    raw = super().listValues
+    del raw[2]
+    raw[0] = raw[0].isoformat()
+    return raw
 
 
 # Modèles pour l'AD
@@ -300,7 +341,7 @@ class WidgetCompute(CommonModel):
 
 
 class Dashboard(CommonModel):
-  name = models.CharField(max_length=64, unique=True, blank=False, default=None)
+  name = models.CharField(max_length=64, unique=False, blank=False, default=None)
   layout = models.ForeignKey('Layout', on_delete=models.PROTECT, blank=False, default=1)
   comment = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   widgetParams = models.ManyToManyField("WidgetParams")
@@ -369,39 +410,6 @@ class CiblageLevel(models.Model):
   dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
-
-# Information Params
-class ParamVisio(CommonModel):
-  field = models.CharField(max_length=64, unique=True, blank=False)
-  prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
-  fvalue = models.CharField(max_length=64, unique=False, blank=False)
-  typeValue = models.CharField(max_length=64, unique=False, blank=False)
-
-  @classmethod
-  def listFields(cls):
-    return ["value"]
-
-  @classmethod
-  def listIndexes(cls):
-    return []
-
-  @classmethod
-  def dictValues(cls):
-    return {param.field:param.value for param in cls.objects.all()}
-
-  @classmethod
-  def getValue(cls, field):
-    param = cls.objects.filter(field=field)
-    if param: return param[0].value
-    return False
-
-  @property
-  def value(self):
-    if self.typeValue == "int":
-      return int(self.fvalue)
-    elif self.typeValue == "float":
-      return float(self.fvalue)
-    return self.fvalue
 
 
 

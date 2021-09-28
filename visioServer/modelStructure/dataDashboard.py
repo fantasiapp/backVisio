@@ -99,12 +99,7 @@ class DataDashboard:
     return self._computeLocalLevels(originLevel[3], selectedLevel)
 
   def _computeLocalDashboards(self, levelGeo:list) -> dict:
-    listIdDb = self._computelistDashboardId(levelGeo, [])
-    tradeLevel, dbTrade = DataDashboard.__levelTrade, []
-    while len(tradeLevel) == 4:
-      dbTrade += tradeLevel[2]
-      tradeLevel = tradeLevel[3]
-    listIdDb = set(listIdDb + dbTrade)
+    listIdDb = self._computelistDashboardId(levelGeo)
     dictDb = {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all() if object.id in listIdDb}
     structureDashboard, dashboards = [], {}
     for id, db in dictDb.items():
@@ -113,16 +108,15 @@ class DataDashboard:
       dashboards[id] = list(db.values())
       listObjWidgetParam = [WidgetParams.objects.get(id = idWP) for idWP in dashboards[id][3]]
       dashboards[id][3] = {object.position:object.id for object in listObjWidgetParam}
-      dbTrade = set(dbTrade)
     return structureDashboard, dashboards
 
-  def _computelistDashboardId(self, levelGeo, listId):
-    for id in levelGeo[2]:
-      if not id in listId:
-        listId.append(id)
-    if len(levelGeo) == 4:
-      return self._computelistDashboardId(levelGeo[3], listId)
-    return listId
+  def _computelistDashboardId(self, levelGeo):
+    listId = []
+    for level in [levelGeo, self.__levelTrade]:
+      while len(level) == 4:
+        listId += level[2]
+        level = level[3]
+    return set(listId)
 
   def __computeDashboard(self, object):
     dictDb = model_to_dict(object)
@@ -274,21 +268,23 @@ class DataDashboard:
 
   @classmethod
   def _formatPdv(cls):
-    listPdv = [cls.__pdvTransformDate(pdv) for pdv in Pdv.objects.all()]
+    listPdv = [cls.__pdvTransform(pdv) for pdv in Pdv.objects.all()]
     formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] + [cls.computeSalesDict().get(str(pdv['id']), [])] for pdv in listPdv}
     fields = list(listPdv[0].keys())[1:]
     indexes = []
     for fieldName in fields:
-        if type(Pdv._meta.get_field(fieldName)) is ForeignKey:
-            indexes.append(fields.index(fieldName))
+      if getattr(Pdv, fieldName, False) and type(Pdv._meta.get_field(fieldName)) is ForeignKey:
+        indexes.append(fields.index(fieldName))
     fields += ['sales']
     dataPdv = {'fields' : fields, 'indexes': indexes}
     dataPdv.update(formatedPdvs)
     return formatedPdvs, dataPdv
 
   @classmethod
-  def __pdvTransformDate(cls, pdv):
+  def __pdvTransform(cls, pdv):
+    nbVisits = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=pdv)])
     dictPdv = model_to_dict(pdv)
+    dictPdv["nbVisits"] = nbVisits
     if isinstance(dictPdv["closedAt"], datetime.datetime):
       dictPdv["closedAt"] = dictPdv["closedAt"].isoformat()
     return dictPdv
