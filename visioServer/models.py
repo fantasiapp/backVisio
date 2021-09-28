@@ -240,7 +240,11 @@ class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
   nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
-  currentYear = ParamVisio.objects.filter(field="currentYear")
+  currentYear = None
+  try:
+    currentYear = ParamVisio.objects.filter(field="currentYear")
+  except:
+    pass
   currentYear = currentYear[0].value if currentYear else None
 
   class Meta:
