@@ -243,9 +243,9 @@ class Visit(CommonModel):
   currentYear = None
   try:
     currentYear = ParamVisio.objects.filter(field="currentYear")
+    currentYear = currentYear[0].value if currentYear else None
   except:
     pass
-  currentYear = currentYear[0].value if currentYear else None
 
   class Meta:
     verbose_name = "Visites Mensuels"
