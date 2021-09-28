@@ -228,6 +228,22 @@ class CreateWidgetParam:
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Nombre de Pdv", "", "b"],
         ["enseigne", "industrie", "p2cd", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par enseigne", "", "c", "histoRow"],
         ["enseigne", "industrie", "dn", [], ["Siniat", "Placo", "Knauf", "Challengers"], "no", "Volume par industrie", "", "c", "histoColumn"]
+      ],"Marché P2CD Enseigne":[
+        ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Vente en volume", "@sum"],
+        ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
+        ["lt-1", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume par enseigne", "", "c", "km²", "histoRow"]
+      ], "Marché Enduit Enseigne":[
+        ["enduitIndustrie", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volume Total", "@sum", "a", "T"],
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
+        ["lt-1", "enduitIndustrie", "enduit", [], AxisForGraph.objects.get(name="indFinition").id, "no", "Volume par enseigne", "Tous segments", "c", "T", "histoRow"]
+      ], "PdM P2CD Enseigne":[
+        ["industrie", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "classic", "Pdm Total", "", "a", "%"],
+        ["industrie", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["lt-1", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "classic", "Par Enseigne", "Tous segments", "c", "%", "histoRow"]
+      ], "PdM Enduit Enseigne":[
+        ["enduitIndustrie", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Pdm Total", "", "a", "%"],
+        ["enduitIndustrie", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
+        ["lt-1", "enduitIndustrie", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
       ]
     }
     params = dictParam[name] if name in dictParam else dictParam['other']
