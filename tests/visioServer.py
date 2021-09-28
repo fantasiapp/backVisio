@@ -29,11 +29,11 @@ if isinstance(data, dict):
     keys = list(data.keys())
     print("Résultats", keys)
     fields = [
-        'structureLevel', 'levelGeo', 'levelTrade', 'structureDashboard', 'indexesDashboard', 'dashboards', 'structureLayout', 'layout', 'widget',
-        'structureWidgetParam', 'widgetParams', 'structureWidgetCompute', 'widgetCompute', 'geoTree', 'tradeTree', 'structurePdv', 'indexesPdv', 'pdvs',
-        'drv', 'agent', 'dep', 'bassin', 'ville', 'segmentMarketing', 'segmentCommercial', 'enseigne', 'ensemble', 'sousEnsemble', 'site', 'produit',
-        'industrie', 'structureTarget', 'target', 'structureTargetLevelDrv', 'targetLevelDrv', 'structureTargetAgentP2CD', 'targetLevelAgentP2CD',
-        'structureTargetLevelAgentFinition', 'targetLevelAgentFinition', 'params']
+        'structureLevel', 'levelGeo', 'levelTrade', 'structureDashboard', 'indexesDashboard', 'dashboards', 'structureWidgetParam', 'widgetParams',
+        'geoTree', 'tradeTree', 'structurePdv', 'indexesPdv', 'pdvs', 'agent', 'dep', 'bassin', 'ville', 'segmentMarketing', 'segmentCommercial',
+        'enseigne', 'ensemble', 'sousEnsemble', 'site', 'produit', 'industrie', 'structureTarget', 'target', 'structureTargetAgentP2CD',
+        'targetLevelAgentP2CD', 'structureLayout', 'layout', 'widget', 'structureWidgetcompute', 'widgetCompute', 'structureLabelforgraph',
+        'labelForGraph', 'structureAxisforgraph', 'indexesAxisforgraph', 'axisForGraph', 'params']
     if len(fields) == len(data):
         for index in range(len(fields)):
             if fields[index] != keys[index]:

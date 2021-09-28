@@ -3,6 +3,7 @@ import json
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.db.models.fields.related import ForeignKey
+import datetime
 from ..utils import camel
 import os
 from dotenv import load_dotenv
@@ -16,10 +17,8 @@ class DataDashboard:
   __formatedPdvs = None
   __dataPdvs = None
   __cacheSalesDict = os.getenv('SALES_DICT')
-  __structureLayout = None
   __structureWidgetParam = None
   __WidgetParamIndexPosition = None
-  __structureWidgetCompute = None
   __structureTarget = None
   __structureTargetLevelDrv = None
   __structureTargetLevelAgentP2CD = None
@@ -30,20 +29,22 @@ class DataDashboard:
     self.__userGroup = userGroup
     DataDashboard.isNotOnServer = isNotOnServer
     if not DataDashboard.__levelGeo:
+      test = TreeNavigation.objects.get(level="root")
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
-      # DataDashboard.__widget = DataDashboard._computeWidget()
-      DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
-      DataDashboard.__widgetCompute = DataDashboard._computeWidgetCompute()
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__target = self._computeTarget()
-      dictModel = {"layout":Layout, "widget":Widget}
+      dictModel = {
+        "layout":Layout, "widget":Widget, "widgetCompute":WidgetCompute, "params":ParamVisio,
+        "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph}
       for name, model in dictModel.items():
          DataDashboard.createFromModel(model, name)
+      
+      DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
       self._computeTargetLevel()
 
   @classmethod
@@ -58,7 +59,6 @@ class DataDashboard:
   def insertModel(cls, data, name):
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
     for attr in listAttr:
-      print(attr, hasattr(cls, attr))
       if hasattr(cls, attr):
         data[attr[2:]] = getattr(cls, attr)
   
@@ -71,34 +71,26 @@ class DataDashboard:
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,
-      "levelTrade":DataDashboard.__levelTrade,
+      "levelTrade": DataDashboard.__levelTrade,
       "structureDashboard":structureDashboard,
       "indexesDashboard":[1,3],
       "dashboards": dashboards,
-      # "widget":DataDashboard.__widget,
       "structureWidgetParam":DataDashboard.__structureWidgetParam,
       "widgetParams":self._computewidgetParams(dashboards),
-      "structureWidgetCompute":DataDashboard.__structureWidgetCompute,
-      "widgetCompute":DataDashboard.__widgetCompute,
       "geoTree":geoTree,
       "tradeTree":DataDashboard.__tradeTree,
       "structurePdv":DataDashboard.__dataPdvs["fields"],
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
       "pdvs": pdvs,
-      "structureLabelForGraph": LabelForGraph.listFields(),
-      "labelForGraph": LabelForGraph.dictValues(),
-      "structureAxislForGraph": AxisForGraph.listFields(),
-      "axisForGraph": AxisForGraph.dictValues()
       }
-    listModel = ["layout", "widget"]
-    for name in listModel:
-      self.insertModel(data, name)
     self._createModelsForGeo(data)
     self._createOtherModels(data)
     data["structureTarget"] = DataDashboard.__structureTarget
     data["target"] = self._computeLocalTarget(pdvs)
     self. _computeLocalTargetLevel(data)
-    data["params"] = ParamVisio.dictValues()
+    listModel = ["layout", "widget", "widgetCompute", "labelForGraph", "axisForGraph", "params"]
+    for name in listModel:
+      self.insertModel(data, name)
     return data
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -108,6 +100,11 @@ class DataDashboard:
 
   def _computeLocalDashboards(self, levelGeo:list) -> dict:
     listIdDb = self._computelistDashboardId(levelGeo, [])
+    tradeLevel, dbTrade = DataDashboard.__levelTrade, []
+    while len(tradeLevel) == 4:
+      dbTrade += tradeLevel[2]
+      tradeLevel = tradeLevel[3]
+    listIdDb = set(listIdDb + dbTrade)
     dictDb = {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all() if object.id in listIdDb}
     structureDashboard, dashboards = [], {}
     for id, db in dictDb.items():
@@ -116,6 +113,7 @@ class DataDashboard:
       dashboards[id] = list(db.values())
       listObjWidgetParam = [WidgetParams.objects.get(id = idWP) for idWP in dashboards[id][3]]
       dashboards[id][3] = {object.position:object.id for object in listObjWidgetParam}
+      dbTrade = set(dbTrade)
     return structureDashboard, dashboards
 
   def _computelistDashboardId(self, levelGeo, listId):
@@ -276,7 +274,7 @@ class DataDashboard:
 
   @classmethod
   def _formatPdv(cls):
-    listPdv = [model_to_dict(object) for object in Pdv.objects.all()]
+    listPdv = [cls.__pdvTransformDate(pdv) for pdv in Pdv.objects.all()]
     formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] + [cls.computeSalesDict().get(str(pdv['id']), [])] for pdv in listPdv}
     fields = list(listPdv[0].keys())[1:]
     indexes = []
@@ -287,6 +285,14 @@ class DataDashboard:
     dataPdv = {'fields' : fields, 'indexes': indexes}
     dataPdv.update(formatedPdvs)
     return formatedPdvs, dataPdv
+
+  @classmethod
+  def __pdvTransformDate(cls, pdv):
+    dictPdv = model_to_dict(pdv)
+    if isinstance(dictPdv["closedAt"], datetime.datetime):
+      dictPdv["closedAt"] = dictPdv["closedAt"].isoformat()
+    return dictPdv
+
 
   @classmethod
   def computeSalesDict(cls):
@@ -335,10 +341,6 @@ class DataDashboard:
     return dicedBykey
 
   @classmethod
-  def _computeWidget(cls):
-    return {object.id:object.name for object in Widget.objects.all()}
-
-  @classmethod
   def _computeWidgetParam(cls):
     return {object.id:cls.__readWidgetParam(object) for object in WidgetParams.objects.all()}
 
@@ -353,21 +355,6 @@ class DataDashboard:
     del widgetParam[cls.__WidgetParamIndexPosition]
     del widgetParam[0]
     return widgetParam
-
-  @classmethod
-  def _computeWidgetCompute(cls):
-    return {object.id:cls.__readWidgetCompute(object) for object in WidgetCompute.objects.all()}
-
-  @classmethod
-  def __readWidgetCompute(cls, object):
-    if not cls.__structureWidgetCompute:
-      cls.__structureWidgetCompute = list(model_to_dict(object).keys())
-      del cls.__structureWidgetCompute[0]
-    widgetCompute = list(model_to_dict(object).values())
-    del widgetCompute[0]
-    widgetCompute[3] = json.loads(widgetCompute[3])
-    widgetCompute[4] = json.loads(widgetCompute[4])
-    return widgetCompute
 
   @classmethod
   def _computeTarget(cls):
