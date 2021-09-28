@@ -2,23 +2,26 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 import json
+from django.db.models.fields import Field
 
 from django.forms.models import model_to_dict
 
 class CommonModel(models.Model):
+  """jsonFields tells which field are to be loaded, and direct fields tells which fields should contain the dict of the sub object."""
   jsonFields = []
+  direct = {}
 
   class Meta:
     abstract = True
 
   @classmethod
   def listFields(cls):
-    return [field.name for field in cls._meta.get_fields()][2:]
+    return [field.name for field in cls._meta.fields][1:]
 
   @classmethod
   def listIndexes(cls):
     listName = cls.listFields()
-    listNameF = [field.name for field in cls._meta.get_fields() if isinstance(field, models.ForeignKey) or isinstance(field, models.ManyToManyField)]
+    listNameF = [name for name in listName if isinstance(cls._meta.get_field(name), models.ForeignKey) or isinstance(cls._meta.get_field(name), models.ManyToManyField)]
     return [listName.index(name) for name in listNameF]
 
   @classmethod
@@ -30,15 +33,28 @@ class CommonModel(models.Model):
 
   @property
   def listValues(self):
-    listRow = list(model_to_dict(self).values())[1:]
+    listFields = self.listFields()
+    listRow = [getattr(self, field) for field in listFields]
     for index in self.listIndexes():
-      if isinstance(listRow[index], list):
-        listRow[index] = [instance.id for instance in listRow[index]]
+      if isinstance(self._meta.get_field(listFields[index]), models.ManyToManyField):
+        listRow[index] = [element.id for element in listRow[index].all()]
     if self.jsonFields:
       for jsonField in self.jsonFields:
         index = self.listFields().index(jsonField)
         listRow[index] = json.loads(listRow[index])
+    self.__loadDirectValue(listRow)
     return listRow
+
+  def __loadDirectValue(self, listRow):
+    if self.direct:
+      for key, value in self.direct.items():
+        if key == "father":
+          index = self.listFields().index(key)
+          listRow[index] = []
+          children = self.__class__.objects.filter(father=self)
+          for child in children:
+            listRow[index].append(child.listValues)
+          print(listRow)
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
@@ -242,16 +258,17 @@ class Ventes(models.Model):
 
 
 # Modèles pour la navigation
-class TreeNavigation(models.Model):
+class TreeNavigation(CommonModel):
+  direct = {"father":"children"}
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
   level = models.CharField(max_length=32, unique=True, blank=False, default=None)
   name = models.CharField(max_length=32, unique=False, blank=False, default=None)
   father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
 
 class Layout(CommonModel):
+  jsonFields = ["template"]
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
   template = models.CharField(max_length=2048, unique=False, blank=False, default=None)
-  jsonFields = ["template"]
 
 class Widget(CommonModel):
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
@@ -264,13 +281,23 @@ class WidgetParams(models.Model):
   widget = models.ForeignKey('Widget', on_delete=models.DO_NOTHING, blank=False, null=False, default=None)
   widgetCompute = models.ForeignKey("WidgetCompute", on_delete=models.DO_NOTHING, blank=False, default=None)
 
-class WidgetCompute(models.Model):
+  @classmethod
+  def listFields(cls): return ["title", "subTitle", "unity", "widget", "widgetCompute"]
+
+  @property
+  def listValues(self):
+    listOld = super().listValues
+
+
+class WidgetCompute(CommonModel):
+  jsonFields = ["groupAxis1", "groupAxis2"]
   axis1 = models.CharField("Axe 1", max_length=32, unique=False, blank=False, default=None)
   axis2 = models.CharField("Axe 2", max_length=32, unique=False, blank=False, default=None)
   indicator = models.CharField("Indicateur", max_length=32, unique=False, blank=False, default=None)
   groupAxis1 = models.CharField("Filtre Axe 1", max_length=4096, unique=False, blank=False, default=None)
   groupAxis2 = models.CharField("Filtre Axe 2", max_length=4096, unique=False, blank=False, default=None)
   percent = models.CharField("Pourcentage", max_length=32, unique=False, blank=False, default="no")
+
 
 class Dashboard(CommonModel):
   name = models.CharField(max_length=64, unique=True, blank=False, default=None)
@@ -303,7 +330,10 @@ class AxisForGraph(CommonModel):
     verbose_name = "Axes pour les graphiques"
 
   @classmethod
-  def listFields(csl): return ["name", "labels"]
+  def listFields(cls): return ["name", "labels"]
+
+  # @classmethod
+  # def listFields(cls): return ["name", "labels"]
   
   def __str__(self) ->str:
     return "AxisForGraph " + str(self.name)
@@ -341,11 +371,19 @@ class CiblageLevel(models.Model):
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
 # Information Params
-class ParamVisio(models.Model):
+class ParamVisio(CommonModel):
   field = models.CharField(max_length=64, unique=True, blank=False)
   prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
   fvalue = models.CharField(max_length=64, unique=False, blank=False)
   typeValue = models.CharField(max_length=64, unique=False, blank=False)
+
+  @classmethod
+  def listFields(cls):
+    return ["value"]
+
+  @classmethod
+  def listIndexes(cls):
+    return []
 
   @classmethod
   def dictValues(cls):
