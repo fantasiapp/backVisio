@@ -368,11 +368,9 @@ class ManageFromOldDatabase:
     return ("Users", False)
 
   def __computeListUser(self):
-    query = "SELECT `userPseudo`, `profile` FROM user;"
-    dictUser = {}
+    query = "SELECT `userPseudo`, `profile`, `userCriptedPassword` FROM user;"
     ManageFromOldDatabase.cursor.execute(query)
-    for line in ManageFromOldDatabase.cursor:
-      dictUser[line[0]] = line[1]
+    dictUser = {line[0]:[line[1], line[2]] for line in ManageFromOldDatabase.cursor}
 
     data, table, listUser = {"drv":{}, "actor":{}}, {"drv":{}, "actor":{}}, {}
     for field in data.keys():
@@ -386,19 +384,41 @@ class ManageFromOldDatabase:
           table[field][oldId] = newObject.id
       table[newField] = table[field]
     del table["actor"]
+
     dictEquiv = {"All":"root", "DRV":"drv", "Secteur":"agent", "Finition":"finition"}
-    for pseudo, profile in dictUser.items():
+    for pseudo, profilePassword in dictUser.items():
+      profile = profilePassword[0]
       listProfile = list(profile.split(":"))
       typeTable = dictEquiv[listProfile[0]]
       oldId = int(listProfile[2])
-      listData = [typeTable, table[typeTable][oldId] if typeTable in table and oldId in table[typeTable] else 0]
+      listData = [typeTable, table[typeTable][oldId] if typeTable in table and oldId in table[typeTable] else 0, profilePassword[1]]
       listUser[pseudo] = listData
     self.__addPassword(listUser)
     return listUser
 
   def __addPassword(self, listUser):
-    for user in listUser.values():
-      user.append("pwd")
+    dictUserPassword= {
+      "15061218431128704":"avisio",
+      "15077873162974986":"sevisio",
+      "159836747134726566":"idfvisio",
+      "14927206322893480":"idfvisio",
+      "00082159275353182":"sovisio",
+      "57510435180997040":"ovisio",
+      "125249184165909318":"ravisio",
+      "17071071491587506":"evisio",
+      "144638294155639156":"nevisio",
+      "116346511173146016":"natvisio", # mot de passe de Chapat
+    }
+    dictUserPb = {
+      "frsijmant":"sovisio",
+      "chaudesaigues":"nevisio",
+    }
+    for pseudo, user in listUser.items():
+      if pseudo in dictUserPb:
+        password = dictUserPb[pseudo]
+      else:
+        password = dictUserPassword[user[2]] if user[2] in dictUserPassword else "natvisio"
+      user[2] = password
 
 # Chargement de la table des ventes
   def getCiblage(self):

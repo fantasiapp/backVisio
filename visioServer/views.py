@@ -12,8 +12,10 @@ class DefaultView(APIView):
 class Data(DefaultView):
     def get(self, request):
         currentUser = request.user
+        print(request.user)
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
+        print([profile for profile in currentProfile])
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         else:
@@ -23,7 +25,6 @@ class Data(DefaultView):
             if action == "dashboard":
                 #request.META['SERVER_PORT'] == '8000' check if query is local
                 dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000') #
-                # print(dataDashBoard.dataQuery)
                 return Response(dataDashBoard.dataQuery)
             return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})

@@ -132,6 +132,8 @@ class DataDashboard:
         if drv[0] == self.__userGeoId:
           return drv
     hierarchy = self.__computeHierarchy()
+    print("_computeLocalGeoTree", hierarchy)
+    print("self.__userGeoId", self.__userGeoId)
     drvId = [couple[0] for couple in hierarchy if couple[1] == self.__userGeoId][0]
     for drv in DataDashboard.__geoTree[1]:
         if drv[0] == drvId:
