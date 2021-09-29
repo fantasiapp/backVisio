@@ -30,7 +30,14 @@ class CreateWidgetParam:
         "Marché P2CD Enseigne":["column:2:1", ""],
         "Marché Enduit Enseigne":["column:2:1", ""],
         "PdM P2CD Enseigne":["column:2:1", ""],
-        "PdM Enduit Enseigne":["column:2:1", ""]}
+        "PdM Enduit Enseigne":["column:2:1", ""],
+        "DN P2CD Enseigne":["column:2:1", ""],
+        "DN Enduit Enseigne":["column:2:1", ""],
+        "Points de Vente P2CD Enseigne":["mono", ""],
+        "Points de Vente Enduit Enseigne":["mono", ""],
+        "Synthèse P2CD Enseigne":["row:1:1:1", ""],
+        "Synthèse Enduit Enseigne":["row:1:1:1", ""]
+        }
     }
   dashboardsLevel = {"geo":{"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
     "DN P2CD Simulation", "DN Enduit Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
@@ -49,17 +56,17 @@ class CreateWidgetParam:
     "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"]
     },
     "trade":{
-      "rootTrade":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-      "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
+      "rootTrade":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD Enseigne", "DN Enduit Enseigne",
+      "Points de Vente P2CD Enseigne", "Points de Vente Enduit Enseigne", "Synthèse P2CD Enseigne", "Synthèse Enduit Enseigne"],
 
-      "enseigne":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-      "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
+      "enseigne":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD Enseigne", "DN Enduit Enseigne",
+      "Points de Vente P2CD Enseigne", "Points de Vente Enduit Enseigne", "Synthèse P2CD Enseigne", "Synthèse Enduit Enseigne"],
 
-      "ensemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-      "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"],
+      "ensemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD Enseigne", "DN Enduit Enseigne",
+      "Points de Vente P2CD Enseigne", "Points de Vente Enduit Enseigne", "Synthèse P2CD Enseigne", "Synthèse Enduit Enseigne"],
 
-      "sousEnsemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD", "DN Enduit",
-      "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit"]}
+      "sousEnsemble":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD Enseigne", "DN Enduit Enseigne",
+      "Points de Vente P2CD Enseigne", "Points de Vente Enduit Enseigne", "Synthèse P2CD Enseigne", "Synthèse Enduit Enseigne"]}
     }
   
 
@@ -212,13 +219,11 @@ class CreateWidgetParam:
         ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "no", "Volume", "", "a", "T", "histoColumnTarget"],
         ["enduitIndustrieTarget", "lg-1", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "cols", "Pdm", "", "b", "%", "histoColumn"],
         ["segmentDnEnduitTarget", "lg-1", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN", "", "c", "Pdv", "histoColumn"]
-      ], 
-      "Suivi AD":[
+      ], "Suivi AD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Evolution de l'AD", "nb de pdv par sem. et cumul en %", "b", "", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "", "", "c", "%", "histoColumn"]
-      ],
-      'Suivi des Visites':[
+      ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "", "gauge"],
         ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (vol)", "@sum", "c", "T"],
@@ -244,6 +249,26 @@ class CreateWidgetParam:
         ["enduitIndustrie", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Pdm Total", "", "a", "%"],
         ["enduitIndustrie", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Par segment", "", "b", "%", "histoColumn"],
         ["lt-1", "enduitIndustrie", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Par Enseigne", "", "c", "%", "histoRow"]
+      ],"DN P2CD Enseigne":[
+        ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, ["@other"], "no", "Par Segment", "Nombre de Pdv Client/Prospect", "a", "Pdv", "donut"],
+        ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "Par Client et Prospect", "", "b", "Pdv", "histoColumn"],
+        ["lt-1", "clientProspect", "dn", [], AxisForGraph.objects.get(name="clientProspect").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
+      ], "DN Enduit Enseigne":[
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "DN totale", "", "a", "Pdv", "donut"],
+        ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "Par segment", "", "b", "Pdv", "histoColumn"],
+        ["lt-1", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="dnFinition").id, "no", "Par Enseigne", "Tous Segments", "c", "Pdv", "histoRow"]
+      ],"Points de Vente P2CD Enseigne":[
+        ["pdvs", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
+      ], "Points de Vente Enduit Enseigne":[
+        ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
+      ], "Synthèse P2CD Enseigne":[
+        ["industrie", "drv", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "", "", "a", "km²", "histoColumn"],
+        ["industrie", "drv", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "", "", "b", "%", "histoColumn"],
+        ["clientProspect", "drv", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "", "", "c", "Pdv", "histoColumn"]
+      ], "Synthèse Enduit Enseigne":[
+        ["enduitIndustrie", "drv", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "no", "", "", "a", "T", "histoColumn"],
+        ["enduitIndustrie", "drv", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduit", "drv", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "", "", "c", "Pdv", "histoColumn"]
       ]
     }
     params = dictParam[name] if name in dictParam else dictParam['other']
