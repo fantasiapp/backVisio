@@ -90,6 +90,7 @@ class ParamVisio(CommonModel):
 
 class Drv(models.Model):
   name = models.CharField('drv', max_length=16, unique=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "DRV"
@@ -100,6 +101,7 @@ class Drv(models.Model):
 class Agent(models.Model):
   name = models.CharField('agent', max_length=64, unique=True)
   drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Secteur"
@@ -110,6 +112,7 @@ class Agent(models.Model):
 class AgentFinitions(models.Model):
   name = models.CharField('agent_finitions', max_length=64, unique=True)
   drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Agent Finitions"
@@ -119,6 +122,7 @@ class AgentFinitions(models.Model):
 
 class Dep(models.Model):
   name = models.CharField('dep', max_length=2, unique=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Département"
@@ -128,6 +132,7 @@ class Dep(models.Model):
 
 class Bassin(models.Model):
   name = models.CharField('bassin', max_length=64, unique=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Bassin"
@@ -146,6 +151,7 @@ class Ville(models.Model):
 
 class SegmentMarketing(models.Model):
   name = models.CharField('segment_marketing', max_length=32, unique=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Segment Marketing"
@@ -155,6 +161,7 @@ class SegmentMarketing(models.Model):
 
 class SegmentCommercial(models.Model):
   name = models.CharField('segment_commercial', max_length=16, unique=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Segment Commercial"
@@ -164,6 +171,7 @@ class SegmentCommercial(models.Model):
 
 class Enseigne(models.Model):
   name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Enseigne"
@@ -174,6 +182,7 @@ class Enseigne(models.Model):
 class Ensemble(models.Model):
   name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
   enseigne = models.ForeignKey('enseigne', on_delete=models.PROTECT, blank=False, default=7)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Ensemble"
@@ -183,6 +192,7 @@ class Ensemble(models.Model):
 
 class SousEnsemble(models.Model):
   name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Sous-Ensemble"
@@ -192,6 +202,7 @@ class SousEnsemble(models.Model):
 
 class Site(models.Model):
   name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Site"
@@ -221,18 +232,7 @@ class Pdv(CommonModel):
   redistributedEnduit = models.BooleanField("redistribué Enduit", default=True)
   pointFeu = models.BooleanField('Point Feu', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
-
-  # @classmethod
-  # def listFields(self): return super().listFields()
-
-  # @property
-  # def listValues(self): return super().listValues + [self.nbVisits]
-
-  # @property
-  # def nbVisits(self):
-  #   visits=Visit.objects.filter(pdv=self)
-  #   if visits: return sum([visit.nbVisitCurrentYear for visit in visits])
-  #   return 0 
+  currentYear = models.BooleanField("Année courante", default=True)
 
   def __str__(self) ->str: return self.name + " " + self.code
 
@@ -293,6 +293,7 @@ class Ventes(models.Model):
   industry = models.ForeignKey("Industrie", on_delete=models.PROTECT, blank=False, default=17)
   product = models.ForeignKey("Produit", on_delete=models.CASCADE, blank=False, default=6)
   volume = models.FloatField('Volume', unique=False, blank=True, default=0.0)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Ventes"
