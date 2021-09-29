@@ -140,7 +140,10 @@ class CreateWidgetParam:
 
         ["suiviAD","Terminées", "#4AA763"],
         ["suiviAD","Non renseignées", "#FFE200"],
-        ["suiviAD","Non mises à jour", "#D00000"]
+        ["suiviAD","Non mises à jour", "#D00000"],
+
+        ["histo&curve","histo", "#363565"],
+        ["histo&curve","curve", "#F06D0C"]
       ]
       for list in data:
         label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
@@ -221,14 +224,15 @@ class CreateWidgetParam:
         ["segmentDnEnduitTarget", "lg-1", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN", "", "c", "Pdv", "histoColumn"]
       ], "Suivi AD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Evolution de l'AD", "nb de pdv par sem. et cumul en %", "b", "", "histoCurve"],
+        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, ["@other"], "no", "Evolution de l'AD", "nb de pdv par sem. et cumul en %", "b", "", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
         ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "", "gauge"],
         ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (vol)", "@sum", "c", "T"],
         ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (nb)", "@sum", "d", "v"]
-      ],"Marché P2CD Enseigne":[
+      ],
+      "Marché P2CD Enseigne":[
         ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Vente en volume", "@sum"],
         ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
         ["lt-1", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume par enseigne", "Tous segments", "c", "km²", "histoRow"]
