@@ -14,7 +14,7 @@ load_dotenv()
 
 class ManageFromOldDatabase:
   fieldsPdv = []
-  listPdv = []
+  listPdv = None
   dictDrv = {}
   dictAgent = {}
   dictAgentFinitions = {}
@@ -97,57 +97,63 @@ class ManageFromOldDatabase:
 
   def getPdvOld(self):
     if not self.listPdv:
+      self.listPdv = {"lastYear":[], "currentYear":[]}
       try:
         query = "SHOW COLUMNS FROM ref_pdv_1"
         ManageFromOldDatabase.cursor.execute(query)
         self.fieldsPdv = [field[0] for field in ManageFromOldDatabase.cursor]
       except db.Error as e:
         return (False, "getPdvOld for fields " + repr(e))
-
-      try:
-        query = "SELECT * FROM ref_pdv_1 WHERE `Closed_by_OM` <> 'y'"
-        ManageFromOldDatabase.cursor.execute(query)
-        for line in ManageFromOldDatabase.cursor:
-          line = [self.unProtect(item) for item in line]
-          self.listPdv.append(line)
-      except db.Error as e:
-        return (False, "getPdvOld for values " + repr(e))
+      for number, name in {0:"lastYear", 1:"currentYear"}.items():
+        try:
+          query = f"SELECT * FROM ref_pdv_{number} WHERE `Closed_by_OM` <> 'y'"
+          ManageFromOldDatabase.cursor.execute(query)
+          for line in ManageFromOldDatabase.cursor:
+            line = [self.unProtect(item) for item in line]
+            self.listPdv[name].append(line)
+        except db.Error as e:
+          return (False, "getPdvOld for values " + repr(e))
     return (False, False)
 
   def getPdvNew(self):
-    for line in self.listPdv:
-      keyValues = {}
-      keyValues["drv"] = self.__findObject("id_drv", self.dictDrv, line, Drv)
-      keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, line, Agent)
-      keyValues["dep"] = self.__findObject("id_dep", self.dictDep, line, Dep)
-      keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, line, Bassin)
-      keyValues["ville"] = self.__findObject("id_ville", self.dictVille, line, Ville)
-      ensemble = Ensemble.objects.filter(name__iexact=line[self.fieldsPdv.index("ensemble")]).first()
-      keyValues["enseigne"] = ensemble.enseigne
-      keyValues["ensemble"] = ensemble
-      keyValues["sousEnsemble"] = SousEnsemble.objects.filter(name__iexact=line[self.fieldsPdv.index("sous-ensemble")]).first()
-      keyValues["site"] = Site.objects.filter(name__iexact=line[self.fieldsPdv.index("site")]).first()
-      keyValues["segmentCommercial"] = self.__findObject("id_segCo", self.dictSegco, line, SegmentCommercial)
-      keyValues["segmentMarketing"] = self.__findObject("id_segment", self.dictSegment, line, SegmentMarketing)
-      keyValues["code"] = line[self.fieldsPdv.index("PDV code")] if line[self.fieldsPdv.index("PDV code")] else None
-      keyValues["name"] = line[self.fieldsPdv.index("PDV")] if line[self.fieldsPdv.index("PDV")] else None
-      keyValues["latitude"] = line[self.fieldsPdv.index("latitude")] if line[self.fieldsPdv.index("PDV code")] else None
-      keyValues["longitude"] = line[self.fieldsPdv.index("longitude")] if line[self.fieldsPdv.index("PDV")] else None
-      keyValues["available"] = self.__computeBoolean(line, field="does_not_exist", valueIfNotExist="y")
-      keyValues["sale"] = self.__computeBoolean(line, field="sale", valueIfNotExist="y")
-      keyValues["redistributed"] = self.__computeBoolean(line, field="redistributed", valueIfNotExist="y")
-      keyValues["redistributedEnduit"] = self.__computeBoolean(line, field="redistributedEnduit", valueIfNotExist="y")
-      keyValues["pointFeu"] = self.__computeBoolean(line, field="pointFeu", valueIfNotExist="O", inverse=True)
-      keyValues["closedAt"] = self.__computeClosedAt(line)
+    listYear = ["lastYear", "currentYear"]
+    for indexYear in range(2):
+      year = listYear[indexYear]
+      for line in self.listPdv[year]:
+        keyValues = {}
+        keyValues["drv"] = self.__findObject("id_drv", self.dictDrv, year, line, Drv)
+        keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, year, line, Agent)
+        keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
+        keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
+        keyValues["ville"] = self.__findObject("id_ville", self.dictVille, year, line, Ville)
+        ensemble = Ensemble.objects.filter(name__iexact=line[self.fieldsPdv.index("ensemble")], currentYear=indexYear==1).first()
+        keyValues["enseigne"] = ensemble.enseigne
+        keyValues["ensemble"] = ensemble
+        keyValues["sousEnsemble"] = SousEnsemble.objects.filter(name__iexact=line[self.fieldsPdv.index("sous-ensemble")], currentYear=indexYear==1).first()
+        keyValues["site"] = Site.objects.filter(name__iexact=line[self.fieldsPdv.index("site")], currentYear=indexYear==1).first()
+        keyValues["segmentCommercial"] = self.__findObject("id_segCo", self.dictSegco, year, line, SegmentCommercial)
+        keyValues["segmentMarketing"] = self.__findObject("id_segment", self.dictSegment, year, line, SegmentMarketing)
+        keyValues["code"] = line[self.fieldsPdv.index("PDV code")] if line[self.fieldsPdv.index("PDV code")] else None
+        keyValues["name"] = line[self.fieldsPdv.index("PDV")] if line[self.fieldsPdv.index("PDV")] else None
+        keyValues["latitude"] = line[self.fieldsPdv.index("latitude")] if line[self.fieldsPdv.index("PDV code")] else None
+        keyValues["longitude"] = line[self.fieldsPdv.index("longitude")] if line[self.fieldsPdv.index("PDV")] else None
+        keyValues["available"] = self.__computeBoolean(line, field="does_not_exist", valueIfNotExist="y")
+        keyValues["sale"] = self.__computeBoolean(line, field="sale", valueIfNotExist="y")
+        keyValues["redistributed"] = self.__computeBoolean(line, field="redistributed", valueIfNotExist="y")
+        keyValues["redistributedEnduit"] = self.__computeBoolean(line, field="redistributedEnduit", valueIfNotExist="y")
+        keyValues["pointFeu"] = self.__computeBoolean(line, field="pointFeu", valueIfNotExist="O", inverse=True)
+        keyValues["closedAt"] = self.__computeClosedAt(line)
+        keyValues["currentYear"] = indexYear==1
 
-      for field, object in keyValues.items():
-        if object == None and field != "closedAt":
-          return [False, "field {}, Pdv {}, code {} does not exists".format(field, keyValues["name"], keyValues["code"])]
-      existsPdv = Pdv.objects.filter(code=keyValues["code"])
-      if not existsPdv.exists():
-        Pdv.objects.create(**keyValues)
-      else:
-        return (False, "Pdv {}, code {} already exists".format(keyValues["name"], keyValues["code"]))
+
+        for field, object in keyValues.items():
+          if object == None and field != "closedAt":
+            return [False, "field {}, Pdv {}, code {} does not exists".format(field, keyValues["name"], keyValues["code"])]
+        existsPdv = Pdv.objects.filter(code=keyValues["code"], currentYear=indexYear==1)
+        if not existsPdv.exists():
+          Pdv.objects.create(**keyValues)
+        else:
+          return (False, "Pdv {}, code {} allready exists".format(keyValues["name"], keyValues["code"]))
     return ("Pdv", False)
 
   def __computeBoolean(self, line:list, field:str, valueIfNotExist:str, inverse:bool=False) -> bool:
@@ -160,80 +166,91 @@ class ManageFromOldDatabase:
       return datetime.fromtimestamp(timestamp, tz=tz.gettz("Europe/Paris"))
     return None
 
-  def __findObject(self, fieldName, dico, line, model):
+  def __findObject(self, fieldName, dico, year, line, model):
     indexObject =  self.fieldsPdv.index(fieldName)
     idObject = line[indexObject]
-    nameObject =dico[idObject] if idObject in dico else dico[1]
+    if year in dico:
+      nameObject = dico[year][idObject] if idObject in dico[year] else dico[year][1]
+    else:
+      nameObject = dico[idObject] if idObject in dico else dico[1]
     objectFound = model.objects.filter(name=nameObject)
     return objectFound.first() if objectFound.exists() else None
 
   def getAgent(self):
+    listYear = ["lastYear", "currentYear"]
     try:
-      query = "SELECT id, name FROM ref_actor_1"
-      ManageFromOldDatabase.cursor.execute(query)
-      drvCorrespondance = self.__getDrvCorrespondance()
-      for (id, name) in ManageFromOldDatabase.cursor:
-        existAgent = Agent.objects.filter(name__iexact=name)
-        if not existAgent.exists():
-          idDrv = drvCorrespondance[id]
-          nameDrv = self.dictDrv[idDrv]
-          drv = Drv.objects.filter(name=nameDrv)
-          if drv.exists():
-            Agent.objects.create(name=name, drv=drv.first())
-          else:
-            return (False, "Agent {} has no drv".format(name))
-        self.dictAgent[id] = name
+      for indexYear in range(2):
+        query = f"SELECT id, name FROM ref_actor_{indexYear}"
+        ManageFromOldDatabase.cursor.execute(query)
+        drvCorrespondance = self.__getDrvCorrespondance(listYear[indexYear])
+        for (id, name) in ManageFromOldDatabase.cursor:
+          existAgent = Agent.objects.filter(name__iexact=name, currentYear=indexYear == 1)
+          if not existAgent.exists():
+            idDrv = drvCorrespondance[id]
+            nameDrv = self.dictDrv[listYear[indexYear]][idDrv]
+            drv = Drv.objects.filter(name=nameDrv, currentYear=indexYear == 1)
+            if drv.exists():
+              Agent.objects.create(name=name, drv=drv.first(), currentYear=indexYear == 1)
+            else:
+              return (False, "Agent {} has no drv".format(name))
+          if not listYear[indexYear] in self.dictAgent:
+            self.dictAgent[listYear[indexYear]] = {}
+          self.dictAgent[listYear[indexYear]][id] = name
     except db.Error as e:
       return "Error getAgent" + repr(e)
     return ("Agent", False)
 
-  def getAgentFinitions(self):
-    try:
-      query = "SELECT id, name, id_drv FROM ref_finition_1"
-      ManageFromOldDatabase.cursor.execute(query)
-      for (id, name, id_drv) in ManageFromOldDatabase.cursor:
-        existsAgent = AgentFinitions.objects.filter(name__iexact=name)
-        if not existsAgent.exists():
-          nameDrv = self.dictDrv[id_drv]
-          drv = Drv.objects.filter(name=nameDrv)
-          if drv.exists():
-            Agent.objects.create(name=name, drv=drv.first())
-          else:
-            return (False, "AgentFinitions {} has no drv".format(name))
-        self.dictAgentFinitions[id] = name
-    except db.Error as e:
-      return "Error getAgentFinitions" + repr(e)
-    return ("AgentFinitions", False)
-
-  def __getDrvCorrespondance(self):
+  def __getDrvCorrespondance(self, year):
     IndexAgent = self.fieldsPdv.index("id_actor")
     IndexDrv =  self.fieldsPdv.index("id_drv")
     drvCorrespondance = {}
-    for line in self.listPdv:
+    for line in self.listPdv[year]:
       idAgent = line[IndexAgent]
       if not idAgent in drvCorrespondance:
         drvCorrespondance[idAgent] = line[IndexDrv]
     return drvCorrespondance
 
+  def getAgentFinitions(self):
+    listYear = ["lastYear", "currentYear"]
+    try:
+      for indexYear in range(2):
+        query = "SELECT id, name, id_drv FROM ref_finition_1"
+        ManageFromOldDatabase.cursor.execute(query)
+        for (id, name, id_drv) in ManageFromOldDatabase.cursor:
+          existsAgent = AgentFinitions.objects.filter(name__iexact=name, currentYear=indexYear==1)
+          if not existsAgent.exists():
+            nameDrv = self.dictDrv[listYear[indexYear]][id_drv]
+            drv = Drv.objects.filter(name=nameDrv, currentYear=indexYear==1)
+            if drv.exists():
+              AgentFinitions.objects.create(name=name, drv=drv.first(), currentYear=indexYear==1)
+            else:
+              return (False, "AgentFinitions {} has no drv".format(name))
+          self.dictAgentFinitions[id] = name
+    except db.Error as e:
+      return "Error getAgentFinitions" + repr(e)
+    return ("AgentFinitions", False)
+
   def getEnsemble(self):
+    listYear = ["lastYear", "currentYear"]
     IndexEnsemble = self.fieldsPdv.index("ensemble")
     IndexEnseigne = self.fieldsPdv.index("id_holding")
-    dicoEnsemble, dicoEnseigne = {}, {}
-    for line in self.listPdv:
-      nameEnsemble = line[IndexEnsemble]
-      idEnseigneOld = self.__cleanEnseigne(line[IndexEnseigne], nameEnsemble)
-      nameEnseigne = self.dictHolding[idEnseigneOld]
-      if not nameEnseigne in dicoEnsemble:
-        dicoEnsemble[nameEnseigne] = []
-      if not nameEnsemble in dicoEnsemble[nameEnseigne]:
-        dicoEnsemble[nameEnseigne].append(nameEnsemble)
-        if not nameEnseigne in dicoEnseigne:
-          existsObject = Enseigne.objects.filter(name__iexact=nameEnseigne)
-          if existsObject.exists:
-            dicoEnseigne[nameEnseigne] = existsObject.first()
-          else:
-            return (False, "Error getEnsemble : Enseigne {} does not exist".format(nameEnseigne))
-        Ensemble.objects.create(name=nameEnsemble, enseigne=dicoEnseigne[nameEnseigne])
+    for indexYear in range(2):
+      dicoEnsemble, dicoEnseigne = {}, {}
+      for line in self.listPdv[listYear[indexYear]]:
+        nameEnsemble = line[IndexEnsemble]
+        idEnseigneOld = self.__cleanEnseigne(line[IndexEnseigne], nameEnsemble)
+        nameEnseigne = self.dictHolding[listYear[indexYear]][idEnseigneOld]
+        if not nameEnseigne in dicoEnsemble:
+          dicoEnsemble[nameEnseigne] = []
+        if not nameEnsemble in dicoEnsemble[nameEnseigne]:
+          dicoEnsemble[nameEnseigne].append(nameEnsemble)
+          if not nameEnseigne in dicoEnseigne:
+            existsObject = Enseigne.objects.filter(name__iexact=nameEnseigne, currentYear=indexYear==1)
+            if existsObject.exists:
+              dicoEnseigne[nameEnseigne] = existsObject.first()
+            else:
+              return (False, "Error getEnsemble : Enseigne {} does not exist".format(nameEnseigne))
+          Ensemble.objects.create(name=nameEnsemble, enseigne=dicoEnseigne[nameEnseigne], currentYear=indexYear==1)
     return ("Ensemble", False)
 
   def __cleanEnseigne(self, idEnseigne:int, nameEnsemble:str) ->str:
@@ -256,27 +273,39 @@ class ManageFromOldDatabase:
     return idEnseigne
 
   def getObjectFromPdv(self, field, classObject):
-    IndexField = self.fieldsPdv.index(field)
-    dico = ['Not assigned']
-    classObject.objects.create(name='Not assigned')
-    for line in self.listPdv:
-      nameField = line[IndexField]
-      if not nameField in dico:
-        dico.append(nameField)
-        classObject.objects.create(name=nameField)
+    listYear = ["lastYear", "currentYear"]
+    dico = [[], []]
+    for indexYear in range(2):
+      IndexField = self.fieldsPdv.index(field)
+      dico[indexYear] = ['Not assigned']
+      classObject.objects.create(name='Not assigned', currentYear=indexYear==1)
+      for line in self.listPdv[listYear[indexYear]]:
+        nameField = line[IndexField]
+        if not nameField in dico[indexYear]:
+          dico[indexYear].append(nameField)
+          classObject.objects.create(name=nameField, currentYear=indexYear==1)
     return (classObject.__name__, False)
 
   def getObject(self, type:str):
+    listYear = ["lastYear", "currentYear"]
     try:
-      query = f"SELECT id, name FROM ref_{type}_1"
-      ManageFromOldDatabase.cursor.execute(query)
-      for (id, name) in ManageFromOldDatabase.cursor:
-        name = self.unProtect(name)
-        existobject = self.typeObject[type].objects.filter(name__iexact=name)
-        if not existobject.exists():
-          self.typeObject[type].objects.create(name=name)
-        dict = getattr(self, "dict" + type.capitalize())
-        dict[id] = name
+      for indexYear in range(2):
+        query = f"SELECT id, name FROM ref_{type}_{indexYear}"
+        ManageFromOldDatabase.cursor.execute(query)
+        for (id, name) in ManageFromOldDatabase.cursor:
+          name, currentYear = self.unProtect(name), listYear[indexYear] == "currentYear"
+          kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[type], "currentYear", False) else {"name__iexact":name}
+          existobject = self.typeObject[type].objects.filter(**kwargs)
+          if not existobject.exists():
+            kwargs = {"name":name, "currentYear":currentYear} if getattr(self.typeObject[type], "currentYear", False) else {"name":name}
+            self.typeObject[type].objects.create(**kwargs)
+          dict = getattr(self, "dict" + type.capitalize())
+          if type in ["ville", "product", "industry"] and not id in dict:
+            dict[id] = name
+          else:
+            if not listYear[indexYear] in dict:
+              dict[listYear[indexYear]] = {}
+            dict[listYear[indexYear]][id] = name
     except db.Error as e:
       return (False, f"Error getObject {type} {repr(e)}")
     return (type, False)
@@ -289,6 +318,7 @@ class ManageFromOldDatabase:
       for level, name in self.createNavigationLevelName(geoOrTrade):
         object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
       dashboardsLevel = self.createDashboards(geoOrTrade)
+      print("dashboardsLevel", geoOrTrade, dashboardsLevel)
       for level, listDashBoard in dashboardsLevel.items():
         levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
         if levelObject.exists():
@@ -324,24 +354,28 @@ class ManageFromOldDatabase:
 
 # Chargement de la table des ventes
   def getVentes(self):
-    dictPdv = {line[0]:line for line in self.listPdv}
+    listYear = ["lastYear", "currentYear"]
     indexCode = self.fieldsPdv.index("PDV code")
     try:
-      query = "SELECT timestamp, id_pdv, id_industry, id_product, volume FROM data_ad_1"
-      ManageFromOldDatabase.cursor.execute(query)
-      for line in ManageFromOldDatabase.cursor:
-          if line[4] != 0.0 and line[1] in dictPdv:
-            idOld = line[1]
-            code = dictPdv[idOld][indexCode]
-            pdv = Pdv.objects.filter(code=code).first()
-            industry = self.dictIndustry[line[2]]
-            industry = Industrie.objects.filter(name=industry).first()
-            product = self.dictProduct[line[3]]
-            product = Produit.objects.filter(name=product).first()
-            dateEvent = None
-            if line[0]:
-              dateEvent = datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris"))
-            Ventes.objects.create(date=dateEvent, pdv=pdv, industry=industry, product=product, volume=float(line[4]))
+      for indexYear in range(2):
+        year = listYear[indexYear]
+        dictPdv = {line[0]:line for line in self.listPdv[year]}
+        query = f"SELECT timestamp, id_pdv, id_industry, id_product, volume FROM data_ad_{indexYear}"
+        ManageFromOldDatabase.cursor.execute(query)
+        for line in ManageFromOldDatabase.cursor:
+            if line[4] != 0.0 and line[1] in dictPdv:
+              idOld = line[1]
+              code = dictPdv[idOld][indexCode]
+              pdv = Pdv.objects.filter(code=code, currentYear=indexYear==1).first()
+              industry = self.dictIndustry[line[2]]
+              industry = Industrie.objects.filter(name=industry).first()
+              product = self.dictProduct[line[3]]
+              product = Produit.objects.filter(name=product).first()
+              dateEvent = None
+              cy = indexYear == 1
+              if line[0]:
+                dateEvent = datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris"))
+              Ventes.objects.create(date=dateEvent, pdv=pdv, industry=industry, product=product, volume=float(line[4]), currentYear=cy)
 
     except db.Error as e:
       return (False, f"Error getVentes {type} {repr(e)}")
@@ -407,7 +441,7 @@ class ManageFromOldDatabase:
       "125249184165909318":"ravisio",
       "17071071491587506":"evisio",
       "144638294155639156":"nevisio",
-      "116346511173146016":"natvisio", # mot de passe de Chapat
+      "116346511173146016":"avignon", # mot de passe de Chapat
     }
     dictUserPb = {
       "frsijmant":"sovisio",
@@ -422,7 +456,7 @@ class ManageFromOldDatabase:
 
 # Chargement de la table des ventes
   def getCiblage(self):
-    dictPdv = {line[0]:line for line in self.listPdv}
+    dictPdv = {line[0]:line for line in self.listPdv["currentYear"]}
     indexCode = self.fieldsPdv.index("PDV code")
     try:
       query = "SELECT timestamp, id_pdv, depot, sale, targetVolume, targetFinition, greenLight, commentTarget FROM ciblage;"
@@ -433,7 +467,7 @@ class ManageFromOldDatabase:
           kwargs = {}
           kwargs['date'] = datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris")) if line[0] else None
           code = dictPdv[idOld][indexCode]
-          kwargs['pdv'] = Pdv.objects.filter(code=code).first()
+          kwargs['pdv'] = Pdv.objects.filter(code=code, currentYear=True).first()
           kwargs['redistributed'] = line[2] == "does not exist"
           kwargs['sale'] = line[3] == "does not exist"
           kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
@@ -449,7 +483,7 @@ class ManageFromOldDatabase:
   def getCiblageLevel(self):
     volP2CD, dnP2CD, volFinition, dnFinition = 1000.0, 50, 150, 30
     dictAgent, now = {}, timezone.now()
-    for agent in Agent.objects.all():
+    for agent in Agent.objects.filter(currentYear=True):
       drv = agent.drv
       if not drv in dictAgent:
         dictAgent[drv] = [agent]

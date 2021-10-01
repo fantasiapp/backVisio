@@ -10,13 +10,14 @@ class CommonModel(models.Model):
   """jsonFields tells which field are to be loaded, and direct fields tells which fields should contain the dict of the sub object."""
   jsonFields = []
   direct = {}
+  currentYear = True
 
   class Meta:
     abstract = True
 
   @classmethod
   def listFields(cls):
-    return [field.name for field in cls._meta.fields][1:]
+    return [field.name for field in cls._meta.fields if field.name != "currentYear"][1:]
 
   @classmethod
   def listIndexes(cls):
@@ -26,6 +27,8 @@ class CommonModel(models.Model):
 
   @classmethod
   def dictValues(cls):
+    if getattr(cls, "currentField", False):
+      return {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
     return {instance.id:instance.listValues for instance in cls.objects.all()}
 
   def __init__(self, *args, **kwargs):
@@ -47,7 +50,7 @@ class CommonModel(models.Model):
 
   def __loadDirectValue(self, listRow):
     if self.direct:
-      for key, value in self.direct.items():
+      for key in self.direct.keys():
         if key == "father":
           index = self.listFields().index(key)
           listRow[index] = []
@@ -89,7 +92,7 @@ class ParamVisio(CommonModel):
     return self.fvalue
 
 class Drv(models.Model):
-  name = models.CharField('drv', max_length=16, unique=True)
+  name = models.CharField('drv', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -99,7 +102,7 @@ class Drv(models.Model):
     return self.name
 
 class Agent(models.Model):
-  name = models.CharField('agent', max_length=64, unique=True)
+  name = models.CharField('agent', max_length=64, unique=False)
   drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -110,7 +113,7 @@ class Agent(models.Model):
     return self.name
 
 class AgentFinitions(models.Model):
-  name = models.CharField('agent_finitions', max_length=64, unique=True)
+  name = models.CharField('agent_finitions', max_length=64, unique=False)
   drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -121,7 +124,7 @@ class AgentFinitions(models.Model):
     return self.name
 
 class Dep(models.Model):
-  name = models.CharField('dep', max_length=2, unique=True)
+  name = models.CharField('dep', max_length=2, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -131,7 +134,7 @@ class Dep(models.Model):
     return self.name
 
 class Bassin(models.Model):
-  name = models.CharField('bassin', max_length=64, unique=True)
+  name = models.CharField('bassin', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -150,7 +153,7 @@ class Ville(models.Model):
     return self.name
 
 class SegmentMarketing(models.Model):
-  name = models.CharField('segment_marketing', max_length=32, unique=True)
+  name = models.CharField('segment_marketing', max_length=32, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -160,7 +163,7 @@ class SegmentMarketing(models.Model):
     return self.name
 
 class SegmentCommercial(models.Model):
-  name = models.CharField('segment_commercial', max_length=16, unique=True)
+  name = models.CharField('segment_commercial', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -170,7 +173,7 @@ class SegmentCommercial(models.Model):
     return self.name
 
 class Enseigne(models.Model):
-  name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -180,7 +183,7 @@ class Enseigne(models.Model):
     return self.name
 
 class Ensemble(models.Model):
-  name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   enseigne = models.ForeignKey('enseigne', on_delete=models.PROTECT, blank=False, default=7)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -191,7 +194,7 @@ class Ensemble(models.Model):
     return self.name
 
 class SousEnsemble(models.Model):
-  name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -201,7 +204,7 @@ class SousEnsemble(models.Model):
     return self.name
 
 class Site(models.Model):
-  name = models.CharField('name', max_length=64, unique=True, blank=False, default="Inconnu")
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:

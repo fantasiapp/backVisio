@@ -29,7 +29,6 @@ class DataDashboard:
     self.__userGroup = userGroup
     DataDashboard.isNotOnServer = isNotOnServer
     if not DataDashboard.__levelGeo:
-      test = TreeNavigation.objects.get(level="root")
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
@@ -99,6 +98,7 @@ class DataDashboard:
     return self._computeLocalLevels(originLevel[3], selectedLevel)
 
   def _computeLocalDashboards(self, levelGeo:list) -> dict:
+    print("_computeLocalDashboards", levelGeo)
     listIdDb = self._computelistDashboardId(levelGeo)
     dictDb = {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all() if object.id in listIdDb}
     structureDashboard, dashboards = [], {}
@@ -113,9 +113,11 @@ class DataDashboard:
   def _computelistDashboardId(self, levelGeo):
     listId = []
     for level in [levelGeo, self.__levelTrade]:
+      print("_computelistDashboardId", self.__levelTrade)
       while len(level) == 4:
         listId += level[2]
         level = level[3]
+    print("_computelistDashboardId", levelGeo, set(listId))
     return set(listId)
 
   def __computeDashboard(self, object):
@@ -132,8 +134,6 @@ class DataDashboard:
         if drv[0] == self.__userGeoId:
           return drv
     hierarchy = self.__computeHierarchy()
-    print("_computeLocalGeoTree", hierarchy)
-    print("self.__userGeoId", self.__userGeoId)
     drvId = [couple[0] for couple in hierarchy if couple[1] == self.__userGeoId][0]
     for drv in DataDashboard.__geoTree[1]:
         if drv[0] == drvId:
@@ -167,6 +167,8 @@ class DataDashboard:
   def _computeLocalTarget(self, pdvs):
     indexPdv = DataDashboard.__structureTarget.index("pdv")
     pdvId = list(pdvs.keys())
+    print("pdvId", pdvId)
+    print("target pdv keys", [item[indexPdv] for item in DataDashboard.__target.values()])
     return {key:value for key, value in DataDashboard.__target.items() if value[indexPdv] in pdvId}
 
   def _createModelsForGeo(self, data):
@@ -197,7 +199,10 @@ class DataDashboard:
     regularModels = [eval(modelName) for modelName in models]
     for model in regularModels:
         key = camel(model.__name__)
-        data.update({key: {object.id:object.name for object in model.objects.all()}})
+        if getattr(model, "currentYear", False):
+          data.update({key: {object.id:object.name for object in model.objects.filter(currentYear=True)}})
+        else:
+          data.update({key: {object.id:object.name for object in model.objects.all()}})
 
   def _createModelVille(self, data):
     idVille = data['structurePdv'].index("ville")
@@ -270,7 +275,7 @@ class DataDashboard:
 
   @classmethod
   def _formatPdv(cls):
-    listPdv = [cls.__pdvTransform(pdv) for pdv in Pdv.objects.all()]
+    listPdv = [cls.__pdvTransform(pdv) for pdv in Pdv.objects.filter(currentYear=True)]
     formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] + [cls.computeSalesDict().get(str(pdv['id']), [])] for pdv in listPdv}
     fields = list(listPdv[0].keys())[1:]
     indexes = []
