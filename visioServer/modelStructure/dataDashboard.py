@@ -23,7 +23,9 @@ class DataDashboard:
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
       Ventes.cacheSalesDict, Ventes.isNotOnServer = os.getenv('SALES_DICT'), isNotOnServer
+      print("start Sales")
       Ventes.createSalesDict()
+      print("end Sales")
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__pdv = Pdv.dictValues()

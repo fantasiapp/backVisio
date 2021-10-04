@@ -12,7 +12,6 @@ class CommonModel(models.Model):
   """jsonFields tells which field are to be loaded, and direct fields tells which fields should contain the dict of the sub object."""
   jsonFields = []
   direct = {}
-  currentYear = True
 
   class Meta:
     abstract = True
@@ -29,8 +28,9 @@ class CommonModel(models.Model):
 
   @classmethod
   def dictValues(cls):
-    if getattr(cls, "currentField", False):
-      return {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
+    if getattr(cls, "currentYear", False):
+      result = {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
+      return result
     return {instance.id:instance.listValues for instance in cls.objects.all()}
 
   def __init__(self, *args, **kwargs):
