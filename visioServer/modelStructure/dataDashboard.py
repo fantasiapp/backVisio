@@ -31,12 +31,13 @@ class DataDashboard:
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
+      DataDashboard.__target = DataDashboard._computeTarget()
       DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
-      DataDashboard.__target = self._computeTarget()
+
       dictModel = {
         "layout":Layout, "widget":Widget, "widgetCompute":WidgetCompute, "params":ParamVisio,
         "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph}
@@ -79,13 +80,14 @@ class DataDashboard:
       "geoTree":geoTree,
       "tradeTree":DataDashboard.__tradeTree,
       "structurePdv":DataDashboard.__dataPdvs["fields"],
+      "structureTarget":DataDashboard.__structureTarget,
       "indexesPdv":DataDashboard.__dataPdvs["indexes"],
       "pdvs": pdvs,
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)
-    data["structureTarget"] = DataDashboard.__structureTarget
-    data["target"] = self._computeLocalTarget(pdvs)
+    
+    # data["target"] = self._computeLocalTarget(pdvs)
     self. _computeLocalTargetLevel(data)
     listModel = ["layout", "widget", "widgetCompute", "labelForGraph", "axisForGraph", "params"]
     for name in listModel:
@@ -98,7 +100,6 @@ class DataDashboard:
     return self._computeLocalLevels(originLevel[3], selectedLevel)
 
   def _computeLocalDashboards(self, levelGeo:list) -> dict:
-    print("_computeLocalDashboards", levelGeo)
     listIdDb = self._computelistDashboardId(levelGeo)
     dictDb = {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all() if object.id in listIdDb}
     structureDashboard, dashboards = [], {}
@@ -113,15 +114,14 @@ class DataDashboard:
   def _computelistDashboardId(self, levelGeo):
     listId = []
     for level in [levelGeo, self.__levelTrade]:
-      print("_computelistDashboardId", self.__levelTrade)
       while len(level) == 4:
         listId += level[2]
         level = level[3]
-    print("_computelistDashboardId", levelGeo, set(listId))
     return set(listId)
 
   def __computeDashboard(self, object):
     dictDb = model_to_dict(object)
+    dictDb["comment"] = json.loads(dictDb["comment"])
     dictDb["widgetParams"] = [widgetParams.id for widgetParams in dictDb["widgetParams"]]
     del dictDb["id"]
     return dictDb
@@ -164,12 +164,10 @@ class DataDashboard:
       listId.append(geoTree)
     return listId
 
-  def _computeLocalTarget(self, pdvs):
-    indexPdv = DataDashboard.__structureTarget.index("pdv")
-    pdvId = list(pdvs.keys())
-    print("pdvId", pdvId)
-    print("target pdv keys", [item[indexPdv] for item in DataDashboard.__target.values()])
-    return {key:value for key, value in DataDashboard.__target.items() if value[indexPdv] in pdvId}
+  # def _computeLocalTarget(self, pdvs):
+  #   indexPdv = DataDashboard.__structureTarget.index("pdv")
+  #   pdvId = list(pdvs.keys())
+  #   return {key:value for key, value in DataDashboard.__target.items() if value[indexPdv] in pdvId}
 
   def _createModelsForGeo(self, data):
     models = json.loads(os.getenv('GEO_MODELS'))
@@ -246,9 +244,9 @@ class DataDashboard:
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
     elif self.__userGroup == "drv":
-      listAgentId = [agent.id for agent in Agent.objects.all() if agent.drv.id == self.__userGeoId]
+      listAgentId = [agent.id for agent in Agent.objects.filter(currentYear=True) if agent.drv.id == self.__userGeoId]
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
-      data["targetLevelDrv"] = {id:level for id, level in self.__targetLevelDrv.items() if level[0] == self.__userGeoId}
+      data["targetLevelDrv"] = {id:level for id, level in self.__targetLevelDrv.items() if id == self.__userGeoId}
       data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
@@ -292,10 +290,23 @@ class DataDashboard:
     nbVisits = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=pdv)])
     dictPdv = model_to_dict(pdv)
     dictPdv["nbVisits"] = nbVisits
+    dictPdv["target"] = DataDashboard.__target[pdv.id] if pdv.id in DataDashboard.__target and pdv.currentYear else None
     if isinstance(dictPdv["closedAt"], datetime.datetime):
       dictPdv["closedAt"] = dictPdv["closedAt"].isoformat()
     return dictPdv
 
+  @classmethod
+  def _computeTarget(cls):
+    return {object.pdv.id:cls.__readTarget(object) for object in Ciblage.objects.all()}
+
+  @classmethod
+  def __readTarget(cls, object):
+    if not cls.__structureTarget:
+      cls.__structureTarget = list(model_to_dict(object).keys())
+      del cls.__structureTarget[0]
+    target = list(model_to_dict(object).values())
+    del target[0]
+    return target
 
   @classmethod
   def computeSalesDict(cls):
@@ -355,38 +366,26 @@ class DataDashboard:
       del cls.__structureWidgetParam[cls.__WidgetParamIndexPosition]
       del cls.__structureWidgetParam[0]
     widgetParam = list(model_to_dict(object).values())
+    widgetParam[2] = json.loads(widgetParam[2])
     del widgetParam[cls.__WidgetParamIndexPosition]
     del widgetParam[0]
     return widgetParam
-
-  @classmethod
-  def _computeTarget(cls):
-    return {object.id:cls.__readTarget(object) for object in Ciblage.objects.all()}
-
-  @classmethod
-  def __readTarget(cls, object):
-    if not cls.__structureTarget:
-      cls.__structureTarget = list(model_to_dict(object).keys())
-      del cls.__structureTarget[0]
-    target = list(model_to_dict(object).values())
-    del target[0]
-    return target
 
   @classmethod
   def _computeTargetLevel(cls):
     cls.__targetLevelDrv, cls.__targetLevelAgentP2CD, cls.__targetLevelAgentFinition = {}, {}, {}
     for tlObject in CiblageLevel.objects.all():
       if not cls.__structureTargetLevelDrv:
-        cls.__structureTargetLevelDrv = ["drv", "volP2CD", "dnP2CD", "volFinition", "dnFinition"]
-        cls.__structureTargetLevelAgentP2CD = ["agent", "volP2CD", "dnP2CD"]
-        cls.__structureTargetLevelAgentFinition = ["agentFinition", "volFinition", "dnFinition"]
+        cls.__structureTargetLevelDrv = ["volP2CD", "dnP2CD", "volFinition", "dnFinition"]
+        cls.__structureTargetLevelAgentP2CD = ["volP2CD", "dnP2CD"]
+        cls.__structureTargetLevelAgentFinition = ["volFinition", "dnFinition"]
       if tlObject.drv:
-        cls.__targetLevelDrv[tlObject.id] = [tlObject.drv.id, tlObject.volP2CD, tlObject.dnP2CD, tlObject.volFinition, tlObject.dnFinition]
+        cls.__targetLevelDrv[tlObject.drv.id] = [tlObject.volP2CD, tlObject.dnP2CD, tlObject.volFinition, tlObject.dnFinition]
       else:
         if tlObject.volP2CD or tlObject.dnP2CD:
-          cls.__targetLevelAgentP2CD[tlObject.id] = [tlObject.agent.id, tlObject.volP2CD, tlObject.dnP2CD]
+          cls.__targetLevelAgentP2CD[tlObject.agent.id] = [tlObject.volP2CD, tlObject.dnP2CD]
         if tlObject.volFinition or tlObject.volFinition:
-          cls.__targetLevelAgentFinition[tlObject.id] = [tlObject.agent.id, tlObject.volFinition, tlObject.dnFinition]
+          cls.__targetLevelAgentFinition[tlObject.agent.id] = [tlObject.volFinition, tlObject.dnFinition]
 
   @classmethod
   def _createParams(cls):

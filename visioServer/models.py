@@ -324,7 +324,7 @@ class Widget(CommonModel):
   
 class WidgetParams(models.Model):
   title = models.CharField(max_length=32, unique=False, blank=False, default=None)
-  subTitle = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  subTitle = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   position = models.CharField(max_length=1, unique=False, blank=False, default=None)
   unity = models.CharField("Unité", max_length=32, unique=False, blank=False, default=None)
   widget = models.ForeignKey('Widget', on_delete=models.DO_NOTHING, blank=False, null=False, default=None)

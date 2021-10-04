@@ -173,7 +173,10 @@ class ManageFromOldDatabase:
       nameObject = dico[year][idObject] if idObject in dico[year] else dico[year][1]
     else:
       nameObject = dico[idObject] if idObject in dico else dico[1]
-    objectFound = model.objects.filter(name=nameObject)
+    if getattr(model, "currentYear", False):
+      objectFound = model.objects.filter(name=nameObject, currentYear=year=="currentYear")
+    else:
+      objectFound = model.objects.filter(name=nameObject)
     return objectFound.first() if objectFound.exists() else None
 
   def getAgent(self):
@@ -318,7 +321,6 @@ class ManageFromOldDatabase:
       for level, name in self.createNavigationLevelName(geoOrTrade):
         object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
       dashboardsLevel = self.createDashboards(geoOrTrade)
-      print("dashboardsLevel", geoOrTrade, dashboardsLevel)
       for level, listDashBoard in dashboardsLevel.items():
         levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
         if levelObject.exists():
@@ -343,6 +345,7 @@ class ManageFromOldDatabase:
       CreateWidgetParam.initialize()
     for name, value in CreateWidgetParam.dashboards[geoOrTrade].items():
       layoutName, comment = value[0], value[1]
+      comment = json.dumps(comment if isinstance(comment, list) else [comment])
       object = Dashboard.objects.create(name=name, layout=CreateWidgetParam.dictLayout[layoutName], comment=comment)
       templateFlat = []
       for listPos in json.loads(CreateWidgetParam.dictLayout[layoutName].template):
@@ -413,7 +416,7 @@ class ManageFromOldDatabase:
       data[field] = {line[0]:line[1] for line in ManageFromOldDatabase.cursor}
       newField = field if field == "drv" else "agent"
       for oldId, value in data[field].items():
-        newObject = self.typeObject[newField].objects.filter(name=value).first()
+        newObject = self.typeObject[newField].objects.filter(name=value, currentYear=True).first()
         if newObject:
           table[field][oldId] = newObject.id
       table[newField] = table[field]
@@ -508,7 +511,7 @@ class ManageFromOldDatabase:
     query = "SELECT pdvCode, NbVisit FROM data_visit_1;"
     ManageFromOldDatabase.cursor.execute(query)
     for line in ManageFromOldDatabase.cursor:
-      pdv = Pdv.objects.filter(code=line[0])
+      pdv = Pdv.objects.filter(code=line[0], currentYear=True)
       if pdv:
         for key, nbVisit in json.loads(self.unProtect(line[1])).items():
           nbVisit = int(nbVisit) if isinstance(nbVisit, str) else nbVisit
@@ -543,15 +546,15 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    # for model in listModel:
-    #   for element in model.objects.all():
-    #     element.delete()
+    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    for model in listModel:
+      for element in model.objects.all():
+        element.delete()
     print("start")
-    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
-    print(Layout.listFields())
-    print(Layout.listIndexes())
-    print(Layout.dictValues())
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # print(Layout.listFields())
+    # print(Layout.listIndexes())
+    # print(Layout.dictValues())
     print("end")
     return {"test":False}
       

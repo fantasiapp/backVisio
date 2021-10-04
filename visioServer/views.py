@@ -12,10 +12,8 @@ class DefaultView(APIView):
 class Data(DefaultView):
     def get(self, request):
         currentUser = request.user
-        print(request.user)
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
-        print([profile for profile in currentProfile])
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         else:

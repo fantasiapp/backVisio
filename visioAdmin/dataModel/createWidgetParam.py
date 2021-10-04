@@ -9,7 +9,7 @@ class CreateWidgetParam:
   dashboards = {
       "geo":{
         "Marché P2CD":["column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
-        "Marché Enduit":["column:2:1", "Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."],
+        "Marché Enduit":["column:2:1", ["Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."]],
         "PdM P2CD":["column:2:1", ""],
         "PdM Enduit":["column:2:1", ""],
         "PdM P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
@@ -164,7 +164,7 @@ class CreateWidgetParam:
     dictParam = {
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Vente en volume", "@sum"],
-        ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de Pdv", "@sum", "b", "Pdv", "donut"],
+        ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de Pdv", ["@sum"], "b", "Pdv", "donut"],
         ["enseigne", "industrie", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume par enseigne", "Tous segments", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
         ["enduitIndustrie", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volume Total", "@sum", "a", "T"],
@@ -284,4 +284,5 @@ class CreateWidgetParam:
   @classmethod
   def executeCreation(cls, axis1, axis2, ind, grAx1, grAx2, percent=False, title="Titre", subTitle="", pos="a", unity="km²", widget="pie"):
     widgetCompute = WidgetCompute.objects.create(axis1=axis1, axis2=axis2, indicator=ind, groupAxis1=json.dumps(grAx1), groupAxis2=json.dumps(grAx2), percent=percent)
+    subTitle = json.dumps(subTitle) if isinstance(subTitle, list) else json.dumps([subTitle])
     return WidgetParams.objects.create(title=title, subTitle=subTitle, position=pos, unity=unity, widget=cls.__dictWidget[widget], widgetCompute=widgetCompute)
