@@ -239,6 +239,11 @@ class Pdv(CommonModel):
 
   def __str__(self) ->str: return self.name + " " + self.code
 
+  @classmethod
+  def listFields(cls):
+    lf = super().listFields()
+    return lf
+
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
   nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)

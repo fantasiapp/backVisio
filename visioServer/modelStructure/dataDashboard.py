@@ -274,6 +274,7 @@ class DataDashboard:
   @classmethod
   def _formatPdv(cls):
     cls.computeSalesDict()
+    print("cls.listFields", Pdv.listFields())
     listPdv = [cls.__pdvTransform(pdv) for pdv in Pdv.objects.filter(currentYear=True)]
     formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] for pdv in listPdv}
     fields = list(listPdv[0].keys())[1:]
@@ -289,6 +290,7 @@ class DataDashboard:
   def __pdvTransform(cls, pdv):
     nbVisits = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=pdv)])
     dictPdv = model_to_dict(pdv)
+    del dictPdv["currentYear"]
     dictPdv["nbVisits"] = nbVisits
     dictPdv["target"] = DataDashboard.__target[pdv.id] if pdv.id in DataDashboard.__target and pdv.currentYear else None
     dictPdv["sales"] = cls.__salesDict[str(pdv.id)] if str(pdv.id) in cls.__salesDict else None
@@ -322,7 +324,6 @@ class DataDashboard:
       if cls.isNotOnServer:
         with open(cls.__cacheSalesDict, 'w') as jsonFile:
           json.dump(cls.__salesDict, jsonFile)
-    print("computeSalesDict", len(cls.__salesDict))
     return cls.__salesDict
 
   @classmethod
