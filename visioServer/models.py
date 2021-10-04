@@ -22,7 +22,7 @@ class CommonModel(models.Model):
   @classmethod
   def listIndexes(cls):
     listName = cls.listFields()
-    listNameF = [name for name in listName if isinstance(cls._meta.get_field(name), models.ForeignKey) or isinstance(cls._meta.get_field(name), models.ManyToManyField)]
+    listNameF = [name for name in listName if getattr(cls, name, False) and (isinstance(cls._meta.get_field(name), models.ForeignKey) or isinstance(cls._meta.get_field(name), models.ManyToManyField))]
     return [listName.index(name) for name in listNameF]
 
   @classmethod
@@ -37,7 +37,7 @@ class CommonModel(models.Model):
   @property
   def listValues(self):
     listFields = self.listFields()
-    listRow = [getattr(self, field) for field in listFields]
+    listRow = [getattr(self, field, False) for field in listFields]
     for index in self.listIndexes():
       if isinstance(self._meta.get_field(listFields[index]), models.ManyToManyField):
         listRow[index] = [element.id for element in listRow[index].all()]
@@ -241,8 +241,12 @@ class Pdv(CommonModel):
 
   @classmethod
   def listFields(cls):
-    lf = super().listFields()
-    return lf
+    return super().listFields() + ["nbVisits", "target", "sales"]
+
+  @property
+  def listValues(self):
+    lv = super().listValues
+    return lv
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
