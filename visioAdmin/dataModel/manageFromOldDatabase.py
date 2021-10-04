@@ -163,7 +163,7 @@ class ManageFromOldDatabase:
   def __computeClosedAt(self, line:list):
     timestamp = line[self.fieldsPdv.index("toBeClosed")]
     if timestamp:
-      return datetime.fromtimestamp(timestamp, tz=tz.gettz("Europe/Paris"))
+      return datetime.datetime.fromtimestamp(timestamp, tz=tz.gettz("Europe/Paris"))
     return None
 
   def __findObject(self, fieldName, dico, year, line, model):
@@ -377,7 +377,7 @@ class ManageFromOldDatabase:
               dateEvent = None
               cy = indexYear == 1
               if line[0]:
-                dateEvent = datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris"))
+                dateEvent = datetime.datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris"))
               Ventes.objects.create(date=dateEvent, pdv=pdv, industry=industry, product=product, volume=float(line[4]), currentYear=cy)
 
     except db.Error as e:
@@ -468,7 +468,7 @@ class ManageFromOldDatabase:
         idOld = line[1]
         if idOld in dictPdv:
           kwargs = {}
-          kwargs['date'] = datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris")) if line[0] else None
+          kwargs['date'] = datetime.datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris")) if line[0] else None
           code = dictPdv[idOld][indexCode]
           kwargs['pdv'] = Pdv.objects.filter(code=code, currentYear=True).first()
           kwargs['redistributed'] = line[2] == "does not exist"

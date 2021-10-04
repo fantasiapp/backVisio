@@ -12,8 +12,6 @@ load_dotenv()
 class DataDashboard:
   __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
-  __salesDict = None
-  __cacheSalesDict = os.getenv('SALES_DICT')
   __structureWidgetParam = None
   __WidgetParamIndexPosition = None
   __structureTargetLevelDrv = None
@@ -23,8 +21,9 @@ class DataDashboard:
   def __init__(self, userGeoId, userGroup, isNotOnServer):
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
-    DataDashboard.isNotOnServer = isNotOnServer
     if not DataDashboard.__levelGeo:
+      Ventes.cacheSalesDict, Ventes.isNotOnServer = os.getenv('SALES_DICT'), isNotOnServer
+      Ventes.createSalesDict()
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__pdv = Pdv.dictValues()
@@ -260,31 +259,6 @@ class DataDashboard:
     level.pop()
     return list(dictLevelWithDashBoard.values())[0]
 
-  # @classmethod
-  # def computeSalesDict(cls):
-  #   if cls.isNotOnServer and not cls.__salesDict:
-  #     try:
-  #       with open(cls.__cacheSalesDict, 'r') as jsonFile:
-  #         cls.__salesDict = json.load(jsonFile)
-  #     except:
-  #       print('Formating sales...')
-  #   if not cls.__salesDict:
-  #     cls.__salesDict = cls.__formatSales()
-  #     if cls.isNotOnServer:
-  #       with open(cls.__cacheSalesDict, 'w') as jsonFile:
-  #         json.dump(cls.__salesDict, jsonFile)
-  #   return cls.__salesDict
-
-  # @classmethod
-  # def __formatSales(cls):
-  #   sales = Ventes.objects.all()
-  #   salesDict = {}
-  #   for sale in sales:
-  #       id = str(sale.pdv.id)
-  #       if id not in salesDict:
-  #           salesDict[id] = []
-  #       salesDict[id].append([sale.industry.id, sale.product.id, sale.volume])
-  #   return salesDict
 
   @classmethod
   def _buildTree(cls, name, steps:list, pdvs:dict):

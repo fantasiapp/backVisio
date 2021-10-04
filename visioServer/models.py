@@ -259,7 +259,10 @@ class Pdv(CommonModel):
     target = Ciblage.objects.filter(pdv = self)
     if target:
       lv[22] = target[0].listValues
-    lv[23] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
+    if Ventes.isNotOnServer:
+      lv[23] = Ventes.salesDict[str(self.id)] if str(self.id) in Ventes.salesDict else []
+    else:
+      lv[23] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
     return lv
 
 class Visit(CommonModel):
@@ -320,6 +323,10 @@ class Ventes(CommonModel):
   volume = models.FloatField('Volume', unique=False, blank=True, default=0.0)
   currentYear = models.BooleanField("Année courante", default=True)
 
+  salesDict = None
+  isNotOnServer = False
+  cacheSalesDict = None
+
   class Meta:
     verbose_name = "Ventes"
     unique_together = ('pdv', 'industry', 'product')
@@ -332,6 +339,33 @@ class Ventes(CommonModel):
     lf = super().listFields()
     del lf[1]
     return lf
+
+  @classmethod
+  def createCache(cls):
+    sales = Ventes.objects.all()
+    salesDict = {}
+    for sale in sales:
+      id = str(sale.pdv.id)
+      if id not in salesDict:
+          salesDict[id] = []
+      salesDict[id].append(sale.listValues)
+    return salesDict
+
+  @classmethod
+  def createSalesDict(cls):
+    if cls.isNotOnServer and not cls.salesDict:
+      try:
+        with open(cls.cacheSalesDict, 'r') as jsonFile:
+          cls.salesDict = json.load(jsonFile)
+      except:
+        print('Formating sales...')
+      
+      if not cls.salesDict:
+        cls.salesDict = cls.createCache()
+        if cls.isNotOnServer:
+          with open(cls.cacheSalesDict, 'w') as jsonFile:
+            json.dump(cls.salesDict, jsonFile)
+
 
 
 # Modèles pour la navigation
