@@ -2,9 +2,11 @@ from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
 import json
-from django.db.models.fields import Field
+# from django.db.models.fields import Field
+import datetime
+import inspect
 
-from django.forms.models import model_to_dict
+# from django.forms.models import model_to_dict
 
 class CommonModel(models.Model):
   """jsonFields tells which field are to be loaded, and direct fields tells which fields should contain the dict of the sub object."""
@@ -38,14 +40,19 @@ class CommonModel(models.Model):
   def listValues(self):
     listFields = self.listFields()
     listRow = [getattr(self, field, False) for field in listFields]
+    if "date" in listFields:
+      indexDate = listFields.index("date")
+      listRow[indexDate] = listRow[indexDate].isoformat() if listRow[indexDate] else None
     for index in self.listIndexes():
       if isinstance(self._meta.get_field(listFields[index]), models.ManyToManyField):
         listRow[index] = [element.id for element in listRow[index].all()]
+      else:
+        listRow[index] = listRow[index].id
     if self.jsonFields:
       for jsonField in self.jsonFields:
         index = self.listFields().index(jsonField)
         listRow[index] = json.loads(listRow[index])
-    self.__loadDirectValue(listRow)
+    # self.__loadDirectValue(listRow)
     return listRow
 
   def __loadDirectValue(self, listRow):
@@ -246,6 +253,13 @@ class Pdv(CommonModel):
   @property
   def listValues(self):
     lv = super().listValues
+    if isinstance(lv[20], datetime.datetime):
+      lv[20] = lv[20].isoformat()
+    lv[21] = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)])
+    target = Ciblage.objects.filter(pdv = self)
+    if target:
+      lv[22] = target[0].listValues
+    lv[23] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
     return lv
 
 class Visit(CommonModel):
@@ -275,7 +289,6 @@ class Visit(CommonModel):
   def listValues(self):
     raw = super().listValues
     del raw[2]
-    raw[0] = raw[0].isoformat()
     return raw
 
 
@@ -299,7 +312,7 @@ class Industrie(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Ventes(models.Model):
+class Ventes(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
   industry = models.ForeignKey("Industrie", on_delete=models.PROTECT, blank=False, default=17)
@@ -313,6 +326,12 @@ class Ventes(models.Model):
 
   def __str__(self) ->str:
     return str(self.pdv) + " " + str(self.industry) + " " + str(self.product)
+
+  @classmethod
+  def listFields(cls):
+    lf = super().listFields()
+    del lf[1]
+    return lf
 
 
 # Modèles pour la navigation
@@ -405,7 +424,7 @@ class UserProfile(models.Model):
 
 # Information ciblage
 
-class Ciblage(models.Model):
+class Ciblage(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
   redistributed = models.BooleanField("Redistribué", default=True)
@@ -418,6 +437,13 @@ class Ciblage(models.Model):
   COLORS_GREEN_LIGHT_CHOICES = [(GREEN, 'vert'), (ORANGE,'orange'), (RED, 'rouge')] 
   greenLight = models.CharField("Feu Ciblage P2CD", max_length=1, choices=COLORS_GREEN_LIGHT_CHOICES, blank=True, default=None)
   commentTargetP2CD = models.TextField("Commentaires ciblage P2CD", blank=True, default=None)
+
+  @classmethod
+  def listFields(cls):
+    lf = super().listFields()
+    del lf[1]
+    return lf
+
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)

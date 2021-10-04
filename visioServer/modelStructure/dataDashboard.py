@@ -3,7 +3,6 @@ import json
 from django.conf import settings
 from django.forms.models import model_to_dict
 from django.db.models.fields.related import ForeignKey
-import datetime
 from ..utils import camel
 import os
 from dotenv import load_dotenv
@@ -14,12 +13,9 @@ class DataDashboard:
   __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
   __salesDict = None
-  __formatedPdvs = None
-  __dataPdvs = None
   __cacheSalesDict = os.getenv('SALES_DICT')
   __structureWidgetParam = None
   __WidgetParamIndexPosition = None
-  __structureTarget = None
   __structureTargetLevelDrv = None
   __structureTargetLevelAgentP2CD = None
   __structureTargetLevelAgentFinition = None
@@ -31,12 +27,11 @@ class DataDashboard:
     if not DataDashboard.__levelGeo:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
-      DataDashboard.__target = DataDashboard._computeTarget()
-      DataDashboard.__formatedPdvs, DataDashboard.__dataPdvs = DataDashboard._formatPdv()
+      DataDashboard.__pdv = Pdv.dictValues()
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
-      DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__formatedPdvs)
+      DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__pdv)
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
-      DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__formatedPdvs)
+      DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__pdv)
 
       dictModel = {
         "layout":Layout, "widget":Widget, "widgetCompute":WidgetCompute, "params":ParamVisio,
@@ -67,7 +62,6 @@ class DataDashboard:
     levelGeo = self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup)
     structureDashboard, dashboards = self._computeLocalDashboards(levelGeo)
     geoTree = self._computeLocalGeoTree()
-    pdvs = self._computeLocalPdvs(geoTree)
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":levelGeo,
@@ -79,15 +73,15 @@ class DataDashboard:
       "widgetParams":self._computewidgetParams(dashboards),
       "geoTree":geoTree,
       "tradeTree":DataDashboard.__tradeTree,
-      "structurePdv":DataDashboard.__dataPdvs["fields"],
-      "structureTarget":DataDashboard.__structureTarget,
-      "indexesPdv":DataDashboard.__dataPdvs["indexes"],
-      "pdvs": pdvs,
+      "structureTarget":Ciblage.listFields(),
+      "structureSales":Ventes.listFields(),
+      "structurePdv":Pdv.listFields(),
+      "indexesPdv":Pdv.listIndexes(),
+      "pdvs": self._computeLocalPdvs(geoTree),
       }
     self._createModelsForGeo(data)
     self._createOtherModels(data)
     
-    # data["target"] = self._computeLocalTarget(pdvs)
     self. _computeLocalTargetLevel(data)
     listModel = ["layout", "widget", "widgetCompute", "labelForGraph", "axisForGraph", "params"]
     for name in listModel:
@@ -152,9 +146,9 @@ class DataDashboard:
 
   def _computeLocalPdvs(self, geoTree):
     if self.__userGroup == "root":
-      return {key:value for key, value in DataDashboard.__formatedPdvs.items()}
+      return {key:value for key, value in DataDashboard.__pdv.items()}
     listId = self.__computeListIdPdv(geoTree)
-    return {key:value for key, value in DataDashboard.__formatedPdvs.items() if key in listId}
+    return {key:value for key, value in DataDashboard.__pdv.items() if key in listId}
 
   def __computeListIdPdv(self, geoTree, listId:list = []):
     if isinstance(geoTree, list):
@@ -163,11 +157,6 @@ class DataDashboard:
     else:
       listId.append(geoTree)
     return listId
-
-  # def _computeLocalTarget(self, pdvs):
-  #   indexPdv = DataDashboard.__structureTarget.index("pdv")
-  #   pdvId = list(pdvs.keys())
-  #   return {key:value for key, value in DataDashboard.__target.items() if value[indexPdv] in pdvId}
 
   def _createModelsForGeo(self, data):
     models = json.loads(os.getenv('GEO_MODELS'))
@@ -271,73 +260,31 @@ class DataDashboard:
     level.pop()
     return list(dictLevelWithDashBoard.values())[0]
 
-  @classmethod
-  def _formatPdv(cls):
-    cls.computeSalesDict()
-    pdvTest = Pdv.objects.get(id=3960)
-    print(pdvTest)
-    print("pdvTest", pdvTest, pdvTest.listValues)
-    listPdv = [cls.__pdvTransform(pdv) for pdv in Pdv.objects.filter(currentYear=True)]
-    formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] for pdv in listPdv}
-    fields = list(listPdv[0].keys())[1:]
-    indexes = []
-    for fieldName in fields:
-      if getattr(Pdv, fieldName, False) and type(Pdv._meta.get_field(fieldName)) is ForeignKey:
-        indexes.append(fields.index(fieldName))
-    dataPdv = {'fields' : fields, 'indexes': indexes}
-    dataPdv.update(formatedPdvs)
-    return formatedPdvs, dataPdv
+  # @classmethod
+  # def computeSalesDict(cls):
+  #   if cls.isNotOnServer and not cls.__salesDict:
+  #     try:
+  #       with open(cls.__cacheSalesDict, 'r') as jsonFile:
+  #         cls.__salesDict = json.load(jsonFile)
+  #     except:
+  #       print('Formating sales...')
+  #   if not cls.__salesDict:
+  #     cls.__salesDict = cls.__formatSales()
+  #     if cls.isNotOnServer:
+  #       with open(cls.__cacheSalesDict, 'w') as jsonFile:
+  #         json.dump(cls.__salesDict, jsonFile)
+  #   return cls.__salesDict
 
-  @classmethod
-  def __pdvTransform(cls, pdv):
-    nbVisits = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=pdv)])
-    dictPdv = model_to_dict(pdv)
-    del dictPdv["currentYear"]
-    dictPdv["nbVisits"] = nbVisits
-    dictPdv["target"] = DataDashboard.__target[pdv.id] if pdv.id in DataDashboard.__target and pdv.currentYear else None
-    dictPdv["sales"] = cls.__salesDict[str(pdv.id)] if str(pdv.id) in cls.__salesDict else []
-    if isinstance(dictPdv["closedAt"], datetime.datetime):
-      dictPdv["closedAt"] = dictPdv["closedAt"].isoformat()
-    return dictPdv
-
-  @classmethod
-  def _computeTarget(cls):
-    return {object.pdv.id:cls.__readTarget(object) for object in Ciblage.objects.all()}
-
-  @classmethod
-  def __readTarget(cls, object):
-    if not cls.__structureTarget:
-      cls.__structureTarget = list(model_to_dict(object).keys())
-      del cls.__structureTarget[0]
-    target = list(model_to_dict(object).values())
-    del target[0]
-    return target
-
-  @classmethod
-  def computeSalesDict(cls):
-    if cls.isNotOnServer and not cls.__salesDict:
-      try:
-        with open(cls.__cacheSalesDict, 'r') as jsonFile:
-          cls.__salesDict = json.load(jsonFile)
-      except:
-        print('Formating sales...')
-    if not cls.__salesDict:
-      cls.__salesDict = cls.__formatSales()
-      if cls.isNotOnServer:
-        with open(cls.__cacheSalesDict, 'w') as jsonFile:
-          json.dump(cls.__salesDict, jsonFile)
-    return cls.__salesDict
-
-  @classmethod
-  def __formatSales(cls):
-    sales = Ventes.objects.all()
-    salesDict = {}
-    for sale in sales:
-        id = str(sale.pdv.id)
-        if id not in salesDict:
-            salesDict[id] = []
-        salesDict[id].append([sale.industry.id, sale.product.id, sale.volume])
-    return salesDict
+  # @classmethod
+  # def __formatSales(cls):
+  #   sales = Ventes.objects.all()
+  #   salesDict = {}
+  #   for sale in sales:
+  #       id = str(sale.pdv.id)
+  #       if id not in salesDict:
+  #           salesDict[id] = []
+  #       salesDict[id].append([sale.industry.id, sale.product.id, sale.volume])
+  #   return salesDict
 
   @classmethod
   def _buildTree(cls, name, steps:list, pdvs:dict):
