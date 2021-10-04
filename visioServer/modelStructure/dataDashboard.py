@@ -273,14 +273,14 @@ class DataDashboard:
 
   @classmethod
   def _formatPdv(cls):
+    cls.computeSalesDict()
     listPdv = [cls.__pdvTransform(pdv) for pdv in Pdv.objects.filter(currentYear=True)]
-    formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] + [cls.computeSalesDict().get(str(pdv['id']), [])] for pdv in listPdv}
+    formatedPdvs = {pdv['id']:[value for key, value in pdv.items() if key != 'id'] for pdv in listPdv}
     fields = list(listPdv[0].keys())[1:]
     indexes = []
     for fieldName in fields:
       if getattr(Pdv, fieldName, False) and type(Pdv._meta.get_field(fieldName)) is ForeignKey:
         indexes.append(fields.index(fieldName))
-    fields += ['sales']
     dataPdv = {'fields' : fields, 'indexes': indexes}
     dataPdv.update(formatedPdvs)
     return formatedPdvs, dataPdv
@@ -291,6 +291,7 @@ class DataDashboard:
     dictPdv = model_to_dict(pdv)
     dictPdv["nbVisits"] = nbVisits
     dictPdv["target"] = DataDashboard.__target[pdv.id] if pdv.id in DataDashboard.__target and pdv.currentYear else None
+    dictPdv["sales"] = cls.__salesDict[str(pdv.id)] if str(pdv.id) in cls.__salesDict else None
     if isinstance(dictPdv["closedAt"], datetime.datetime):
       dictPdv["closedAt"] = dictPdv["closedAt"].isoformat()
     return dictPdv
@@ -321,6 +322,7 @@ class DataDashboard:
       if cls.isNotOnServer:
         with open(cls.__cacheSalesDict, 'w') as jsonFile:
           json.dump(cls.__salesDict, jsonFile)
+    print("computeSalesDict", len(cls.__salesDict))
     return cls.__salesDict
 
   @classmethod
