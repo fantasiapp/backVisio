@@ -77,7 +77,6 @@ class DataDashboard:
       self.insertModel(data, name, list)
 
     self._createModelsForGeo(data)
-    # self._createOtherModels(data)
     self. _computeLocalTargetLevel(data)
     return data
 
@@ -160,18 +159,7 @@ class DataDashboard:
         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.filter(currentYear=True)}})
     data['ville'] = self._createModelVille(data)
 
-  # def _createOtherModels(self, data):
-  #   models = json.loads(os.getenv('REGULAR_MODELS'))
-  #   regularModels = [eval(modelName) for modelName in models]
-  #   for model in regularModels:
-  #       key = camel(model.__name__)
-  #       if getattr(model, "currentYear", False):
-  #         data.update({key: {object.id:object.name for object in model.objects.filter(currentYear=True)}})
-  #       else:
-  #         data.update({key: {object.id:object.name for object in model.objects.all()}})
-
   def _createModelVille(self, data):
-    print("_createModelVille", data.keys())
     idVille = data['structurePdvs'].index("ville")
     listId = [pdv[idVille] for pdv in data['pdvs'].values()]
     return {object.id:object.name for object in Ville.objects.all() if object.id in listId}
@@ -298,3 +286,8 @@ class DataDashboard:
   def getUpdate(cls, userId, userGroup, nature):
     print("query getUpdate", userId, userGroup, nature)
     return {"message":"getUpdate received"}
+
+  @classmethod
+  def postUpdate(cls, userId, userGroup, nature):
+    print("query getUpdate", userId, userGroup, nature)
+    return {"message":"postUpdate received"}

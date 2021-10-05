@@ -31,7 +31,6 @@ class CommonModel(models.Model):
     length = len(cls.listFields()) == 1
     if getattr(cls, "currentYear", False):
       result = {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.filter(currentYear=True)}
-      print("dictValue", len(result))
       return result
     return {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.all()}
 
