@@ -28,6 +28,7 @@ class CommonModel(models.Model):
 
   @classmethod
   def dictValues(cls):
+    print("dictValue", cls, getattr(cls, "currentYear", False))
     if getattr(cls, "currentYear", False):
       return {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
     return {instance.id:instance.listValues for instance in cls.objects.all()}

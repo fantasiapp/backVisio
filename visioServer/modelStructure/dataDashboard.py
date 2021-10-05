@@ -70,7 +70,6 @@ class DataDashboard:
       "pdvs":self._computeListPdv,"layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
       "labelForGraph":False, "axisForGraph":False, "params":False}
     for name, list in listModel.items():
-      print("name model", name)
       self.insertModel(data, name, list)
     self._createModelsForGeo(data)
     self._createOtherModels(data)
@@ -151,9 +150,9 @@ class DataDashboard:
     for model in regularModels:
       key = camel(model.__name__)
       if key in dictSelectedId:
-         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all() if object.id in dictSelectedId[key]}})
+         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.filter(currentYear=True) if object.id in dictSelectedId[key]}})
       else:
-        data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.all()}})
+        data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.filter(currentYear=True)}})
     data['ville'] = self._createModelVille(data)
 
   def _createOtherModels(self, data):
@@ -167,7 +166,6 @@ class DataDashboard:
           data.update({key: {object.id:object.name for object in model.objects.all()}})
 
   def _createModelVille(self, data):
-    print(list(data.keys()))
     idVille = data['structurePdvs'].index("ville")
     listId = [pdv[idVille] for pdv in data['pdvs'].values()]
     return {object.id:object.name for object in Ville.objects.all() if object.id in listId}
