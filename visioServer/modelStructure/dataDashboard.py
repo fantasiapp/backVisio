@@ -12,8 +12,6 @@ load_dotenv()
 class DataDashboard:
   __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
-  __structureWidgetParam = None
-  __WidgetParamIndexPosition = None
   __structureTargetLevelDrv = None
   __structureTargetLevelAgentP2CD = None
   __structureTargetLevelAgentFinition = None
@@ -22,25 +20,17 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
-      Ventes.cacheSalesDict, Ventes.isNotOnServer = os.getenv('SALES_DICT'), isNotOnServer
-      print("start Sales")
-      Ventes.createSalesDict()
-      print("end Sales")
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
-      DataDashboard.__pdv = Pdv.dictValues()
-      DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
-      DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, DataDashboard.__pdv)
-      DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
-      DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, DataDashboard.__pdv)
-
       dictModel = {
-        "layout":Layout, "widget":Widget, "widgetCompute":WidgetCompute, "params":ParamVisio,
+        "pdvs":Pdv, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
         "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph}
       for name, model in dictModel.items():
          DataDashboard.createFromModel(model, name)
-      
-      DataDashboard.__widgetParam = DataDashboard._computeWidgetParam()
+      DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
+      DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
+      DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
+      DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, getattr(DataDashboard, "__pdvs"))
       self._computeTargetLevel()
 
   @classmethod
@@ -48,15 +38,16 @@ class DataDashboard:
     if len(model.listFields()) > 1:
       setattr(cls, f"__structure{name.capitalize()}", model.listFields())
     indexes = model.listIndexes()
-    if len(indexes) != 0: setattr(cls, f"__indexes{name.capitalize()}", indexes)
+    if len(indexes) != 0:
+      setattr(cls, f"__indexes{name.capitalize()}", indexes)
     setattr(cls, f"__{name}", model.dictValues())
 
   @classmethod
-  def insertModel(cls, data, name):
+  def insertModel(cls, data, name, listId=False):
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
     for attr in listAttr:
       if hasattr(cls, attr):
-        data[attr[2:]] = getattr(cls, attr)
+        data[attr[2:]] =  {id:value for id, value in getattr(cls, attr).items() if id in listId(data)} if attr == f"__{name}" and listId else getattr(cls, attr)
   
   @property
   def dataQuery(self):
@@ -70,23 +61,20 @@ class DataDashboard:
       "structureDashboard":structureDashboard,
       "indexesDashboard":[1,3],
       "dashboards": dashboards,
-      "structureWidgetParam":DataDashboard.__structureWidgetParam,
-      "widgetParams":self._computewidgetParams(dashboards),
       "geoTree":geoTree,
       "tradeTree":DataDashboard.__tradeTree,
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
-      "structurePdv":Pdv.listFields(),
-      "indexesPdv":Pdv.listIndexes(),
-      "pdvs": self._computeLocalPdvs(geoTree),
       }
+    listModel = {
+      "pdvs":self._computeListPdv,"layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
+      "labelForGraph":False, "axisForGraph":False, "params":False}
+    for name, list in listModel.items():
+      print("name model", name)
+      self.insertModel(data, name, list)
     self._createModelsForGeo(data)
     self._createOtherModels(data)
-    
     self. _computeLocalTargetLevel(data)
-    listModel = ["layout", "widget", "widgetCompute", "labelForGraph", "axisForGraph", "params"]
-    for name in listModel:
-      self.insertModel(data, name)
     return data
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -145,20 +133,6 @@ class DataDashboard:
         hierarchy.append((drvId, agent[0]))
     return hierarchy
 
-  def _computeLocalPdvs(self, geoTree):
-    if self.__userGroup == "root":
-      return {key:value for key, value in DataDashboard.__pdv.items()}
-    listId = self.__computeListIdPdv(geoTree)
-    return {key:value for key, value in DataDashboard.__pdv.items() if key in listId}
-
-  def __computeListIdPdv(self, geoTree, listId:list = []):
-    if isinstance(geoTree, list):
-      for subLevel in geoTree[1]:
-        self.__computeListIdPdv(subLevel, listId)
-    else:
-      listId.append(geoTree)
-    return listId
-
   def _createModelsForGeo(self, data):
     models = json.loads(os.getenv('GEO_MODELS'))
     if self.__userGroup == "root":
@@ -193,7 +167,8 @@ class DataDashboard:
           data.update({key: {object.id:object.name for object in model.objects.all()}})
 
   def _createModelVille(self, data):
-    idVille = data['structurePdv'].index("ville")
+    print(list(data.keys()))
+    idVille = data['structurePdvs'].index("ville")
     listId = [pdv[idVille] for pdv in data['pdvs'].values()]
     return {object.id:object.name for object in Ville.objects.all() if object.id in listId}
     
@@ -219,11 +194,25 @@ class DataDashboard:
           currentIds = nextIds
     return dictSelectedId
 
-  def _computewidgetParams(self, dashboards):
+  def _computelistWP(self, data):
     listId = []
-    for db in dashboards.values():
+    for db in data["dashboards"].values():
       listId += list(db[3].values())
-    return {key:value for key, value in DataDashboard.__widgetParam.items() if key in listId}
+    return set(listId)
+
+  def _computelistWC(self, data):
+    return set([wp[4] for wp in data["widgetParams"].values()])
+
+  def _computeListPdv(self, data):
+    return self.__computeListIdPdv(data["geoTree"])
+
+  def __computeListIdPdv(self, geoTree, listId:list = []):
+    if isinstance(geoTree, list):
+      for subLevel in geoTree[1]:
+        self.__computeListIdPdv(subLevel, listId)
+    else:
+      listId.append(geoTree)
+    return listId
 
   def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":
@@ -283,23 +272,6 @@ class DataDashboard:
     return dicedBykey
 
   @classmethod
-  def _computeWidgetParam(cls):
-    return {object.id:cls.__readWidgetParam(object) for object in WidgetParams.objects.all()}
-
-  @classmethod
-  def __readWidgetParam(cls, object):
-    if not cls.__structureWidgetParam:
-      cls.__structureWidgetParam = list(model_to_dict(object).keys())
-      cls.__WidgetParamIndexPosition = cls.__structureWidgetParam.index("position")
-      del cls.__structureWidgetParam[cls.__WidgetParamIndexPosition]
-      del cls.__structureWidgetParam[0]
-    widgetParam = list(model_to_dict(object).values())
-    widgetParam[2] = json.loads(widgetParam[2])
-    del widgetParam[cls.__WidgetParamIndexPosition]
-    del widgetParam[0]
-    return widgetParam
-
-  @classmethod
   def _computeTargetLevel(cls):
     cls.__targetLevelDrv, cls.__targetLevelAgentP2CD, cls.__targetLevelAgentFinition = {}, {}, {}
     for tlObject in CiblageLevel.objects.all():
@@ -315,9 +287,8 @@ class DataDashboard:
         if tlObject.volFinition or tlObject.volFinition:
           cls.__targetLevelAgentFinition[tlObject.agent.id] = [tlObject.volFinition, tlObject.dnFinition]
 
+
   @classmethod
-  def _createParams(cls):
-    return {param.field:param.value for param in ParamVisio.objects.all()}
-
-
-  
+  def updateFromClient(cls, userId, userGroup, content):
+    print(content)
+    return {"message":"updateFromClient received"}

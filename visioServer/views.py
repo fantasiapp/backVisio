@@ -22,7 +22,11 @@ class Data(DefaultView):
             action = request.GET["action"]
             if action == "dashboard":
                 #request.META['SERVER_PORT'] == '8000' check if query is local
-                dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000') #
+                dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
                 return Response(dataDashBoard.dataQuery)
+            elif action == "update":
+                content = request.json if hasattr("json", request) else None
+                answer = DataDashboard.updateFromClient(userIdGeo, userGroup[0], content)
+                return Response(answer)
             return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})

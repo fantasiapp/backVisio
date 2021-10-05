@@ -29,8 +29,7 @@ class CommonModel(models.Model):
   @classmethod
   def dictValues(cls):
     if getattr(cls, "currentYear", False):
-      result = {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
-      return result
+      return {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
     return {instance.id:instance.listValues for instance in cls.objects.all()}
 
   def __init__(self, *args, **kwargs):
@@ -259,10 +258,7 @@ class Pdv(CommonModel):
     target = Ciblage.objects.filter(pdv = self)
     if target:
       lv[22] = target[0].listValues
-    if Ventes.isNotOnServer:
-      lv[23] = Ventes.salesDict[str(self.id)] if str(self.id) in Ventes.salesDict else []
-    else:
-      lv[23] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
+    lv[23] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
     return lv
 
 class Visit(CommonModel):
@@ -384,7 +380,8 @@ class Layout(CommonModel):
 class Widget(CommonModel):
   name = models.CharField(max_length=32, unique=True, blank=False, default=None)
   
-class WidgetParams(models.Model):
+class WidgetParams(CommonModel):
+  jsonFields = ["subTitle"]
   title = models.CharField(max_length=32, unique=False, blank=False, default=None)
   subTitle = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   position = models.CharField(max_length=1, unique=False, blank=False, default=None)
@@ -394,10 +391,6 @@ class WidgetParams(models.Model):
 
   @classmethod
   def listFields(cls): return ["title", "subTitle", "unity", "widget", "widgetCompute"]
-
-  @property
-  def listValues(self):
-    listOld = super().listValues
 
 
 class WidgetCompute(CommonModel):
@@ -471,12 +464,33 @@ class Ciblage(CommonModel):
   COLORS_GREEN_LIGHT_CHOICES = [(GREEN, 'vert'), (ORANGE,'orange'), (RED, 'rouge')] 
   greenLight = models.CharField("Feu Ciblage P2CD", max_length=1, choices=COLORS_GREEN_LIGHT_CHOICES, blank=True, default=None)
   commentTargetP2CD = models.TextField("Commentaires ciblage P2CD", blank=True, default=None)
+  targetsDict = None
 
   @classmethod
   def listFields(cls):
     lf = super().listFields()
     del lf[1]
     return lf
+
+  @classmethod
+  def createCache(cls):
+    cls.targetsDict = {target.pdv.id:target.listValues for target in cls.objects.all()}
+
+  @classmethod
+  def createTargetDict(cls):
+    fileName = Ventes.cacheSalesDict.replace("sales", "targets")
+    if Ventes.isNotOnServer and not cls.targetsDict:
+      try:
+        with open(fileName, 'r') as jsonFile:
+          cls.targetsDict = json.load(jsonFile)
+      except:
+        print('Formating targets...')
+      
+      if not cls.targetsDict:
+        cls.createCache()
+        if Ventes.isNotOnServer:
+          with open(fileName, 'w') as jsonFile:
+            json.dump(cls.targetsDict, jsonFile)
 
 
 class CiblageLevel(models.Model):
