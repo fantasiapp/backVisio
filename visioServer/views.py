@@ -41,5 +41,7 @@ class Data(DefaultView):
             print("what is it?", action, currentUser, userGroup[0], userIdGeo)
             if action == "update":
                 print("what data", dict(request.POST))
+                answer = DataDashboard.getUpdate(userIdGeo, userGroup[0], request.GET["nature"])
+                return Response(answer)
         return Response({"message":"test"})
             
