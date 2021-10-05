@@ -18,7 +18,7 @@ fileName = 'test.json'
 url = f'{address}/visioServer/data/'
 
 start = time.time()
-if False:
+if True:
     response = requests.get(url, headers=headers, params={"action":"dashboard"})
     print(response.headers)
     try:

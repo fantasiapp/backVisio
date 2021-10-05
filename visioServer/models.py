@@ -28,10 +28,12 @@ class CommonModel(models.Model):
 
   @classmethod
   def dictValues(cls):
-    print("dictValue", cls, getattr(cls, "currentYear", False))
+    length = len(cls.listFields()) == 1
     if getattr(cls, "currentYear", False):
-      return {instance.id:instance.listValues for instance in cls.objects.filter(currentYear=True)}
-    return {instance.id:instance.listValues for instance in cls.objects.all()}
+      result = {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.filter(currentYear=True)}
+      print("dictValue", len(result))
+      return result
+    return {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.all()}
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -110,7 +112,6 @@ class Drv(models.Model):
 
 class Agent(models.Model):
   name = models.CharField('agent', max_length=64, unique=False)
-  drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -121,7 +122,6 @@ class Agent(models.Model):
 
 class AgentFinitions(models.Model):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
-  drv = models.ForeignKey('drv', on_delete=models.PROTECT, blank=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -159,7 +159,7 @@ class Ville(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class SegmentMarketing(models.Model):
+class SegmentMarketing(CommonModel):
   name = models.CharField('segment_marketing', max_length=32, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -169,7 +169,7 @@ class SegmentMarketing(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class SegmentCommercial(models.Model):
+class SegmentCommercial(CommonModel):
   name = models.CharField('segment_commercial', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -179,7 +179,7 @@ class SegmentCommercial(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Enseigne(models.Model):
+class Enseigne(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -189,9 +189,8 @@ class Enseigne(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Ensemble(models.Model):
+class Ensemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
-  enseigne = models.ForeignKey('enseigne', on_delete=models.PROTECT, blank=False, default=7)
   currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
@@ -200,7 +199,7 @@ class Ensemble(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class SousEnsemble(models.Model):
+class SousEnsemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -210,7 +209,7 @@ class SousEnsemble(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Site(models.Model):
+class Site(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -249,6 +248,11 @@ class Pdv(CommonModel):
   @classmethod
   def listFields(cls):
     return super().listFields() + ["nbVisits", "target", "sales"]
+
+  @classmethod
+  def dictValues(cls):
+    indexSale = cls.listFields().index("sale")
+    return {id:value for id, value in super().dictValues().items() if value[indexSale]}
 
   @property
   def listValues(self):
@@ -294,7 +298,7 @@ class Visit(CommonModel):
 
 # Modèles pour l'AD
 
-class Produit(models.Model):
+class Produit(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
 
   class Meta:
@@ -303,7 +307,7 @@ class Produit(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Industrie(models.Model):
+class Industrie(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
 
   class Meta:

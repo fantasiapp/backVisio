@@ -25,8 +25,7 @@ class Data(DefaultView):
                 dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
-                content = request.POST.get("content")
-                answer = DataDashboard.updateFromClient(userIdGeo, userGroup[0], content)
+                answer = DataDashboard.getUpdate(userIdGeo, userGroup[0], request.GET["nature"])
                 return Response(answer)
             return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})

@@ -81,7 +81,7 @@ class ManageFromOldDatabase:
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
-        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("Ensemble", []),
+        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
         ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
@@ -126,9 +126,8 @@ class ManageFromOldDatabase:
         keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
         keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
         keyValues["ville"] = self.__findObject("id_ville", self.dictVille, year, line, Ville)
-        ensemble = Ensemble.objects.filter(name__iexact=line[self.fieldsPdv.index("ensemble")], currentYear=indexYear==1).first()
-        keyValues["enseigne"] = ensemble.enseigne
-        keyValues["ensemble"] = ensemble
+        keyValues["enseigne"] = self.__findObject("id_holding", self.dictHolding, year, line, Enseigne)
+        keyValues["ensemble"] = Ensemble.objects.filter(name__iexact=line[self.fieldsPdv.index("ensemble")], currentYear=indexYear==1).first()
         keyValues["sousEnsemble"] = SousEnsemble.objects.filter(name__iexact=line[self.fieldsPdv.index("sous-ensemble")], currentYear=indexYear==1).first()
         keyValues["site"] = Site.objects.filter(name__iexact=line[self.fieldsPdv.index("site")], currentYear=indexYear==1).first()
         keyValues["segmentCommercial"] = self.__findObject("id_segCo", self.dictSegco, year, line, SegmentCommercial)
@@ -145,10 +144,9 @@ class ManageFromOldDatabase:
         keyValues["closedAt"] = self.__computeClosedAt(line)
         keyValues["currentYear"] = indexYear==1
 
-
         for field, object in keyValues.items():
           if object == None and field != "closedAt":
-            return [False, "field {}, Pdv {}, code {} does not exists".format(field, keyValues["name"], keyValues["code"])]
+            return [False, "field {}, Pdv {}, code {} does not exist".format(field, keyValues["name"], keyValues["code"])]
         existsPdv = Pdv.objects.filter(code=keyValues["code"], currentYear=indexYear==1)
         if not existsPdv.exists():
           Pdv.objects.create(**keyValues)
@@ -189,13 +187,7 @@ class ManageFromOldDatabase:
         for (id, name) in ManageFromOldDatabase.cursor:
           existAgent = Agent.objects.filter(name__iexact=name, currentYear=indexYear == 1)
           if not existAgent.exists():
-            idDrv = drvCorrespondance[id]
-            nameDrv = self.dictDrv[listYear[indexYear]][idDrv]
-            drv = Drv.objects.filter(name=nameDrv, currentYear=indexYear == 1)
-            if drv.exists():
-              Agent.objects.create(name=name, drv=drv.first(), currentYear=indexYear == 1)
-            else:
-              return (False, "Agent {} has no drv".format(name))
+            Agent.objects.create(name=name, currentYear=indexYear == 1)
           if not listYear[indexYear] in self.dictAgent:
             self.dictAgent[listYear[indexYear]] = {}
           self.dictAgent[listYear[indexYear]][id] = name
@@ -214,20 +206,14 @@ class ManageFromOldDatabase:
     return drvCorrespondance
 
   def getAgentFinitions(self):
-    listYear = ["lastYear", "currentYear"]
     try:
       for indexYear in range(2):
-        query = "SELECT id, name, id_drv FROM ref_finition_1"
+        query = "SELECT id, name FROM ref_finition_1"
         ManageFromOldDatabase.cursor.execute(query)
-        for (id, name, id_drv) in ManageFromOldDatabase.cursor:
+        for (id, name) in ManageFromOldDatabase.cursor:
           existsAgent = AgentFinitions.objects.filter(name__iexact=name, currentYear=indexYear==1)
           if not existsAgent.exists():
-            nameDrv = self.dictDrv[listYear[indexYear]][id_drv]
-            drv = Drv.objects.filter(name=nameDrv, currentYear=indexYear==1)
-            if drv.exists():
-              AgentFinitions.objects.create(name=name, drv=drv.first(), currentYear=indexYear==1)
-            else:
-              return (False, "AgentFinitions {} has no drv".format(name))
+            AgentFinitions.objects.create(name=name, currentYear=indexYear==1)
           self.dictAgentFinitions[id] = name
     except db.Error as e:
       return "Error getAgentFinitions" + repr(e)
@@ -236,24 +222,13 @@ class ManageFromOldDatabase:
   def getEnsemble(self):
     listYear = ["lastYear", "currentYear"]
     IndexEnsemble = self.fieldsPdv.index("ensemble")
-    IndexEnseigne = self.fieldsPdv.index("id_holding")
     for indexYear in range(2):
-      dicoEnsemble, dicoEnseigne = {}, {}
+      dicoEnsemble = {}
       for line in self.listPdv[listYear[indexYear]]:
         nameEnsemble = line[IndexEnsemble]
-        idEnseigneOld = self.__cleanEnseigne(line[IndexEnseigne], nameEnsemble)
-        nameEnseigne = self.dictHolding[listYear[indexYear]][idEnseigneOld]
-        if not nameEnseigne in dicoEnsemble:
-          dicoEnsemble[nameEnseigne] = []
-        if not nameEnsemble in dicoEnsemble[nameEnseigne]:
-          dicoEnsemble[nameEnseigne].append(nameEnsemble)
-          if not nameEnseigne in dicoEnseigne:
-            existsObject = Enseigne.objects.filter(name__iexact=nameEnseigne, currentYear=indexYear==1)
-            if existsObject.exists:
-              dicoEnseigne[nameEnseigne] = existsObject.first()
-            else:
-              return (False, "Error getEnsemble : Enseigne {} does not exist".format(nameEnseigne))
-          Ensemble.objects.create(name=nameEnsemble, enseigne=dicoEnseigne[nameEnseigne], currentYear=indexYear==1)
+        if not nameEnsemble in dicoEnsemble:
+          dicoEnsemble.append(nameEnsemble)
+          Ensemble.objects.create(name=nameEnsemble, currentYear=indexYear==1)
     return ("Ensemble", False)
 
   def __cleanEnseigne(self, idEnseigne:int, nameEnsemble:str) ->str:
@@ -486,13 +461,11 @@ class ManageFromOldDatabase:
   def getCiblageLevel(self):
     volP2CD, dnP2CD, volFinition, dnFinition = 1000.0, 50, 150, 30
     dictAgent, now = {}, timezone.now()
-    for agent in Agent.objects.filter(currentYear=True):
-      drv = agent.drv
-      if not drv in dictAgent:
-        dictAgent[drv] = [agent]
-      else:
-        dictAgent[drv].append(agent)
-    for drv, listAgent in dictAgent.items():
+    listDrv = {drv.id:drv for drv in Drv.objects.filter(currentYear=True)}
+    for drv in listDrv.values():
+      dictAgent[drv.id] = set([pdv.agent for pdv in Pdv.objects.filter(sale=True, currentYear=True, drv=drv)])
+    for drvId, listAgent in dictAgent.items():
+      drv = listDrv[drvId]
       CiblageLevel.objects.create(date=now, drv=drv, volP2CD=volP2CD, dnP2CD=dnP2CD, volFinition=volFinition, dnFinition=dnFinition)
       dvP2CD = volP2CD / len(listAgent)
       ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
@@ -546,15 +519,18 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    listModel = [CiblageLevel]
     for model in listModel:
       for element in model.objects.all():
         element.delete()
     print("start")
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    self.getCiblageLevel()
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     # print(Layout.listFields())
     # print(Layout.listIndexes())
     # print(Layout.dictValues())
+
     print("end")
     return {"test":False}
       

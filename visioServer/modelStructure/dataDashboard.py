@@ -24,9 +24,9 @@ class DataDashboard:
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       dictModel = {
         "pdvs":Pdv, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
-        "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph}
+        "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph, "segmentMarketing":SegmentMarketing, "segmentCommercial":SegmentCommercial, "enseigne":Enseigne, "ensemble":Ensemble, "sousEnsemble":SousEnsemble, "site":Site, "produit":Produit, "industrie":Industrie}
       for name, model in dictModel.items():
-         DataDashboard.createFromModel(model, name)
+        DataDashboard.createFromModel(model, name)
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
@@ -47,7 +47,11 @@ class DataDashboard:
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
     for attr in listAttr:
       if hasattr(cls, attr):
-        data[attr[2:]] =  {id:value for id, value in getattr(cls, attr).items() if id in listId(data)} if attr == f"__{name}" and listId else getattr(cls, attr)
+        listIdComputed = listId(data) if listId else False
+        if attr == f"__{name}" and isinstance(listIdComputed, list):
+          data[attr[2:]] = {id:value for id, value in getattr(cls, attr).items() if id in listIdComputed}
+        else:
+          data[attr[2:]] = getattr(cls, attr)
   
   @property
   def dataQuery(self):
@@ -68,11 +72,12 @@ class DataDashboard:
       }
     listModel = {
       "pdvs":self._computeListPdv,"layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
-      "labelForGraph":False, "axisForGraph":False, "params":False}
+      "labelForGraph":False, "axisForGraph":False, "params":False, "segmentMarketing":False, "segmentCommercial":False, "enseigne":False, "ensemble":False, "sousEnsemble":False, "site":False, "produit":False, "industrie":False}
     for name, list in listModel.items():
       self.insertModel(data, name, list)
+
     self._createModelsForGeo(data)
-    self._createOtherModels(data)
+    # self._createOtherModels(data)
     self. _computeLocalTargetLevel(data)
     return data
 
@@ -155,17 +160,18 @@ class DataDashboard:
         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.filter(currentYear=True)}})
     data['ville'] = self._createModelVille(data)
 
-  def _createOtherModels(self, data):
-    models = json.loads(os.getenv('REGULAR_MODELS'))
-    regularModels = [eval(modelName) for modelName in models]
-    for model in regularModels:
-        key = camel(model.__name__)
-        if getattr(model, "currentYear", False):
-          data.update({key: {object.id:object.name for object in model.objects.filter(currentYear=True)}})
-        else:
-          data.update({key: {object.id:object.name for object in model.objects.all()}})
+  # def _createOtherModels(self, data):
+  #   models = json.loads(os.getenv('REGULAR_MODELS'))
+  #   regularModels = [eval(modelName) for modelName in models]
+  #   for model in regularModels:
+  #       key = camel(model.__name__)
+  #       if getattr(model, "currentYear", False):
+  #         data.update({key: {object.id:object.name for object in model.objects.filter(currentYear=True)}})
+  #       else:
+  #         data.update({key: {object.id:object.name for object in model.objects.all()}})
 
   def _createModelVille(self, data):
+    print("_createModelVille", data.keys())
     idVille = data['structurePdvs'].index("ville")
     listId = [pdv[idVille] for pdv in data['pdvs'].values()]
     return {object.id:object.name for object in Ville.objects.all() if object.id in listId}
@@ -193,15 +199,18 @@ class DataDashboard:
     return dictSelectedId
 
   def _computelistWP(self, data):
+    if self.__userGroup == "root": return False
     listId = []
     for db in data["dashboards"].values():
       listId += list(db[3].values())
     return set(listId)
 
   def _computelistWC(self, data):
+    if self.__userGroup == "root": return False
     return set([wp[4] for wp in data["widgetParams"].values()])
 
   def _computeListPdv(self, data):
+    if self.__userGroup == "root": return False
     return self.__computeListIdPdv(data["geoTree"])
 
   def __computeListIdPdv(self, geoTree, listId:list = []):
@@ -216,15 +225,14 @@ class DataDashboard:
     if self.__userGroup == "root":
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = self.__targetLevelDrv
-      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
     elif self.__userGroup == "drv":
-      listAgentId = [agent.id for agent in Agent.objects.filter(currentYear=True) if agent.drv.id == self.__userGeoId]
+      indexDrv, indexAgent = data["structurePdvs"].index("drv"), data["structurePdvs"].index("agent")
+      listAgentId = [line[indexAgent] for line in data["pdvs"].values() if line[indexDrv] == self.__userGeoId]
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = {id:level for id, level in self.__targetLevelDrv.items() if id == self.__userGeoId}
-      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
@@ -287,6 +295,6 @@ class DataDashboard:
 
 
   @classmethod
-  def updateFromClient(cls, userId, userGroup, content):
-    print(content)
-    return {"message":"updateFromClient received"}
+  def getUpdate(cls, userId, userGroup, nature):
+    print("query getUpdate", userId, userGroup, nature)
+    return {"message":"getUpdate received"}
