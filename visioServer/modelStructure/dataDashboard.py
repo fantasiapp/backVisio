@@ -285,7 +285,12 @@ class DataDashboard:
   @classmethod
   def getUpdate(cls, userId, userGroup, nature):
     print("query getUpdate", userId, userGroup, nature)
-    return {"message":"getUpdate received"}
+    if nature == "request":
+      return {"message":"getUpdate request received"}
+    elif nature == "acknowledge":
+      return {"message":"getUpdate acknowledge received"}
+    else:
+      return {"error":"wrong nature received"}
 
   @classmethod
   def postUpdate(cls, userId, userGroup, nature):
