@@ -38,8 +38,9 @@ class Data(DefaultView):
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         if 'action' in request.GET:
-            print("action in get")
-        if 'action' in request.POST:
-            print("action in post")
+            action = request.GET["action"]
+            print("what is it?", action, currentUser, userGroup[0], userIdGeo)
+            if action == "update":
+                print("what data", dict(request.POST))
         return Response({"message":"test"})
             
