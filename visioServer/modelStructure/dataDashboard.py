@@ -293,6 +293,6 @@ class DataDashboard:
       return {"error":"wrong nature received"}
 
   @classmethod
-  def postUpdate(cls, userId, userGroup, nature):
-    print("query getUpdate", userId, userGroup, nature)
+  def postUpdate(cls, userId, userGroup, nature, data):
+    print("query getUpdate", userId, userGroup, nature, data)
     return {"message":"postUpdate received"}
