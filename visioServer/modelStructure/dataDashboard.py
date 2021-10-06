@@ -279,7 +279,11 @@ class DataDashboard:
                   saleObject.save()
             else:
               print("creation")
-              Ventes.objects.create(date=now, pdv=id, industry=saleImported[1], product=saleImported[2], volume=saleImported[3], currentYear=True)
+              pdv = Pdv.objects.get(id=id)
+              industry = Industrie.object.get(id=saleImported[1])
+              product = Produit.object.get(id=saleImported[2])
+              print("type", type(saleImported[3]))
+              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=saleImported[3], currentYear=True)
               salesInRam.append([now.timestamp()] + saleImported[1:])
               print("in ram", [now.timestamp()] + saleImported[1:])
               print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", saleImported[3], "currentYear=", True)
