@@ -32,12 +32,14 @@ class Data(DefaultView):
 
     def post(self, request):
         print("body", request.body)
-        jsonString = request.body.decode("utf8")
+        jsonString = request.body.decode("ascii")
+        print("string", jsonString)
         currentUser = request.user
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
+            print("identification", userGroup, userIdGeo)
         else:
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if jsonString:
