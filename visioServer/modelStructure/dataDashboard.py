@@ -283,10 +283,11 @@ class DataDashboard:
               industry = Industrie.objects.get(id=saleImported[1])
               product = Produit.objects.get(id=saleImported[2])
               print("type", type(saleImported[3]))
-              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=saleImported[3], currentYear=True)
+              print(now, pdv, industry, product, float(saleImported[3]))
+              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
               salesInRam.append([now.timestamp()] + saleImported[1:])
               print("in ram", [now.timestamp()] + saleImported[1:])
-              print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", saleImported[3], "currentYear=", True)
+              print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", float(saleImported[3]), "currentYear=", True)
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
