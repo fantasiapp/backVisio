@@ -248,8 +248,6 @@ class DataDashboard:
     try:
       jsonData = json.loads(jsonString)
       print("jsonData loaded")
-      self.updateDatabase(now, user, json)
-      print("database updated")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
       print("creation saved in log")
       now = self.updateDatabase(jsonData)
