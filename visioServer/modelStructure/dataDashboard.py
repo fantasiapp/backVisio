@@ -21,14 +21,14 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
-      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
-      DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       dictModel = {
         "pdvs":Pdv, "dashboards":Dashboard, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
         "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph, "segmentMarketing":SegmentMarketing, "segmentCommercial":SegmentCommercial, "enseigne":Enseigne, "ensemble":Ensemble, "sousEnsemble":SousEnsemble, "site":Site, "produit":Produit, "industrie":Industrie,
         "drv":Drv, "agent":Agent, "dep":Dep, "bassin":Bassin, "ville":Ville}
       for name, model in dictModel.items():
-        DataDashboard.createFromModel(model, name)
+        DataDashboard.createFromModel(model, name, isNotOnServer)
+      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
+      DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
@@ -36,7 +36,17 @@ class DataDashboard:
       self._computeTargetLevel()
 
   @classmethod
-  def createFromModel(cls, model, name):
+  def createFromModel(cls, model, name, isNotOnServer):
+    if name == "pdvs" and isNotOnServer:
+      setattr(cls, "__indexesPdvs", Pdv.listIndexes())
+      setattr(cls, "__structurePdvs", Pdv.listFields())
+      if not os.path.isfile("./visioServer/modelStructure/pdvDict.json"):
+        with open("./visioServer/modelStructure/pdvDict.json", 'w') as jsonFile:
+          json.dump(Pdv.dictValues(), jsonFile, indent = 3)
+      with open("./visioServer/modelStructure/pdvDict.json") as jsonFile:
+        pdvs = {int(id):value for id, value in json.load(jsonFile).items()}
+        setattr(cls, "__pdvs", pdvs)
+      return
     if len(model.listFields()) > 1:
       setattr(cls, f"__structure{name.capitalize()}", model.listFields())
     indexes = model.listIndexes()
@@ -182,7 +192,6 @@ class DataDashboard:
         dictLevelWithDashBoard[level[3]][3] = level
     level.pop()
     return list(dictLevelWithDashBoard.values())[0]
-
 
   @classmethod
   def _buildTree(cls, name, steps:list, pdvs:dict):

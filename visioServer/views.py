@@ -40,7 +40,7 @@ class Data(DefaultView):
             action = request.GET["action"]
             print("what is it?", action, currentUser, userGroup[0], userIdGeo)
             if action == "update":
-                print("what data", request.POST)
+                print("what data POST", list(request.POST.keys()), list(request.POST.values()), "GET", list(request.GET.keys()), list(request.GET.values()))
                 answer = DataDashboard.postUpdate(userIdGeo, userGroup[0], request.POST)
                 return Response(answer)
         return Response({"message":"test"})
