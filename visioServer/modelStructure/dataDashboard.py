@@ -24,13 +24,7 @@ class DataDashboard:
     if not DataDashboard.__levelGeo:
       listClass= ([cls for cls in CommonModel.__subclasses__() if "nature" in cls.readingData and cls.readingData["nature"] == "normal"])
       normalClass = list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
-      print(normalClass)
-
-      dictModel = {
-        "pdvs":Pdv, "dashboards":Dashboard, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
-        "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph, "segmentMarketing":SegmentMarketing, "segmentCommercial":SegmentCommercial, "enseigne":Enseigne, "ensemble":Ensemble, "sousEnsemble":SousEnsemble, "site":Site, "produit":Produit, "industrie":Industrie,
-        "drv":Drv, "agent":Agent, "dep":Dep, "bassin":Bassin, "ville":Ville}
-      for name, model in dictModel.items():
+      for name, model in normalClass:
         DataDashboard.createFromModel(model, name, isNotOnServer)
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
@@ -144,10 +138,10 @@ class DataDashboard:
 
   def _computeListPdv(self, data, name):
     if self.__userGroup == "root": return False
-    self.__pdvSelected = self.__computeListIdPdv(data["geoTree"])
+    self.__pdvSelected = self.__computeListIdPdv(data["geoTree"], [])
     return self.__pdvSelected
 
-  def __computeListIdPdv(self, geoTree, listId:list = []):
+  def __computeListIdPdv(self, geoTree, listId:list):
     if isinstance(geoTree, list):
       for subLevel in geoTree[1]:
         self.__computeListIdPdv(subLevel, listId)

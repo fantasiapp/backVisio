@@ -73,7 +73,7 @@ class ParamVisio(CommonModel):
   prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
   fvalue = models.CharField(max_length=64, unique=False, blank=False)
   typeValue = models.CharField(max_length=64, unique=False, blank=False)
-  readingData = {"nature":"normal", "position":5, "name":"params"}
+  readingData = {"nature":"normal", "position":6, "name":"params"}
 
   @classmethod
   def listFields(cls):
@@ -104,7 +104,7 @@ class ParamVisio(CommonModel):
 class Drv(CommonModel):
   name = models.CharField('drv', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":16, "name":"drv"}
+  readingData = {"nature":"normal", "position":17, "name":"drv"}
 
   class Meta:
     verbose_name = "DRV"
@@ -115,7 +115,7 @@ class Drv(CommonModel):
 class Agent(CommonModel):
   name = models.CharField('agent', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":17, "name":"agent"}
+  readingData = {"nature":"normal", "position":18, "name":"agent"}
 
   class Meta:
     verbose_name = "Secteur"
@@ -136,7 +136,7 @@ class AgentFinitions(CommonModel):
 class Dep(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":18, "name":"dep"}
+  readingData = {"nature":"normal", "position":19, "name":"dep"}
 
   class Meta:
     verbose_name = "Département"
@@ -147,7 +147,7 @@ class Dep(CommonModel):
 class Bassin(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":19, "name":"bassin"}
+  readingData = {"nature":"normal", "position":20, "name":"bassin"}
 
   class Meta:
     verbose_name = "Bassin"
@@ -161,7 +161,7 @@ class Bassin(CommonModel):
 
 class Ville(CommonModel):
   name = models.CharField('ville', max_length=128, unique=True)
-  readingData = {"nature":"normal", "position":20, "name":"ville"}
+  readingData = {"nature":"normal", "position":21, "name":"ville"}
 
   class Meta:
     verbose_name = "Ville"
@@ -172,7 +172,7 @@ class Ville(CommonModel):
 class SegmentMarketing(CommonModel):
   name = models.CharField('segment_marketing', max_length=32, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":8, "name":"segmentMarketing"}
+  readingData = {"nature":"normal", "position":9, "name":"segmentMarketing"}
 
   class Meta:
     verbose_name = "Segment Marketing"
@@ -183,7 +183,7 @@ class SegmentMarketing(CommonModel):
 class SegmentCommercial(CommonModel):
   name = models.CharField('segment_commercial', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":9, "name":"segmentCommercial"}
+  readingData = {"nature":"normal", "position":10, "name":"segmentCommercial"}
 
   class Meta:
     verbose_name = "Segment Commercial"
@@ -194,7 +194,7 @@ class SegmentCommercial(CommonModel):
 class Enseigne(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":10, "name":"enseigne"}
+  readingData = {"nature":"normal", "position":11, "name":"enseigne"}
 
   class Meta:
     verbose_name = "Enseigne"
@@ -205,7 +205,7 @@ class Enseigne(CommonModel):
 class Ensemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":11, "name":"ensemble"}
+  readingData = {"nature":"normal", "position":12, "name":"ensemble"}
 
   class Meta:
     verbose_name = "Ensemble"
@@ -216,7 +216,7 @@ class Ensemble(CommonModel):
 class SousEnsemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":12, "name":"sousEnsemble"}
+  readingData = {"nature":"normal", "position":13, "name":"sousEnsemble"}
 
   class Meta:
     verbose_name = "Sous-Ensemble"
@@ -227,7 +227,7 @@ class SousEnsemble(CommonModel):
 class Site(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":13, "name":"site"}
+  readingData = {"nature":"normal", "position":14, "name":"site"}
 
   class Meta:
     verbose_name = "Site"
@@ -317,7 +317,7 @@ class Visit(CommonModel):
 
 class Produit(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
-  readingData = {"nature":"normal", "position":14, "name":"produit"}
+  readingData = {"nature":"normal", "position":15, "name":"produit"}
 
   class Meta:
     verbose_name = "Produit"
@@ -327,7 +327,7 @@ class Produit(CommonModel):
 
 class Industrie(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
-  readingData = {"nature":"normal", "position":15, "name":"industrie"}
+  readingData = {"nature":"normal", "position":16, "name":"industrie"}
 
   class Meta:
     verbose_name = "Industrie"
@@ -428,7 +428,7 @@ class WidgetCompute(CommonModel):
   groupAxis1 = models.CharField("Filtre Axe 1", max_length=4096, unique=False, blank=False, default=None)
   groupAxis2 = models.CharField("Filtre Axe 2", max_length=4096, unique=False, blank=False, default=None)
   percent = models.CharField("Pourcentage", max_length=32, unique=False, blank=False, default="no")
-  readingData = {"nature":"normal", "position":5, "name":"dashboards"}
+  readingData = {"nature":"normal", "position":5, "name":"widgetCompute"}
 
 
 class Dashboard(CommonModel):
@@ -461,7 +461,7 @@ class LabelForGraph(CommonModel):
   axisType = models.CharField(max_length=32, unique=False, blank=False, default=None)
   label = models.CharField(max_length=32, unique=False, blank=False, default=None)
   color = models.CharField(max_length=32, unique=False, blank=False, default=None)
-  readingData = {"nature":"normal", "position":6, "name":"labelForGraph"}
+  readingData = {"nature":"normal", "position":7, "name":"labelForGraph"}
 
   def __str__(self) ->str:
     return "LabelForGraph " + str(self.axisType) + " " + str(self.label) + " " + str(self.color)
@@ -469,7 +469,7 @@ class LabelForGraph(CommonModel):
 class AxisForGraph(CommonModel):
   name = models.CharField(max_length=32, unique=False, blank=False, default=None)
   labels = models.ManyToManyField("LabelForGraph")
-  readingData = {"nature":"normal", "position":7, "name":"axisForGraph"}
+  readingData = {"nature":"normal", "position":8, "name":"axisForGraph"}
 
   class Meta:
     verbose_name = "Axes pour les graphiques"
