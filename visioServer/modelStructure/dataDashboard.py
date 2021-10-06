@@ -272,10 +272,13 @@ class DataDashboard:
               saleObject = salesObject[0]
               if abs(saleObject.volume - saleImported[3]) >= 1:
                 salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
-                self.__updateSaleRam(salesInRam, saleImported, now)
-                saleObject.volume = saleImported[3]
-                saleObject.date = now
-                saleObject.save()
+                if self.__updateSaleRam(salesInRam, saleImported, now):
+                  saleObject.volume = saleImported[3]
+                  saleObject.date = now
+                  saleObject.save()
+                else:
+                  Ventes.objects.create(date=now, pdv=id, industry=saleImported[1], product=saleImported[2], volume=saleImported[3])
+                  salesInRam.append([now.timestamp(), id, saleImported[1], saleImported[2], saleImported[3]])
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
@@ -284,4 +287,5 @@ class DataDashboard:
         saleInRam[0] = now.timestamp()
         saleInRam[3] = saleImported[3]
         print("updated", saleInRam, "new value", saleImported[3])
-        return
+        return True
+    return False
