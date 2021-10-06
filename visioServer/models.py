@@ -44,7 +44,7 @@ class CommonModel(models.Model):
     listRow = [getattr(self, field, False) for field in listFields]
     if "date" in listFields:
       indexDate = listFields.index("date")
-      listRow[indexDate] = listRow[indexDate].isoformat() if listRow[indexDate] else None
+      listRow[indexDate] = listRow[indexDate].timestamp() if listRow[indexDate] else None
     for index in self.listIndexes():
       if isinstance(self._meta.get_field(listFields[index]), models.ManyToManyField):
         listRow[index] = [element.id for element in listRow[index].all()]
@@ -545,7 +545,6 @@ class CiblageLevel(models.Model):
 
 class LogUpdate(models.Model):
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
-  # user = models.OneToOneField(User, on_delete=models.CASCADE)
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
   data = models.TextField("Json des updates reçus", blank=True, default="")
 
