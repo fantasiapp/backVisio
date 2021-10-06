@@ -12,9 +12,10 @@ load_dotenv()
 class DataDashboard:
   __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
-  __structureTargetLevelDrv = None
-  __structureTargetLevelAgentP2CD = None
-  __structureTargetLevelAgentFinition = None
+  __structureTargetLevelDrv = ["volP2CD", "dnP2CD", "volFinition", "dnFinition"]
+  __structureTargetLevelAgentP2CD = ["volP2CD", "dnP2CD"]
+  __structureTargetLevelAgentFinition = ["volFinition", "dnFinition"]
+  
 
   def __init__(self, userGeoId, userGroup, isNotOnServer):
     self.__userGeoId = userGeoId
@@ -23,8 +24,9 @@ class DataDashboard:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       dictModel = {
-        "pdvs":Pdv, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
-        "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph, "segmentMarketing":SegmentMarketing, "segmentCommercial":SegmentCommercial, "enseigne":Enseigne, "ensemble":Ensemble, "sousEnsemble":SousEnsemble, "site":Site, "produit":Produit, "industrie":Industrie}
+        "pdvs":Pdv, "dashboards":Dashboard, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
+        "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph, "segmentMarketing":SegmentMarketing, "segmentCommercial":SegmentCommercial, "enseigne":Enseigne, "ensemble":Ensemble, "sousEnsemble":SousEnsemble, "site":Site, "produit":Produit, "industrie":Industrie,
+        "drv":Drv, "agent":Agent, "dep":Dep, "bassin":Bassin, "ville":Ville}
       for name, model in dictModel.items():
         DataDashboard.createFromModel(model, name)
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
@@ -47,36 +49,28 @@ class DataDashboard:
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
     for attr in listAttr:
       if hasattr(cls, attr):
-        listIdComputed = listId(data) if listId else False
-        if attr == f"__{name}" and isinstance(listIdComputed, list):
+        listIdComputed = listId(data, name) if listId else False
+        if attr == f"__{name}" and (isinstance(listIdComputed, list) or isinstance(listIdComputed, set)):
           data[attr[2:]] = {id:value for id, value in getattr(cls, attr).items() if id in listIdComputed}
         else:
           data[attr[2:]] = getattr(cls, attr)
   
   @property
   def dataQuery(self):
-    levelGeo = self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup)
-    structureDashboard, dashboards = self._computeLocalDashboards(levelGeo)
-    geoTree = self._computeLocalGeoTree()
     data = {
       "structureLevel":DataDashboard.__structureLevel,
-      "levelGeo":levelGeo,
+      "levelGeo":self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup),
       "levelTrade": DataDashboard.__levelTrade,
-      "structureDashboard":structureDashboard,
-      "indexesDashboard":[1,3],
-      "dashboards": dashboards,
-      "geoTree":geoTree,
+      "geoTree":self._computeLocalGeoTree(),
       "tradeTree":DataDashboard.__tradeTree,
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
       }
     listModel = {
-      "pdvs":self._computeListPdv,"layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
-      "labelForGraph":False, "axisForGraph":False, "params":False, "segmentMarketing":False, "segmentCommercial":False, "enseigne":False, "ensemble":False, "sousEnsemble":False, "site":False, "produit":False, "industrie":False}
+      "pdvs":self._computeListPdv, "dashboards":self._computelistdb, "layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
+      "labelForGraph":False, "axisForGraph":False, "params":False, "segmentMarketing":False, "segmentCommercial":False, "enseigne":self._computeFieldPdv, "ensemble":self._computeFieldPdv, "sousEnsemble":self._computeFieldPdv, "site":self._computeFieldPdv, "produit":False, "industrie":False, "drv":self._computeFieldPdv, "agent":self._computeFieldPdv, "dep":self._computeFieldPdv, "bassin":self._computeFieldPdv, "ville":self._computeFieldPdv}
     for name, list in listModel.items():
       self.insertModel(data, name, list)
-
-    self._createModelsForGeo(data)
     self. _computeLocalTargetLevel(data)
     return data
 
@@ -84,33 +78,6 @@ class DataDashboard:
     if originLevel[0] == selectedLevel:
       return originLevel
     return self._computeLocalLevels(originLevel[3], selectedLevel)
-
-  def _computeLocalDashboards(self, levelGeo:list) -> dict:
-    listIdDb = self._computelistDashboardId(levelGeo)
-    dictDb = {object.id:self.__computeDashboard(object) for object in Dashboard.objects.all() if object.id in listIdDb}
-    structureDashboard, dashboards = [], {}
-    for id, db in dictDb.items():
-      if not structureDashboard:
-        structureDashboard = list(db.keys())
-      dashboards[id] = list(db.values())
-      listObjWidgetParam = [WidgetParams.objects.get(id = idWP) for idWP in dashboards[id][3]]
-      dashboards[id][3] = {object.position:object.id for object in listObjWidgetParam}
-    return structureDashboard, dashboards
-
-  def _computelistDashboardId(self, levelGeo):
-    listId = []
-    for level in [levelGeo, self.__levelTrade]:
-      while len(level) == 4:
-        listId += level[2]
-        level = level[3]
-    return set(listId)
-
-  def __computeDashboard(self, object):
-    dictDb = model_to_dict(object)
-    dictDb["comment"] = json.loads(dictDb["comment"])
-    dictDb["widgetParams"] = [widgetParams.id for widgetParams in dictDb["widgetParams"]]
-    del dictDb["id"]
-    return dictDb
 
   def _computeLocalGeoTree(self):
     if self.__userGroup == "root":
@@ -136,70 +103,30 @@ class DataDashboard:
         hierarchy.append((drvId, agent[0]))
     return hierarchy
 
-  def _createModelsForGeo(self, data):
-    models = json.loads(os.getenv('GEO_MODELS'))
-    if self.__userGroup == "root":
-      data["root"] = {0:""}
-    else:
-      del models[0]
-      if self.__userGroup == "drv":
-        drvId = data["geoTree"][0]
-        data["drv"] = {drvId:Drv.objects.get(id=drvId).name}
-      else:
-        del models[0]
-        agentId = data["geoTree"][0]
-        data["agent"] = {agentId:Agent.objects.get(id=agentId).name}
-    regularModels = [eval(modelName) for modelName in models]
-    dictSelectedId = self.__computeSelectedId(data["geoTree"], models)
-    for model in regularModels:
-      key = camel(model.__name__)
-      if key in dictSelectedId:
-         data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.filter(currentYear=True) if object.id in dictSelectedId[key]}})
-      else:
-        data.update({key: {object.id: self._formatObjectName(object.name, key) for object in model.objects.filter(currentYear=True)}})
-    data['ville'] = self._createModelVille(data)
+  def _computelistdb(self, data, name):
+    levelGeo = data["levelGeo"]
+    listId = []
+    for level in [levelGeo, self.__levelTrade]:
+      while len(level) == 4:
+        listId += level[2]
+        level = level[3]
+    return set(listId)
 
-  def _createModelVille(self, data):
-    idVille = data['structurePdvs'].index("ville")
-    listId = [pdv[idVille] for pdv in data['pdvs'].values()]
-    return {object.id:object.name for object in Ville.objects.all() if object.id in listId}
-    
-
-  def _formatObjectName(self, name, modelName):
-    if modelName == "bassin":
-      return name.replace("Négoce_", "")
-    return name
-
-  def __computeSelectedId(self, tree, models)->dict:
-    """compute ids for object selected"""
-    listLevel = [camel(name) for name in models]
-    dictSelectedId = {}
-    if self.__userGroup != "root":
-      currentIds = tree[1]
-      for level in listLevel:
-        listIds, nextIds = [], []
-        if isinstance(currentIds[0], list):
-          for listCouple in currentIds:
-            listIds.append(listCouple[0])
-            nextIds += listCouple[1]
-          dictSelectedId[level] = listIds
-          currentIds = nextIds
-    return dictSelectedId
-
-  def _computelistWP(self, data):
+  def _computelistWP(self, data, name):
     if self.__userGroup == "root": return False
     listId = []
     for db in data["dashboards"].values():
       listId += list(db[3].values())
     return set(listId)
 
-  def _computelistWC(self, data):
+  def _computelistWC(self, data, name):
     if self.__userGroup == "root": return False
     return set([wp[4] for wp in data["widgetParams"].values()])
 
-  def _computeListPdv(self, data):
+  def _computeListPdv(self, data, name):
     if self.__userGroup == "root": return False
-    return self.__computeListIdPdv(data["geoTree"])
+    self.__pdvSelected = self.__computeListIdPdv(data["geoTree"])
+    return self.__pdvSelected
 
   def __computeListIdPdv(self, geoTree, listId:list = []):
     if isinstance(geoTree, list):
@@ -208,6 +135,18 @@ class DataDashboard:
     else:
       listId.append(geoTree)
     return listId
+  
+  def _computeFieldPdv(self, data, name):
+    if self.__userGroup == "root":
+      if name == "drv":
+        data["root"] = {0:""}
+      return False
+    if self.__userGroup == "agent" and name == "agent":
+      del data["drv"]
+    if isinstance(self.__pdvSelected[0], int):
+      self.__pdvSelected = [data["pdvs"][id] for id in self.__pdvSelected]
+    indexField = data["structurePdvs"].index(name)
+    return set([line[indexField] for line in self.__pdvSelected])
 
   def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":
@@ -269,10 +208,6 @@ class DataDashboard:
   def _computeTargetLevel(cls):
     cls.__targetLevelDrv, cls.__targetLevelAgentP2CD, cls.__targetLevelAgentFinition = {}, {}, {}
     for tlObject in CiblageLevel.objects.all():
-      if not cls.__structureTargetLevelDrv:
-        cls.__structureTargetLevelDrv = ["volP2CD", "dnP2CD", "volFinition", "dnFinition"]
-        cls.__structureTargetLevelAgentP2CD = ["volP2CD", "dnP2CD"]
-        cls.__structureTargetLevelAgentFinition = ["volFinition", "dnFinition"]
       if tlObject.drv:
         cls.__targetLevelDrv[tlObject.drv.id] = [tlObject.volP2CD, tlObject.dnP2CD, tlObject.volFinition, tlObject.dnFinition]
       else:
@@ -290,7 +225,7 @@ class DataDashboard:
     elif nature == "acknowledge":
       return {"message":"getUpdate acknowledge received"}
     else:
-      return {"error":"wrong nature received"}
+      return {"error":f"wrong nature received : {nature}"}
 
   @classmethod
   def postUpdate(cls, userId, userGroup, data):

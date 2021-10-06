@@ -99,7 +99,7 @@ class ParamVisio(CommonModel):
       return float(self.fvalue)
     return self.fvalue
 
-class Drv(models.Model):
+class Drv(CommonModel):
   name = models.CharField('drv', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -109,7 +109,7 @@ class Drv(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Agent(models.Model):
+class Agent(CommonModel):
   name = models.CharField('agent', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -119,7 +119,7 @@ class Agent(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class AgentFinitions(models.Model):
+class AgentFinitions(CommonModel):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -129,7 +129,7 @@ class AgentFinitions(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Dep(models.Model):
+class Dep(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -139,7 +139,7 @@ class Dep(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Bassin(models.Model):
+class Bassin(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -149,7 +149,11 @@ class Bassin(models.Model):
   def __str__(self) ->str:
     return self.name
 
-class Ville(models.Model):
+  @property
+  def listValues(self):
+    return [bassin.replace("Négoce_", "") for bassin in super().listValues]
+
+class Ville(CommonModel):
   name = models.CharField('ville', max_length=128, unique=True)
 
   class Meta:
@@ -408,6 +412,7 @@ class WidgetCompute(CommonModel):
 
 
 class Dashboard(CommonModel):
+  jsonFields = ["comment"]
   name = models.CharField(max_length=64, unique=False, blank=False, default=None)
   layout = models.ForeignKey('Layout', on_delete=models.PROTECT, blank=False, default=1)
   comment = models.CharField(max_length=2048, unique=False, blank=False, default=None)
@@ -415,6 +420,15 @@ class Dashboard(CommonModel):
 
   @classmethod
   def listFields(csl): return ["name", "layout", "comment", "widgetParams"]
+
+  @property
+  def listValues(self):
+      lv = super().listValues
+      listObjWidgetParam = [WidgetParams.objects.get(id = wp.id) for wp in self.widgetParams.all()]
+      indexWP = self.listFields().index("widgetParams")
+      lv[indexWP] = {object.position:object.id for object in listObjWidgetParam}
+      return lv
+
 
 class DashboardTree(models.Model):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
