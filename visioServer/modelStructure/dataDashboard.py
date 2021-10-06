@@ -254,8 +254,8 @@ class DataDashboard:
       print("query getUpdate", userName, now)
       return {"message":"postUpdate received"}
     except:
-      update = LogUpdate.objects.get(id=14)
-      self.updateDatabase(now, json.loads(update.data))
+      # update = LogUpdate.objects.get(id=14)
+      # self.updateDatabase(now, json.loads(update.data))
       return {"error":"postUpdate body is not json"}
 
   def updateDatabase(self, now, data):
@@ -264,4 +264,19 @@ class DataDashboard:
       if isinstance(data["pdvs"], dict):
         for id, value in data["pdvs"].items():
           sales = value[indexSales]
-          print("pdv", id, sales)
+          for saleImported in sales:
+            salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
+            if salesObject:
+              saleObject = salesObject[0]
+              if abs(saleObject.volume - saleImported[3]) >= 1:
+                salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
+                self.__updateSaleRam(salesInRam, saleImported)
+                saleObject.volume = saleImported[3]
+                saleObject.save()
+
+  def __updateSaleRam(self, salesInRam, saleImported):
+    for saleInRam in salesInRam:
+      if saleInRam[1]  == saleImported[1] and saleInRam[2]  == saleImported[2]:
+        saleInRam[3] = saleImported[3]
+        print("updated", saleInRam, "new value", saleImported[3])
+        return
