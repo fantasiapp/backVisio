@@ -259,6 +259,7 @@ class DataDashboard:
       return {"error":"postUpdate body is not json"}
 
   def updateDatabase(self, now, data):
+    print("updateDatabase")
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       if isinstance(data["pdvs"], dict):
