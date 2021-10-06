@@ -248,18 +248,22 @@ class DataDashboard:
     now = timezone.now()
     try:
       jsonData = json.loads(jsonString)
+      print("jsonData loaded")
       self.updateDatabase(now, user, json)
+      print("database updated")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
-      self.updateDatabase(now, jsonData)
+      print("creation saved in log")
+      now = self.updateDatabase(jsonData)
       print("query getUpdate", userName, now)
       return {"message":"postUpdate received"}
     except:
-      # update = LogUpdate.objects.get(id=14)
-      # self.updateDatabase(now, json.loads(update.data))
+      update = LogUpdate.objects.get(id=14)
+      self.updateDatabase(json.loads(update.data))
       return {"error":"postUpdate body is not json"}
 
-  def updateDatabase(self, now, data):
+  def updateDatabase(self, data):
     print("updateDatabase")
+    now = timezone.now()
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       if isinstance(data["pdvs"], dict):
@@ -271,13 +275,16 @@ class DataDashboard:
               saleObject = salesObject[0]
               if abs(saleObject.volume - saleImported[3]) >= 1:
                 salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
-                self.__updateSaleRam(salesInRam, saleImported)
+                self.__updateSaleRam(salesInRam, saleImported, now)
                 saleObject.volume = saleImported[3]
+                saleObject.date = now
                 saleObject.save()
+    return now
 
-  def __updateSaleRam(self, salesInRam, saleImported):
+  def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:
       if saleInRam[1]  == saleImported[1] and saleInRam[2]  == saleImported[2]:
+        saleInRam[0] = now.timestamp()
         saleInRam[3] = saleImported[3]
         print("updated", saleInRam, "new value", saleImported[3])
         return

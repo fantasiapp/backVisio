@@ -45,5 +45,5 @@ class Data(DefaultView):
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if jsonString:
             dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
-            return Response(dataDashBoard.postUpdate(request.user,jsonString))
+            return Response(dataDashBoard.postUpdate(jsonString))
         return Response({"error":"empty body"})
