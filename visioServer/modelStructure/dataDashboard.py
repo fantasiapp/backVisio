@@ -166,6 +166,7 @@ class DataDashboard:
     if self.__userGroup == "root":
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = self.__targetLevelDrv
+      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
@@ -174,6 +175,7 @@ class DataDashboard:
       listAgentId = [line[indexAgent] for line in data["pdvs"].values() if line[indexDrv] == self.__userGeoId]
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = {id:level for id, level in self.__targetLevelDrv.items() if id == self.__userGeoId}
+      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
@@ -240,11 +242,26 @@ class DataDashboard:
     else:
       return {"error":f"wrong nature received : {nature}"}
 
-  @classmethod
-  def postUpdate(cls, userName, jsonString):
+  def postUpdate(self, userName, jsonString):
     # data = json.loads(jsonString)
     user = User.objects.get(username=userName)
     now = timezone.now()
-    LogUpdate.objects.create(date=now, user=user, data=jsonString)
-    print("query getUpdate", userName, now)
-    return {"message":"postUpdate received"}
+    try:
+      jsonData = json.loads(jsonString)
+      self.updateDatabase(now, user, json)
+      LogUpdate.objects.create(date=now, user=user, data=jsonString)
+      self.updateDatabase(now, jsonData)
+      print("query getUpdate", userName, now)
+      return {"message":"postUpdate received"}
+    except:
+      update = LogUpdate.objects.get(id=14)
+      self.updateDatabase(now, json.loads(update.data))
+      return {"error":"postUpdate body is not json"}
+
+  def updateDatabase(self, now, data):
+    if "pdvs" in data:
+      indexSales = getattr(self, "__structurePdvs").index("sales")
+      if isinstance(data["pdvs"], dict):
+        for id, value in data["pdvs"].items():
+          sales = value[indexSales]
+          print("pdv", id, sales)
