@@ -232,11 +232,23 @@ class DataDashboard:
           cls.__targetLevelAgentFinition[tlObject.agent.id] = [tlObject.volFinition, tlObject.dnFinition]
 
 
-  @classmethod
-  def getUpdate(cls, userId, userGroup, nature):
-    print("query getUpdate", userId, userGroup, nature)
+  def getUpdate(self, userProfile, nature):
+    geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
+    listIdPdv = False if self.__userGroup == "root" else self.__computeListIdPdv(geoTree, [])
+    now = timezone.now()
     if nature == "request":
-      return {"message":"getUpdate request received"}
+      listUpdate = [json.loads(logUpdate.data) for logUpdate in LogUpdate.objects.all()]
+      if listUpdate:
+        jsonToSend = {key:{} for key in listUpdate[0]}
+        for dictUpdate in listUpdate:
+          for id, pdv in dictUpdate["pdvs"].items():
+            if not listIdPdv or id in listIdPdv:
+              jsonToSend["pdvs"][id] = pdv
+        if userProfile:
+          userProfile.lastUpdate = now
+          userProfile.save()
+        return jsonToSend      
+      return {}
     elif nature == "acknowledge":
       return {"message":"getUpdate acknowledge received"}
     else:
@@ -247,47 +259,34 @@ class DataDashboard:
     now = timezone.now()
     try:
       jsonData = json.loads(jsonString)
-      print("jsonData loaded")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
-      print("creation saved in log")
       now = self.updateDatabase(jsonData)
-      print("query getUpdate", userName, now)
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
 
   def updateDatabase(self, data):
-    print("updateDatabase")
     now = timezone.now()
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
-      if isinstance(data["pdvs"], dict):
-        for id, value in data["pdvs"].items():
-          print("pdv", id)
-          sales = value[indexSales]
-          for saleImported in sales:
-            print("saleImported", saleImported)
-            salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
-            if salesObject:
-              saleObject = salesObject[0]
-              if abs(saleObject.volume - saleImported[3]) >= 1:
-                salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
-                if self.__updateSaleRam(salesInRam, saleImported, now):
-                  print("update")
-                  saleObject.volume = saleImported[3]
-                  saleObject.date = now
-                  saleObject.save()
-            else:
-              print("creation")
-              pdv = Pdv.objects.get(id=id)
-              industry = Industrie.objects.get(id=saleImported[1])
-              product = Produit.objects.get(id=saleImported[2])
-              print("type", type(saleImported[3]))
-              print(now, pdv, industry, product, float(saleImported[3]))
-              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
-              salesInRam.append([now.timestamp()] + saleImported[1:])
-              print("in ram", [now.timestamp()] + saleImported[1:])
-              print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", float(saleImported[3]), "currentYear=", True)
+      for id, value in data["pdvs"].items():
+        sales = value[indexSales]
+        for saleImported in sales:
+          salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
+          if salesObject:
+            saleObject = salesObject[0]
+            if abs(saleObject.volume - saleImported[3]) >= 1:
+              salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
+              if self.__updateSaleRam(salesInRam, saleImported, now):
+                saleObject.volume = saleImported[3]
+                saleObject.date = now
+                saleObject.save()
+          else:
+            pdv = Pdv.objects.get(id=id)
+            industry = Industrie.objects.get(id=saleImported[1])
+            product = Produit.objects.get(id=saleImported[2])
+            Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
+            salesInRam.append([now.timestamp()] + saleImported[1:])
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
@@ -295,5 +294,5 @@ class DataDashboard:
       if saleInRam[1]  == saleImported[1] and saleInRam[2]  == saleImported[2]:
         saleInRam[0] = now.timestamp()
         saleInRam[3] = saleImported[3]
-        print("updated", saleInRam, "new value", saleImported[3])
+        return
         

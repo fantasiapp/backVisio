@@ -487,8 +487,9 @@ class AxisForGraph(CommonModel):
 # Informations complémentaire pour les users profile
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     idGeo = models.IntegerField(blank=True, default=None)
+    lastUpdate = models.DateTimeField('Dernière mise à jour', blank=True, null=True, default=None)
 
 # Information ciblage
 
