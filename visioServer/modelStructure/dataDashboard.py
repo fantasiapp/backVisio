@@ -243,7 +243,6 @@ class DataDashboard:
       return {"error":f"wrong nature received : {nature}"}
 
   def postUpdate(self, userName, jsonString):
-    # data = json.loads(jsonString)
     user = User.objects.get(username=userName)
     now = timezone.now()
     try:
@@ -257,8 +256,8 @@ class DataDashboard:
       print("query getUpdate", userName, now)
       return {"message":"postUpdate received"}
     except:
-      update = LogUpdate.objects.get(id=14)
-      self.updateDatabase(json.loads(update.data))
+      # update = LogUpdate.objects.get(id=14)
+      # self.updateDatabase(json.loads(update.data))
       return {"error":"postUpdate body is not json"}
 
   def updateDatabase(self, data):
