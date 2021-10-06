@@ -32,18 +32,5 @@ class Data(DefaultView):
 
     def post(self, request):
         print("body", request.body)
-        currentUser = request.user
-        userGroup = request.user.groups.values_list('name', flat=True)
-        currentProfile = UserProfile.objects.filter(user=currentUser)
-        if userGroup:
-            userIdGeo = currentProfile[0].idGeo if currentProfile else None
-        print("what data POST", list(request.POST.keys()), list(request.POST.values()))
-        if 'action' in request.GET:
-            action = request.GET["action"]
-            print("who is it?", currentUser, userGroup[0], userIdGeo)
-            if action == "update":
-                print("what data POST", list(request.POST.keys()), list(request.POST.values()), "GET", list(request.GET.keys()), list(request.GET.values()))
-                answer = DataDashboard.postUpdate(userIdGeo, userGroup[0], request.POST)
-                return Response(answer)
-        return Response({"message":"test"})
-            
+        jsonString = request.body.decode("utf8")
+        return Response(DataDashboard.postUpdate(request.user,jsonString))

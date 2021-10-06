@@ -543,5 +543,11 @@ class CiblageLevel(models.Model):
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
+class LogUpdate(models.Model):
+  date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
+  # user = models.OneToOneField(User, on_delete=models.CASCADE)
+  user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+  data = models.TextField("Json des updates reçus", blank=True, default="")
+
 
 

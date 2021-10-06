@@ -5,6 +5,7 @@ from django.forms.models import model_to_dict
 from django.db.models.fields.related import ForeignKey
 from ..utils import camel
 import os
+from django.utils import timezone
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -240,6 +241,10 @@ class DataDashboard:
       return {"error":f"wrong nature received : {nature}"}
 
   @classmethod
-  def postUpdate(cls, userId, userGroup, data):
-    print("query getUpdate", userId, userGroup, data)
+  def postUpdate(cls, userName, jsonString):
+    # data = json.loads(jsonString)
+    user = User.objects.get(username=userName)
+    now = timezone.now()
+    LogUpdate.objects.create(date=now, user=user, data=jsonString)
+    print("query getUpdate", userName, now)
     return {"message":"postUpdate received"}
