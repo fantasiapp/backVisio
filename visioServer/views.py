@@ -31,6 +31,7 @@ class Data(DefaultView):
         return Response({"error":f"no action defined"})
 
     def post(self, request):
+        print("body", request.body)
         currentUser = request.user
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
