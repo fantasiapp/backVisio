@@ -36,9 +36,10 @@ class Data(DefaultView):
         currentProfile = UserProfile.objects.filter(user=currentUser)
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
+        print("what data POST", list(request.POST.keys()), list(request.POST.values()))
         if 'action' in request.GET:
             action = request.GET["action"]
-            print("what is it?", action, currentUser, userGroup[0], userIdGeo)
+            print("who is it?", currentUser, userGroup[0], userIdGeo)
             if action == "update":
                 print("what data POST", list(request.POST.keys()), list(request.POST.values()), "GET", list(request.GET.keys()), list(request.GET.values()))
                 answer = DataDashboard.postUpdate(userIdGeo, userGroup[0], request.POST)

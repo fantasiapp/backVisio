@@ -18,9 +18,14 @@ class DataDashboard:
   
 
   def __init__(self, userGeoId, userGroup, isNotOnServer):
+    """engendre les données complètes (niveau national) et sauve les données dans des attributs de classe"""
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
+      listClass= ([cls for cls in CommonModel.__subclasses__() if "nature" in cls.readingData and cls.readingData["nature"] == "normal"])
+      normalClass = list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
+      print(normalClass)
+
       dictModel = {
         "pdvs":Pdv, "dashboards":Dashboard, "layout":Layout, "widget":Widget, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "params":ParamVisio,
         "labelForGraph":LabelForGraph, "axisForGraph": AxisForGraph, "segmentMarketing":SegmentMarketing, "segmentCommercial":SegmentCommercial, "enseigne":Enseigne, "ensemble":Ensemble, "sousEnsemble":SousEnsemble, "site":Site, "produit":Produit, "industrie":Industrie,
@@ -38,21 +43,25 @@ class DataDashboard:
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
     if name == "pdvs" and isNotOnServer:
-      setattr(cls, "__indexesPdvs", Pdv.listIndexes())
-      setattr(cls, "__structurePdvs", Pdv.listFields())
-      if not os.path.isfile("./visioServer/modelStructure/pdvDict.json"):
-        with open("./visioServer/modelStructure/pdvDict.json", 'w') as jsonFile:
-          json.dump(Pdv.dictValues(), jsonFile, indent = 3)
-      with open("./visioServer/modelStructure/pdvDict.json") as jsonFile:
-        pdvs = {int(id):value for id, value in json.load(jsonFile).items()}
-        setattr(cls, "__pdvs", pdvs)
-      return
+      return cls.__createFromJson()
     if len(model.listFields()) > 1:
       setattr(cls, f"__structure{name.capitalize()}", model.listFields())
     indexes = model.listIndexes()
     if len(indexes) != 0:
       setattr(cls, f"__indexes{name.capitalize()}", indexes)
     setattr(cls, f"__{name}", model.dictValues())
+
+  @classmethod
+  def __createFromJson(cls):
+    setattr(cls, "__indexesPdvs", Pdv.listIndexes())
+    setattr(cls, "__structurePdvs", Pdv.listFields())
+    if not os.path.isfile("./visioServer/modelStructure/pdvDict.json"):
+      with open("./visioServer/modelStructure/pdvDict.json", 'w') as jsonFile:
+        json.dump(Pdv.dictValues(), jsonFile, indent = 3)
+    with open("./visioServer/modelStructure/pdvDict.json") as jsonFile:
+      pdvs = {int(id):value for id, value in json.load(jsonFile).items()}
+      setattr(cls, "__pdvs", pdvs)
+
 
   @classmethod
   def insertModel(cls, data, name, listId=False):

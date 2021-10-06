@@ -18,7 +18,7 @@ fileName = 'test.json'
 url = f'{address}/visioServer/data/'
 
 start = time.time()
-if False:
+if True:
     response = requests.get(url, headers=headers, params={"action":"dashboard"})
     print(response.headers)
     try:
@@ -43,7 +43,7 @@ if False:
     else:
         print("pb in data:", data)
 else:
-    response = requests.post(url, headers=headers, params={"action":"update"}, data={"pdvs":{"foo":"bar"}})
+    response = requests.post(url, headers=headers, params={"action":"update"}, data={"pdvs":json.dumps({"foo":"bar"})})
 
     try:
         data = json.loads(response.text)
