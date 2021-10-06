@@ -129,10 +129,10 @@ class CreateWidgetParam:
 
         ["indFinitionTarget","Pregy", "#B3007E"],
         ["indFinitionTarget","Salsi", "#D00000"],
-        ["indFinitionTarget","Croissance", "#DEDEDE"],
         ["indFinitionTarget","Cible Croissance", "#CD77E2"],
-        ["indFinitionTarget","Conquête", "#466A50"],
         ["indFinitionTarget","Cible Conquête", "#5BB273"],
+        ["indFinitionTarget","Croissance", "#DEDEDE"],
+        ["indFinitionTarget","Conquête", "#466A50"],
 
         ["dnFinition","P2CD + Enduit", "#B3007E"],
         ["dnFinition","Enduit hors P2CD", "#AC0000"],
@@ -141,8 +141,8 @@ class CreateWidgetParam:
         ["dnFinitionTarget","P2CD + Enduit", "#B3007E"],
         ["dnFinitionTarget","Enduit hors P2CD", "#AC0000"],
         ["dnFinitionTarget","Cible P2CD", "#D00000"],
-        ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
         ["dnFinitionTarget","Cible Pur Prospect", "#DEDEDE"],
+        ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
 
         ["clientProspect","Client", "#B3007E"],
         ["clientProspect","Prospect", "#888888"],
