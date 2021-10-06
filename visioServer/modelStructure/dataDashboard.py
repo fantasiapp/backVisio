@@ -263,23 +263,26 @@ class DataDashboard:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       if isinstance(data["pdvs"], dict):
         for id, value in data["pdvs"].items():
+          print("pdv", id)
           sales = value[indexSales]
           for saleImported in sales:
+            print("saleImported", saleImported)
             salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
             if salesObject:
               saleObject = salesObject[0]
               if abs(saleObject.volume - saleImported[3]) >= 1:
                 salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
                 if self.__updateSaleRam(salesInRam, saleImported, now):
+                  print("update")
                   saleObject.volume = saleImported[3]
                   saleObject.date = now
                   saleObject.save()
-                else:
-                  print("creation")
-                  Ventes.objects.create(date=now, pdv=id, industry=saleImported[1], product=saleImported[2], volume=saleImported[3], currentYear=True)
-                  salesInRam.append([now.timestamp()] + saleImported[1:])
-                  print("in ram", [now.timestamp()] + saleImported[1:])
-                  print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", saleImported[3], "currentYear=", True)
+            else:
+              print("creation")
+              Ventes.objects.create(date=now, pdv=id, industry=saleImported[1], product=saleImported[2], volume=saleImported[3], currentYear=True)
+              salesInRam.append([now.timestamp()] + saleImported[1:])
+              print("in ram", [now.timestamp()] + saleImported[1:])
+              print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", saleImported[3], "currentYear=", True)
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
@@ -288,5 +291,4 @@ class DataDashboard:
         saleInRam[0] = now.timestamp()
         saleInRam[3] = saleImported[3]
         print("updated", saleInRam, "new value", saleImported[3])
-        return True
-    return False
+        
