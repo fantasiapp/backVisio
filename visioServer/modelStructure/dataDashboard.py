@@ -81,7 +81,7 @@ class DataDashboard:
       }
     listModel = {
       "pdvs":self._computeListPdv, "dashboards":self._computelistdb, "layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
-      "labelForGraph":False, "axisForGraph":False, "params":False, "segmentMarketing":False, "segmentCommercial":False, "enseigne":self._computeFieldPdv, "ensemble":self._computeFieldPdv, "sousEnsemble":self._computeFieldPdv, "site":self._computeFieldPdv, "produit":False, "industrie":False, "drv":self._computeFieldPdv, "agent":self._computeFieldPdv, "dep":self._computeFieldPdv, "bassin":self._computeFieldPdv, "ville":self._computeFieldPdv}
+      "labelForGraph":False, "axisForGraph":False, "params":False, "segmentMarketing":False, "segmentCommercial":False, "enseigne":False, "ensemble":False, "sousEnsemble":False, "site":self._computeFieldPdv, "produit":False, "industrie":False, "drv":self._computeFieldPdv, "agent":self._computeFieldPdv, "dep":self._computeFieldPdv, "bassin":self._computeFieldPdv, "ville":self._computeFieldPdv}
     for name, list in listModel.items():
       self.insertModel(data, name, list)
     self. _computeLocalTargetLevel(data)
