@@ -254,8 +254,6 @@ class DataDashboard:
       print("query getUpdate", userName, now)
       return {"message":"postUpdate received"}
     except:
-      # update = LogUpdate.objects.get(id=14)
-      # self.updateDatabase(json.loads(update.data))
       return {"error":"postUpdate body is not json"}
 
   def updateDatabase(self, data):
@@ -277,8 +275,11 @@ class DataDashboard:
                   saleObject.date = now
                   saleObject.save()
                 else:
-                  Ventes.objects.create(date=now, pdv=id, industry=saleImported[1], product=saleImported[2], volume=saleImported[3])
-                  salesInRam.append([now.timestamp(), id, saleImported[1], saleImported[2], saleImported[3]])
+                  print("creation")
+                  Ventes.objects.create(date=now, pdv=id, industry=saleImported[1], product=saleImported[2], volume=saleImported[3], currentYear=True)
+                  salesInRam.append([now.timestamp()] + saleImported[1:])
+                  print("in ram", [now.timestamp()] + saleImported[1:])
+                  print("in db", "date=", now, "pdv=", id, "industry=", saleImported[1], "product=", saleImported[2], "volume=", saleImported[3], "currentYear=", True)
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
