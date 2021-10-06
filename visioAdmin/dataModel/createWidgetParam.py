@@ -9,14 +9,14 @@ class CreateWidgetParam:
   dashboards = {
       "geo":{
         "Marché P2CD":["column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
-        "Marché Enduit":["column:2:1", ["Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."]],
+        "Marché Enduit":["column:2:1", "Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."],
         "PdM P2CD":["column:2:1", ""],
         "PdM Enduit":["column:2:1", ""],
-        "PdM P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
-        "PdM Enduit Simulation":["column:2:1", "Objectif : @Nb en Tonnes \r\n Ciblage : @Nb2 en Tonnes"],
+        "PdM P2CD Simulation":["column:2:1", ["Objectif Siège : ", "@objectifSiege",", ","@GeoName", ": ","@targetArea", " en km² \r\n Ciblage : ", "@ciblage", " en km²"]],
+        "PdM Enduit Simulation":["column:2:1", ["Objectif : ","@targetArea"," en Tonnes \r\n Ciblage : ","@ciblage"," en Tonnes"]],
         "DN P2CD":["column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],
         "DN Enduit":["column:2:1", ""],
-        "DN P2CD Simulation":["column:2:1", "Objectif Siège : @Nb, @GeoName : @Nb2 en km² \r\n Ciblage : @Nb3 en km²"],
+        "DN P2CD Simulation":["column:2:1", ["Objectif Siège : ", "@objectifSiege",", ","@GeoName", ": ","@targetArea", " en km² \r\n Ciblage : ", "@ciblage", " en km²"]],
         "DN Enduit Simulation":["column:2:1", ""],
         "Points de Vente P2CD":["mono", ""],
         "Points de Vente Enduit":["mono", ""],
@@ -129,10 +129,10 @@ class CreateWidgetParam:
 
         ["indFinitionTarget","Pregy", "#B3007E"],
         ["indFinitionTarget","Salsi", "#D00000"],
-        ["indFinitionTarget","Croissance", "#DEDEDE"],
         ["indFinitionTarget","Cible Croissance", "#CD77E2"],
-        ["indFinitionTarget","Conquête", "#466A50"],
         ["indFinitionTarget","Cible Conquête", "#5BB273"],
+        ["indFinitionTarget","Croissance", "#DEDEDE"],
+        ["indFinitionTarget","Conquête", "#466A50"],
 
         ["dnFinition","P2CD + Enduit", "#B3007E"],
         ["dnFinition","Enduit hors P2CD", "#AC0000"],
@@ -141,8 +141,8 @@ class CreateWidgetParam:
         ["dnFinitionTarget","P2CD + Enduit", "#B3007E"],
         ["dnFinitionTarget","Enduit hors P2CD", "#AC0000"],
         ["dnFinitionTarget","Cible P2CD", "#D00000"],
-        ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
         ["dnFinitionTarget","Cible Pur Prospect", "#DEDEDE"],
+        ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
 
         ["clientProspect","Client", "#B3007E"],
         ["clientProspect","Prospect", "#888888"],
