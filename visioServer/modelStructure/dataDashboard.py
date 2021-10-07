@@ -259,6 +259,7 @@ class DataDashboard:
     now = timezone.now()
     try:
       jsonData = json.loads(jsonString)
+      print(jsonData)
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
       now = self.updateDatabase(jsonData)
       return {"message":"postUpdate received"}
