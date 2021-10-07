@@ -272,6 +272,7 @@ class DataDashboard:
       for id, value in data["pdvs"].items():
         sales = value[indexSales]
         for saleImported in sales:
+          print("sales", saleImported)
           salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
           if salesObject:
             saleObject = salesObject[0]
@@ -282,11 +283,13 @@ class DataDashboard:
                 saleObject.date = now
                 saleObject.save()
           else:
+            print("new")
             pdv = Pdv.objects.get(id=id)
             industry = Industrie.objects.get(id=saleImported[1])
             product = Produit.objects.get(id=saleImported[2])
             Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
             salesInRam.append([now.timestamp()] + saleImported[1:])
+            print("update", [now.timestamp()] + saleImported[1:])
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
