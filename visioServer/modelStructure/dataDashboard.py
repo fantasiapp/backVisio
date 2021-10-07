@@ -270,11 +270,13 @@ class DataDashboard:
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
+        print("pdv id",id)
         sales = value[indexSales]
         for saleImported in sales:
           print("sales", saleImported)
           salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
           if salesObject:
+            print("update")
             saleObject = salesObject[0]
             if abs(saleObject.volume - saleImported[3]) >= 1:
               salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
@@ -297,5 +299,5 @@ class DataDashboard:
       if saleInRam[1]  == saleImported[1] and saleInRam[2]  == saleImported[2]:
         saleInRam[0] = now.timestamp()
         saleInRam[3] = saleImported[3]
-        return
+        break
         
