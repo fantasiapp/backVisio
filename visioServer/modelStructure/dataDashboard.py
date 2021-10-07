@@ -275,6 +275,7 @@ class DataDashboard:
       for id, value in data["pdvs"].items():
         print("pdv id",id)
         pdv = Pdv.objects.get(id=id)
+        salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
         sales = value[indexSales]
         for saleImported in sales:
           print("volume", saleImported[3])
@@ -286,7 +287,6 @@ class DataDashboard:
               saleObject = salesObject[0]
               if abs(saleObject.volume - saleImported[3]) >= 1:
                 print("real update")
-                salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
                 if self.__updateSaleRam(salesInRam, saleImported, now):
                   saleObject.volume = saleImported[3]
                   saleObject.date = now
@@ -303,7 +303,7 @@ class DataDashboard:
               print("volume", float(saleImported[3]))
               Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
               print("creation done")
-              print([now.timestamp()])
+              print([int(now.timestamp())])
               print(saleImported[1:])
               print(salesInRam)
               salesInRam.append([now.timestamp()] + saleImported[1:])
