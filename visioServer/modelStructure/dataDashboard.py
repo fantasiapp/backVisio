@@ -308,7 +308,7 @@ class DataDashboard:
     for key, dictTargetLevel in data.items():
       print(key)
       if key != "pdvs" and dictTargetLevel:
-        if dictTargetLevel == "targetLevelDrv":
+        if key == "targetLevelDrv":
           print("dictTargetLevel", dictTargetLevel)
           for idDrv, listTargetLevel in dictTargetLevel.items():
             print("idDrv", dictTargetLevel)
@@ -327,6 +327,3 @@ class DataDashboard:
             print("near end")
             DataDashboard.__targetLevelDrv[idDrv] = listTargetLevel
             print("end", listTargetLevel)
-
-
-        
