@@ -259,8 +259,11 @@ class DataDashboard:
     now = timezone.now()
     try:
       jsonData = json.loads(jsonString)
+      print("json exists")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
+      print("log created")
       now = self.updateDatabase(jsonData)
+      print("updated done")
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
