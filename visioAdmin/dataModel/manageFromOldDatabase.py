@@ -50,7 +50,7 @@ class ManageFromOldDatabase:
       self.cursorNew = self.connectionNew.cursor()
       self.typeObjectList = list(self.typeObject.values())
 
-    LogUpdate.object.all().delete()
+    LogUpdate.objects.all().delete()
     if self.typeObjectList:
       model = self.typeObjectList.pop(0)
       table = model.objects.model._meta.db_table
