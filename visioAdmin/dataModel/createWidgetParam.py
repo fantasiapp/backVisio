@@ -8,7 +8,7 @@ class CreateWidgetParam:
   dictLayout = None
   dashboards = {
       "geo":{
-        "Marché P2CD":["column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
+        "Marché P2CD":["column:2:1", "Marché P2CD négoce, exprimé en milliers de km²."],
         "Marché Enduit":["column:2:1", "Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."],
         "PdM P2CD":["column:2:1", ""],
         "PdM Enduit":["column:2:1", ""],
@@ -16,7 +16,7 @@ class CreateWidgetParam:
         "PdM Enduit Simulation":["column:2:1", ["@objectifEnduit","@ciblageEnduit"]],
         "DN P2CD":["column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],
         "DN Enduit":["column:2:1", ""],
-        "DN P2CD Simulation":["column:2:1", ["@objectifSiege", "@DRV", "@objectifP2CD", "@ciblageP2CD"]],
+        "DN P2CD Simulation":["column:2:1", ["@objectifSiegeDn", "@DRVdn", "@objectifP2CDdn", "@ciblageP2CDdn"]],
         "DN Enduit Simulation":["column:2:1", ""],
         "Points de Vente P2CD":["mono", ""],
         "Points de Vente Enduit":["mono", ""],
@@ -49,11 +49,9 @@ class CreateWidgetParam:
     "agent":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
     "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
 
-    "dep":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
-    "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"],
+    "dep":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "DN P2CD", "DN Enduit", "Points de Vente P2CD", "Points de Vente Enduit"],
 
-    "bassin":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN Enduit",
-    "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit"]
+    "bassin":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "DN P2CD", "DN Enduit", "Points de Vente P2CD", "Points de Vente Enduit"]
     },
     "trade":{
       "rootTrade":["Marché P2CD Enseigne", "Marché Enduit Enseigne", "PdM P2CD Enseigne", "PdM Enduit Enseigne", "DN P2CD Enseigne", "DN Enduit Enseigne",
