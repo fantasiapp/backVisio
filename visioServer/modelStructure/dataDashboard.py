@@ -259,9 +259,8 @@ class DataDashboard:
     try:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
-      self.__updateDatabaseTargetLevel(jsonData)
+      self.__updateDatabaseTargetLevel(jsonData, now)
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
-
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
@@ -275,7 +274,6 @@ class DataDashboard:
         salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
         sales = value[indexSales]
         for saleImported in sales:
-          
           if saleImported[3]:
             salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
             if salesObject:
@@ -302,28 +300,16 @@ class DataDashboard:
         return True
       return False
 
-  def __updateDatabaseTargetLevel(self, data):
-    print("start")
-    now = timezone.now()
+  def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():
-      print(key)
       if key != "pdvs" and dictTargetLevel:
         if key == "targetLevelDrv":
-          print("dictTargetLevel", dictTargetLevel)
           for idDrv, listTargetLevel in dictTargetLevel.items():
-            print("idDrv", dictTargetLevel)
             drv = Drv.objects.get(id=idDrv)
-            print("drv", drv)
             targetLevel = CiblageLevel.objects.filter(drv=drv)[0]
-            print("targetLevel", targetLevel)
             targetLevel.date = now
-            print("volP2CD", float(listTargetLevel[0]) if listTargetLevel[0] else 0.0)
             targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
-            print("dnP2CD", int(listTargetLevel[1]) if listTargetLevel[1] else 0)
             targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
-            print("volFinition", int(listTargetLevel[2]) if listTargetLevel[2] else 0.0)
             targetLevel.volFinition = float(listTargetLevel[2]) if listTargetLevel[2] else 0.0
             targetLevel.save()
-            print("near end")
             DataDashboard.__targetLevelDrv[idDrv] = listTargetLevel
-            print("end", listTargetLevel)
