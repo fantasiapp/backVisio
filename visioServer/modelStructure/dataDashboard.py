@@ -259,11 +259,8 @@ class DataDashboard:
     now = timezone.now()
     try:
       jsonData = json.loads(jsonString)
-      print("json exists")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
-      print("log created")
       now = self.updateDatabase(jsonData)
-      print("updated done")
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
@@ -273,20 +270,15 @@ class DataDashboard:
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
-        print("pdv id",id)
         pdv = Pdv.objects.get(id=id)
         salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
         sales = value[indexSales]
         for saleImported in sales:
-          print("volume", saleImported[3])
           if saleImported[3]:
-            print("sales", saleImported)
             salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
             if salesObject:
-              print("try update")
               saleObject = salesObject[0]
               if abs(saleObject.volume - saleImported[3]) >= 1:
-                print("real update")
                 if self.__updateSaleRam(salesInRam, saleImported, now):
                   saleObject.volume = saleImported[3]
                   saleObject.date = now
@@ -294,20 +286,10 @@ class DataDashboard:
                 else:
                   print("Error: inconsistency between base and Ram")
             else:
-              print("new")
-              print("pdv", pdv)
               industry = Industrie.objects.get(id=saleImported[1])
-              print("industry", industry)
               product = Produit.objects.get(id=saleImported[2])
-              print("product", product)
-              print("volume", float(saleImported[3]))
               Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
-              print("creation done")
-              print([int(now.timestamp())])
-              print(saleImported[1:])
-              print(salesInRam)
               salesInRam.append([now.timestamp()] + saleImported[1:])
-              print("update", [now.timestamp()] + saleImported[1:])
     return now
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
