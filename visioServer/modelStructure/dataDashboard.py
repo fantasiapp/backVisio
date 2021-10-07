@@ -279,14 +279,17 @@ class DataDashboard:
           print("sales", saleImported)
           salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
           if salesObject:
-            print("update")
+            print("try update")
             saleObject = salesObject[0]
             if abs(saleObject.volume - saleImported[3]) >= 1:
+              print("real update")
               salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
               if self.__updateSaleRam(salesInRam, saleImported, now):
                 saleObject.volume = saleImported[3]
                 saleObject.date = now
                 saleObject.save()
+              else:
+                print("Error: inconsistency between base and Ram")
           else:
             print("new")
             pdv = Pdv.objects.get(id=id)
@@ -298,6 +301,9 @@ class DataDashboard:
             print("volume", float(saleImported[3]))
             Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
             print("creation done")
+            print([now.timestamp()])
+            print(saleImported[1:])
+            print(salesInRam)
             salesInRam.append([now.timestamp()] + saleImported[1:])
             print("update", [now.timestamp()] + saleImported[1:])
     return now
@@ -307,5 +313,6 @@ class DataDashboard:
       if saleInRam[1]  == saleImported[1] and saleInRam[2]  == saleImported[2]:
         saleInRam[0] = now.timestamp()
         saleInRam[3] = saleImported[3]
-        break
+        return True
+      return False
         
