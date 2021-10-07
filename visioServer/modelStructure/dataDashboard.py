@@ -290,9 +290,14 @@ class DataDashboard:
           else:
             print("new")
             pdv = Pdv.objects.get(id=id)
+            print("pdv", pdv)
             industry = Industrie.objects.get(id=saleImported[1])
+            print("industry", industry)
             product = Produit.objects.get(id=saleImported[2])
+            print("product", product)
+            print("volume", float(saleImported[3]))
             Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
+            print("creation done")
             salesInRam.append([now.timestamp()] + saleImported[1:])
             print("update", [now.timestamp()] + saleImported[1:])
     return now
