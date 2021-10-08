@@ -143,6 +143,13 @@ class CreateWidgetParam:
         ["dnFinitionTarget","Cible Pur Prospect", "#DEDEDE"],
         ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
 
+        ["dnFinitionTargetVisits","P2CD + Enduit", "#B3007E"],
+        ["dnFinitionTargetVisits","Cible P2CD + Enduit", "#CD77E2"],
+        ["dnFinitionTargetVisits","Enduit hors P2CD", "#AC0000"],
+        ["dnFinitionTargetVisits","Cible Enduit hors P2CD", "#D00000"],
+        ["dnFinitionTargetVisits","Pur prospect", "#8B8B8B"],
+        ["dnFinitionTargetVisits","Cible Pur Prospect", "#DEDEDE"],
+
         ["clientProspect","Client", "#B3007E"],
         ["clientProspect","Prospect", "#888888"],
         ["clientProspect","Non documenté", "#DEDEDE"],
@@ -241,10 +248,10 @@ class CreateWidgetParam:
         ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, ["@other"], "no", "Evolution de l'AD", "nb de pdv par sem. et cumul en %", "b", "", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
-        ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
-        ["segmentMarketing", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "", "gauge"],
-        ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (vol)", "@sum", "c", "T"],
-        ["segmentDnEnduitTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, ["@other"], "no", "Répartition des visites (nb)", "@sum", "d", "v"]
+        ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
+        ["targetedVisits", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "", "gauge"],
+        ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites (vol)", "@sum", "c", "T"],
+        ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites (nb)", "@sum", "d", "visites"]
       ],
       "Marché P2CD Enseigne":[
         ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Vente en volume", "@sum"],
