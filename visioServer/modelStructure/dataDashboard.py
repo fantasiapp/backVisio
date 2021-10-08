@@ -241,17 +241,20 @@ class DataDashboard:
       if listUpdate:
         jsonToSend = {key:{} for key in listUpdate[0].keys()}
         for dictUpdate in listUpdate:
+          print("dictUpdate", dictUpdate)
           for nature, dictNature in dictUpdate.items():
+            print("dictNature", nature, dictNature)
             for id, listObject in dictNature.items():
               if nature == "pdvs":
                 if not listIdPdv or id in listIdPdv:
                   jsonToSend["pdvs"][id] = listObject
               else:
+                print("jsonLevel", nature, id, listObject)
                 jsonToSend[nature][id] = listObject
         if userProfile:
           userProfile.lastUpdate = now
           userProfile.save()
-          print(jsonToSend)
+        print("final", jsonToSend)
         return jsonToSend      
       return {}
     elif nature == "acknowledge":
@@ -265,7 +268,9 @@ class DataDashboard:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
+      print("date", now, "user", user, "data", jsonString)
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
+      print("OK")
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
