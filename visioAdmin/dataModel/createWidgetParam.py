@@ -143,12 +143,12 @@ class CreateWidgetParam:
         ["dnFinitionTarget","Cible Pur Prospect", "#DEDEDE"],
         ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
 
-        ['segmentDnEnduitTargetVisits',"P2CD + Enduit", "#B3007E"],
-        ['segmentDnEnduitTargetVisits',"Cible P2CD + Enduit", "#CD77E2"],
-        ['segmentDnEnduitTargetVisits',"Enduit hors P2CD", "#AC0000"],
-        ['segmentDnEnduitTargetVisits',"Cible Enduit hors P2CD", "#D00000"],
-        ['segmentDnEnduitTargetVisits',"Pur prospect", "#8B8B8B"],
-        ['segmentDnEnduitTargetVisits',"Cible Pur Prospect", "#DEDEDE"],
+        ["dnFinitionTargetVisits","P2CD + Enduit", "#B3007E"],
+        ["dnFinitionTargetVisits","Cible P2CD + Enduit", "#CD77E2"],
+        ["dnFinitionTargetVisits","Enduit hors P2CD", "#AC0000"],
+        ["dnFinitionTargetVisits","Cible Enduit hors P2CD", "#D00000"],
+        ["dnFinitionTargetVisits","Pur prospect", "#8B8B8B"],
+        ["dnFinitionTargetVisits","Cible Pur Prospect", "#DEDEDE"],
 
         ["clientProspect","Client", "#B3007E"],
         ["clientProspect","Prospect", "#888888"],
