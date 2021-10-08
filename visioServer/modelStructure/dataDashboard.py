@@ -260,10 +260,18 @@ class DataDashboard:
         if key == "targetLevelDrv":
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
-            targetLevel = CiblageLevel.objects.filter(drv=drv)[0]
+            targetLevel = CiblageLevel.objects.get(drv=drv)
             targetLevel.date = now
             targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
             targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
             targetLevel.volFinition = float(listTargetLevel[2]) if listTargetLevel[2] else 0.0
             targetLevel.save()
             DataDashboard.__targetLevelDrv[idDrv] = listTargetLevel
+        if key == "targetLevelAgentP2CD":
+          for idAgent, listTargetLevel in dictTargetLevel.items():
+            agent = Agent.objects.get(id=idAgent)
+            targetLevel = CiblageLevel.objects.get(agent=agent)
+            targetLevel.date = now
+            targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
+            targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
+            DataDashboard.__targetLevelAgentP2CD[idDrv] = listTargetLevel
