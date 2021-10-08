@@ -108,7 +108,10 @@ class ParamVisio(CommonModel):
       return int(self.fvalue)
     elif self.typeValue == "float":
       return float(self.fvalue)
+    elif self.typeValue == "bool":
+      return True
     return self.fvalue
+    
 
 class Drv(CommonModel):
   name = models.CharField('drv', max_length=16, unique=False)
@@ -265,6 +268,7 @@ class Pdv(CommonModel):
   redistributed = models.BooleanField("Redistribué", default=True)
   redistributedEnduit = models.BooleanField("redistribué Enduit", default=True)
   pointFeu = models.BooleanField('Point Feu', default=False)
+  onlySiniat = models.BooleanField('100% Siniat', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":0, "name":"pdvs"}
@@ -410,8 +414,6 @@ class Ventes(CommonModel):
           with open(cls.cacheSalesDict, 'w') as jsonFile:
             json.dump(cls.salesDict, jsonFile)
 
-
-
 # Modèles pour la navigation
 class TreeNavigation(CommonModel):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
@@ -487,7 +489,6 @@ class Dashboard(CommonModel):
         level = level[3]
     return set(listId)
 
-
   @property
   def listValues(self):
       lv = super().listValues
@@ -495,7 +496,6 @@ class Dashboard(CommonModel):
       indexWP = self.listFields().index("widgetParams")
       lv[indexWP] = {object.position:object.id for object in listObjWidgetParam}
       return lv
-
 
 class DashboardTree(models.Model):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
@@ -522,9 +522,6 @@ class AxisForGraph(CommonModel):
 
   @classmethod
   def listFields(cls): return ["name", "labels"]
-
-  # @classmethod
-  # def listFields(cls): return ["name", "labels"]
   
   def __str__(self) ->str:
     return "AxisForGraph " + str(self.name)

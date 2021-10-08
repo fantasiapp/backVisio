@@ -376,8 +376,7 @@ class ManageFromOldDatabase:
       if not Group.objects.filter(name=groupName):
         Group.objects.create(name=groupName)
       user.groups.add(Group.objects.get(name=groupName))
-      if int(userList[1]):
-        UserProfile.objects.create(user=user, idGeo=int(userList[1]))
+      UserProfile.objects.create(user=user, idGeo=int(userList[1]) if int(userList[1]) else 0)
     return ("Users", False)
 
   def __computeListUser(self):
@@ -505,6 +504,7 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", fvalue="0.360", typeValue="float")
     ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.1", typeValue="float")
     ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
+    ParamVisio.objects.create(field="isAdOpen", prettyPrint="Ouverture de l'AD", fvalue="True", typeValue="bool")
     return ("ParamVisio", False)
 
 
