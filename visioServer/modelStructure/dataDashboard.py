@@ -131,7 +131,7 @@ class DataDashboard:
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
     elif self.__userGroup == "agent":
-      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
+      data["structureTargetLevelAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
   
   @classmethod
