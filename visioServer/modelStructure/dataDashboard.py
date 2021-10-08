@@ -53,7 +53,7 @@ class DataDashboard:
         json.dump(Pdv.dictValues(), jsonFile, indent = 3)
     with open("./visioServer/modelStructure/pdvDict.json") as jsonFile:
       pdvs = {int(id):value for id, value in json.load(jsonFile).items()}
-      setattr(cls, "__pdvs", pdvs)
+    setattr(cls, "__pdvs", pdvs)
 
   def insertModel(self, data, name, model):
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
@@ -112,51 +112,6 @@ class DataDashboard:
       for agent in drv[1]:
         hierarchy.append((drvId, agent[0]))
     return hierarchy
-
-  # def _computelistdb(self, data, name):
-  #   levelGeo = data["levelGeo"]
-  #   listId = []
-  #   for level in [levelGeo, self.__levelTrade]:
-  #     while len(level) == 4:
-  #       listId += level[2]
-  #       level = level[3]
-  #   return set(listId)
-
-  # def _computelistWP(self, data, name):
-  #   if self.__userGroup == "root": return False
-  #   listId = []
-  #   for db in data["dashboards"].values():
-  #     listId += list(db[3].values())
-  #   return set(listId)
-
-  # def _computelistWC(self, data, name):
-  #   if self.__userGroup == "root": return False
-  #   return set([wp[4] for wp in data["widgetParams"].values()])
-
-  # def _computeListPdv(self, data, name):
-  #   if self.__userGroup == "root": return False
-  #   self.__pdvSelected = self.__computeListIdPdv(data["geoTree"], [])
-  #   return self.__pdvSelected
-
-  # def __computeListIdPdv(self, geoTree, listId:list):
-  #   if isinstance(geoTree, list):
-  #     for subLevel in geoTree[1]:
-  #       self.__computeListIdPdv(subLevel, listId)
-  #   else:
-  #     listId.append(geoTree)
-  #   return listId
-  
-  # def _computeFieldPdv(self, data, name):
-  #   if self.__userGroup == "root":
-  #     if name == "drv":
-  #       data["root"] = {0:""}
-  #     return False
-  #   if self.__userGroup == "agent" and name == "agent":
-  #     del data["drv"]
-  #   if isinstance(self.__pdvSelected[0], int):
-  #     self.__pdvSelected = [data["pdvs"][id] for id in self.__pdvSelected]
-  #   indexField = data["structurePdvs"].index(name)
-  #   return set([line[indexField] for line in self.__pdvSelected])
 
   def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":
@@ -227,6 +182,7 @@ class DataDashboard:
         if tlObject.volFinition or tlObject.volFinition:
           cls.__targetLevelAgentFinition[tlObject.agent.id] = [tlObject.volFinition, tlObject.dnFinition]
 
+  #queries for updates
 
   def getUpdate(self, userProfile, nature):
     geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()

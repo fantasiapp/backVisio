@@ -301,14 +301,15 @@ class Pdv(CommonModel):
 
   @property
   def listValues(self):
-    lv = super().listValues
-    if isinstance(lv[20], datetime.datetime):
-      lv[20] = lv[20].isoformat()
-    lv[21] = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)])
+    lv, lf = super().listValues, self.listFields()
+    idDat, idNbV, idTar, idSal = lf.index("closedAt"), lf.index("nbVisits"), lf.index("target"), lf.index("sales")
+    if isinstance(lv[idDat], datetime.datetime):
+      lv[idDat] = lv[idDat].isoformat()
+    lv[idNbV] = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)])
     target = Ciblage.objects.filter(pdv = self)
     if target:
-      lv[22] = target[0].listValues
-    lv[23] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
+      lv[idTar] = target[0].listValues
+    lv[idSal] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
     return lv
 
 class Visit(CommonModel):
