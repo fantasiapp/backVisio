@@ -23,9 +23,7 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     if not DataDashboard.__levelGeo:
-      listClass= ([cls for cls in CommonModel.__subclasses__() if "nature" in cls.readingData and cls.readingData["nature"] == "normal"])
-      normalClass = list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
-      for name, model in normalClass:
+      for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
@@ -57,17 +55,18 @@ class DataDashboard:
       pdvs = {int(id):value for id, value in json.load(jsonFile).items()}
       setattr(cls, "__pdvs", pdvs)
 
-
-  @classmethod
-  def insertModel(cls, data, name, listId=False):
+  def insertModel(self, data, name, model):
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
     for attr in listAttr:
-      if hasattr(cls, attr):
-        listIdComputed = listId(data, name) if listId else False
-        if attr == f"__{name}" and (isinstance(listIdComputed, list) or isinstance(listIdComputed, set)):
-          data[attr[2:]] = {id:value for id, value in getattr(cls, attr).items() if id in listIdComputed}
+      if hasattr(self, attr):
+        listId = model.computeListId(self, data)
+        if attr == f"__{name}" and (isinstance(listId, list) or isinstance(listId, set)):
+          data[attr[2:]] = {id:value for id, value in getattr(self, attr).items() if id in listId}
         else:
-          data[attr[2:]] = getattr(cls, attr)
+          data[attr[2:]] = getattr(self, attr)
+
+  @property
+  def userGroup(self): return self.__userGroup
   
   @property
   def dataQuery(self):
@@ -80,11 +79,8 @@ class DataDashboard:
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
       }
-    listModel = {
-      "pdvs":self._computeListPdv, "dashboards":self._computelistdb, "layout":False, "widget":False, "widgetParams":self._computelistWP, "widgetCompute":self._computelistWC,
-      "labelForGraph":False, "axisForGraph":False, "params":False, "segmentMarketing":False, "segmentCommercial":False, "enseigne":False, "ensemble":False, "sousEnsemble":False, "site":self._computeFieldPdv, "produit":False, "industrie":False, "drv":self._computeFieldPdv, "agent":self._computeFieldPdv, "dep":self._computeFieldPdv, "bassin":self._computeFieldPdv, "ville":self._computeFieldPdv}
-    for name, list in listModel.items():
-      self.insertModel(data, name, list)
+    for name, model in CommonModel.computeTableClass():
+      self.insertModel(data, name, model)
     self. _computeLocalTargetLevel(data)
     return data
 
@@ -117,50 +113,50 @@ class DataDashboard:
         hierarchy.append((drvId, agent[0]))
     return hierarchy
 
-  def _computelistdb(self, data, name):
-    levelGeo = data["levelGeo"]
-    listId = []
-    for level in [levelGeo, self.__levelTrade]:
-      while len(level) == 4:
-        listId += level[2]
-        level = level[3]
-    return set(listId)
+  # def _computelistdb(self, data, name):
+  #   levelGeo = data["levelGeo"]
+  #   listId = []
+  #   for level in [levelGeo, self.__levelTrade]:
+  #     while len(level) == 4:
+  #       listId += level[2]
+  #       level = level[3]
+  #   return set(listId)
 
-  def _computelistWP(self, data, name):
-    if self.__userGroup == "root": return False
-    listId = []
-    for db in data["dashboards"].values():
-      listId += list(db[3].values())
-    return set(listId)
+  # def _computelistWP(self, data, name):
+  #   if self.__userGroup == "root": return False
+  #   listId = []
+  #   for db in data["dashboards"].values():
+  #     listId += list(db[3].values())
+  #   return set(listId)
 
-  def _computelistWC(self, data, name):
-    if self.__userGroup == "root": return False
-    return set([wp[4] for wp in data["widgetParams"].values()])
+  # def _computelistWC(self, data, name):
+  #   if self.__userGroup == "root": return False
+  #   return set([wp[4] for wp in data["widgetParams"].values()])
 
-  def _computeListPdv(self, data, name):
-    if self.__userGroup == "root": return False
-    self.__pdvSelected = self.__computeListIdPdv(data["geoTree"], [])
-    return self.__pdvSelected
+  # def _computeListPdv(self, data, name):
+  #   if self.__userGroup == "root": return False
+  #   self.__pdvSelected = self.__computeListIdPdv(data["geoTree"], [])
+  #   return self.__pdvSelected
 
-  def __computeListIdPdv(self, geoTree, listId:list):
-    if isinstance(geoTree, list):
-      for subLevel in geoTree[1]:
-        self.__computeListIdPdv(subLevel, listId)
-    else:
-      listId.append(geoTree)
-    return listId
+  # def __computeListIdPdv(self, geoTree, listId:list):
+  #   if isinstance(geoTree, list):
+  #     for subLevel in geoTree[1]:
+  #       self.__computeListIdPdv(subLevel, listId)
+  #   else:
+  #     listId.append(geoTree)
+  #   return listId
   
-  def _computeFieldPdv(self, data, name):
-    if self.__userGroup == "root":
-      if name == "drv":
-        data["root"] = {0:""}
-      return False
-    if self.__userGroup == "agent" and name == "agent":
-      del data["drv"]
-    if isinstance(self.__pdvSelected[0], int):
-      self.__pdvSelected = [data["pdvs"][id] for id in self.__pdvSelected]
-    indexField = data["structurePdvs"].index(name)
-    return set([line[indexField] for line in self.__pdvSelected])
+  # def _computeFieldPdv(self, data, name):
+  #   if self.__userGroup == "root":
+  #     if name == "drv":
+  #       data["root"] = {0:""}
+  #     return False
+  #   if self.__userGroup == "agent" and name == "agent":
+  #     del data["drv"]
+  #   if isinstance(self.__pdvSelected[0], int):
+  #     self.__pdvSelected = [data["pdvs"][id] for id in self.__pdvSelected]
+  #   indexField = data["structurePdvs"].index(name)
+  #   return set([line[indexField] for line in self.__pdvSelected])
 
   def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":

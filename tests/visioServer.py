@@ -2,9 +2,9 @@ import requests
 import json
 import time
 
-username, password = "all", "avisio"
-address = 'http://localhost:8000'
-# address = 'https://visio.fantasiapp.tech:3441'
+username, password = "t", "avisio"
+# address = 'http://localhost:8000'
+address = 'https://visio.fantasiapp.tech:3441'
 tokenUrl = f'{address}/visioServer/api-token-auth/'
 headers = {'Content-Type': 'application/json'}
 data = json.dumps({"username": username, "password": password})
@@ -18,7 +18,7 @@ fileName = 'test.json'
 url = f'{address}/visioServer/data/'
 
 start = time.time()
-if False:
+if True:
     response = requests.get(url, headers=headers, params={"action":"dashboard"})
     print(response.headers)
     try:
