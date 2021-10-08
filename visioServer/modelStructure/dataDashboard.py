@@ -237,16 +237,17 @@ class DataDashboard:
     listIdPdv = False if self.__userGroup == "root" else self.__computeListIdPdv(geoTree, [])
     now = timezone.now()
     if nature == "request":
-      dictUpdate = [json.loads(logUpdate.data) for logUpdate in LogUpdate.objects.all()]
-      if dictUpdate:
-        jsonToSend = {key:{} for key in dictUpdate.keys()}
-        for nature, dictNature in dictUpdate:
-          for id, listObject in dictNature.items():
-            if nature == "pdvs":
-              if not listIdPdv or id in listIdPdv:
-                jsonToSend["pdvs"][id] = listObject
-            else:
-              jsonToSend[nature][id] = listObject
+      listUpdate = [json.loads(logUpdate.data) for logUpdate in LogUpdate.objects.all()]
+      if listUpdate:
+        jsonToSend = {key:{} for key in listUpdate[0].keys()}
+        for dictUpdate in listUpdate:
+          for nature, dictNature in dictUpdate:
+            for id, listObject in dictNature.items():
+              if nature == "pdvs":
+                if not listIdPdv or id in listIdPdv:
+                  jsonToSend["pdvs"][id] = listObject
+              else:
+                jsonToSend[nature][id] = listObject
         if userProfile:
           userProfile.lastUpdate = now
           userProfile.save()
