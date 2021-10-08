@@ -241,7 +241,7 @@ class DataDashboard:
       if listUpdate:
         jsonToSend = {key:{} for key in listUpdate[0].keys()}
         for dictUpdate in listUpdate:
-          for nature, dictNature in dictUpdate:
+          for nature, dictNature in dictUpdate.items():
             for id, listObject in dictNature.items():
               if nature == "pdvs":
                 if not listIdPdv or id in listIdPdv:
