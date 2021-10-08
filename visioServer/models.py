@@ -9,9 +9,8 @@ import inspect
 # from django.forms.models import model_to_dict
 
 class CommonModel(models.Model):
-  """jsonFields tells which field are to be loaded, and direct fields tells which fields should contain the dict of the sub object."""
+  """jsonFields tells which field are to be loaded."""
   jsonFields = []
-  direct = {}
   readingData = {}
 
   class Meta:
@@ -54,18 +53,28 @@ class CommonModel(models.Model):
       for jsonField in self.jsonFields:
         index = self.listFields().index(jsonField)
         listRow[index] = json.loads(listRow[index])
-    # self.__loadDirectValue(listRow)
     return listRow
 
-  def __loadDirectValue(self, listRow):
-    if self.direct:
-      for key in self.direct.keys():
-        if key == "father":
-          index = self.listFields().index(key)
-          listRow[index] = []
-          children = self.__class__.objects.filter(father=self)
-          for child in children:
-            listRow[index].append(child.listValues)
+  @classmethod
+  def computeListId(cls, dataDashBoard, data):
+    name = cls.readingData["name"] if "name" in cls.readingData else None
+    if dataDashBoard.userGroup == "root":
+      if name and name == "drv":
+        data["root"] = {0:""}
+      return False
+    if dataDashBoard.userGroup == "agent" and name == "agent":
+      del data["drv"]
+    if "pdvFiltered" in cls.readingData:
+      if isinstance(dataDashBoard.listIdPdv[0], int):
+        dataDashBoard.listIdPdv = [data["pdvs"][id] for id in dataDashBoard.listIdPdv]
+      indexField = data["structurePdvs"].index(name)
+      return set([line[indexField] for line in dataDashBoard.listIdPdv])
+    return False
+
+  @classmethod
+  def computeTableClass(csl):
+    listClass= ([cls for cls in CommonModel.__subclasses__() if "nature" in cls.readingData and cls.readingData["nature"] == "normal"])
+    return list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
 
 # Information Params
 class ParamVisio(CommonModel):
@@ -104,7 +113,7 @@ class ParamVisio(CommonModel):
 class Drv(CommonModel):
   name = models.CharField('drv', max_length=16, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":17, "name":"drv"}
+  readingData = {"nature":"normal", "position":17, "name":"drv", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "DRV"
@@ -115,7 +124,7 @@ class Drv(CommonModel):
 class Agent(CommonModel):
   name = models.CharField('agent', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":18, "name":"agent"}
+  readingData = {"nature":"normal", "position":18, "name":"agent", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Secteur"
@@ -136,7 +145,7 @@ class AgentFinitions(CommonModel):
 class Dep(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":19, "name":"dep"}
+  readingData = {"nature":"normal", "position":19, "name":"dep", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Département"
@@ -147,7 +156,7 @@ class Dep(CommonModel):
 class Bassin(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":20, "name":"bassin"}
+  readingData = {"nature":"normal", "position":20, "name":"bassin", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Bassin"
@@ -161,7 +170,7 @@ class Bassin(CommonModel):
 
 class Ville(CommonModel):
   name = models.CharField('ville', max_length=128, unique=True)
-  readingData = {"nature":"normal", "position":21, "name":"ville"}
+  readingData = {"nature":"normal", "position":21, "name":"ville", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Ville"
@@ -227,7 +236,7 @@ class SousEnsemble(CommonModel):
 class Site(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":14, "name":"site"}
+  readingData = {"nature":"normal", "position":14, "name":"site", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Site"
@@ -270,6 +279,21 @@ class Pdv(CommonModel):
   def dictValues(cls):
     indexSale = cls.listFields().index("sale")
     return {id:value for id, value in super().dictValues().items() if value[indexSale]}
+
+  @classmethod
+  def computeListId(cls, dataDashBoard, data):
+    if dataDashBoard.userGroup == "root": return False
+    dataDashBoard.listIdPdv = cls.__computeListIdRecursive (data["geoTree"], [])
+    return dataDashBoard.listIdPdv
+
+  @classmethod
+  def __computeListIdRecursive(cls, geoTree, listId:list):
+    if isinstance(geoTree, list):
+      for subLevel in geoTree[1]:
+        cls.__computeListIdRecursive(subLevel, listId)
+    else:
+      listId.append(geoTree)
+    return listId
 
   @property
   def listValues(self):
@@ -390,7 +414,6 @@ class Ventes(CommonModel):
 
 # Modèles pour la navigation
 class TreeNavigation(CommonModel):
-  direct = {"father":"children"}
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
   level = models.CharField(max_length=32, unique=True, blank=False, default=None)
   name = models.CharField(max_length=32, unique=False, blank=False, default=None)
@@ -419,6 +442,14 @@ class WidgetParams(CommonModel):
   @classmethod
   def listFields(cls): return ["title", "subTitle", "unity", "widget", "widgetCompute"]
 
+  @classmethod
+  def computeListId(cls, dataDashboard, data):
+    if dataDashboard.userGroup == "root": return False
+    listId = []
+    for db in data["dashboards"].values():
+      listId += list(db[3].values())
+    return set(listId)
+
 
 class WidgetCompute(CommonModel):
   jsonFields = ["groupAxis1", "groupAxis2"]
@@ -430,6 +461,11 @@ class WidgetCompute(CommonModel):
   percent = models.CharField("Pourcentage", max_length=32, unique=False, blank=False, default="no")
   readingData = {"nature":"normal", "position":5, "name":"widgetCompute"}
 
+  @classmethod
+  def computeListId(cls, dataDashboard, data):
+    if dataDashboard.userGroup == "root": return False
+    return set([wp[4] for wp in data["widgetParams"].values()])
+
 
 class Dashboard(CommonModel):
   jsonFields = ["comment"]
@@ -440,7 +476,17 @@ class Dashboard(CommonModel):
   readingData = {"nature":"normal", "position":1, "name":"dashboards"}
 
   @classmethod
-  def listFields(csl): return ["name", "layout", "comment", "widgetParams"]
+  def listFields(cls): return ["name", "layout", "comment", "widgetParams"]
+
+  @classmethod
+  def computeListId(cls, dataDashboard, data):
+    listId = []
+    for level in [data["levelGeo"], data["levelTrade"]]:
+      while len(level) == 4:
+        listId += level[2]
+        level = level[3]
+    return set(listId)
+
 
   @property
   def listValues(self):
