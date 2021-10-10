@@ -215,9 +215,7 @@ class DataDashboard:
     try:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
-      print("before", jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
-      print("after")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
       return {"message":"postUpdate received"}
     except:
@@ -257,7 +255,6 @@ class DataDashboard:
       return False
 
   def __updateDatabaseTargetLevel(self, data, now):
-    print("__updateDatabaseTargetLevel")
     for key, dictTargetLevel in data.items():
       if key != "pdvs" and dictTargetLevel:
         if key == "targetLevelDrv":
@@ -271,20 +268,11 @@ class DataDashboard:
             targetLevel.save()
             DataDashboard.__targetLevelDrv[idDrv] = listTargetLevel
         if key == "targetLevelAgentP2CD":
-          print("targetLevelAgentP2CD")
           for idAgent, listTargetLevel in dictTargetLevel.items():
-            print("idAgent", idAgent)
             agent = Agent.objects.get(id=idAgent)
-            print("idAgent")
             targetLevel = CiblageLevel.objects.get(agent=agent)
-            print("targetLevel", targetLevel, listTargetLevel)
             targetLevel.date = now
-            print(1, targetLevel.volP2CD)
             targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
-            print(2, targetLevel.dnP2CD, float(listTargetLevel[0]) if listTargetLevel[0] else 0.0, int(listTargetLevel[1]) if listTargetLevel[1] else 0)
             targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
-            print(3, targetLevel.date, targetLevel.agent, targetLevel.volP2CD, targetLevel.dnP2CD, targetLevel.volFinition, targetLevel.dnFinition)
             targetLevel.save()
-            print("end 1", DataDashboard.__targetLevelAgentP2CD, idAgent)
             DataDashboard.__targetLevelAgentP2CD[idAgent] = listTargetLevel
-            print("end 2")
