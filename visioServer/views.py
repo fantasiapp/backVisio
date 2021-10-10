@@ -19,10 +19,10 @@ class Data(DefaultView):
         else:
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if 'action' in request.GET:
+            #request.META['SERVER_PORT'] == '8000' check if server is local
             dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
             action = request.GET["action"]
             if action == "dashboard":
-                #request.META['SERVER_PORT'] == '8000' check if query is local
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
                 answer = dataDashBoard.getUpdate(currentProfile[0] if currentProfile else None, request.GET["nature"])
