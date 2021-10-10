@@ -282,4 +282,5 @@ class DataDashboard:
             targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
             targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
             targetLevel.save()
+            print(DataDashboard.__targetLevelAgentP2CD[idDrv], listTargetLevel)
             DataDashboard.__targetLevelAgentP2CD[idDrv] = listTargetLevel
