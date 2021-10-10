@@ -286,5 +286,5 @@ class DataDashboard:
             print(3, targetLevel.date, targetLevel.agent, targetLevel.volP2CD, targetLevel.dnP2CD, targetLevel.volFinition, targetLevel.dnFinition)
             targetLevel.save()
             print("end 1", DataDashboard.__targetLevelAgentP2CD, idAgent)
-            print("end", DataDashboard.__targetLevelAgentP2CD[idAgent], listTargetLevel)
             DataDashboard.__targetLevelAgentP2CD[idAgent] = listTargetLevel
+            print("end 2")
