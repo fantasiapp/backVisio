@@ -277,8 +277,9 @@ class DataDashboard:
             agent = Agent.objects.get(id=idAgent)
             print("idAgent")
             targetLevel = CiblageLevel.objects.get(agent=agent)
-            print("targetLevel", targetLevel)
+            print("targetLevel", targetLevel, listTargetLevel)
             targetLevel.date = now
             targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
             targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
+            targetLevel.save()
             DataDashboard.__targetLevelAgentP2CD[idDrv] = listTargetLevel
