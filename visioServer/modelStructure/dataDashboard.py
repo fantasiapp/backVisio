@@ -263,7 +263,7 @@ class DataDashboard:
     else:
       print("need to Create Target Object")
     if flagSave:
-      pdvInRam[indexTarget] = indexTarget
+      pdvInRam[indexTarget] = target
       print("__updateDataBaseTarget saved in Ram", pdvInRam)
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
