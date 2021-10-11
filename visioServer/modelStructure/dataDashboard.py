@@ -1,3 +1,4 @@
+from sys import flags
 from ..models import *
 import json
 from django.conf import settings
@@ -227,6 +228,7 @@ class DataDashboard:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
         pdv = Pdv.objects.get(id=id)
+        self.__updateDataBaseTarget(id, value, pdv)
         salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
         sales = value[indexSales]
         for saleImported in sales:
@@ -245,6 +247,12 @@ class DataDashboard:
               Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
               salesInRam.append([now.timestamp()] + saleImported[1:])
     return now
+
+
+  def __updateDataBaseTarget(self, id, valueReceived, pdv):
+    indexTarget = getattr(self, "__structurePdvs").index("target")
+    target = valueReceived[indexTarget]
+    print(target, pdv.target)
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:
