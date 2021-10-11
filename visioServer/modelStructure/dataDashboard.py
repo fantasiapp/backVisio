@@ -256,9 +256,13 @@ class DataDashboard:
     indexTarget = getattr(self, "__structurePdvs").index("target")
     print("index", indexTarget, valueReceived)
     target = valueReceived[indexTarget]
-    targetObject = Ciblage.objects.get(pdv=pdv)
-    print("__updateDataBaseTarget", target, getattr(self, "__structureTarget"), targetObject)
-    targetObject.update(target, self, now)
+    print("target", target)
+    targetObject = Ciblage.objects.filter(pdv=pdv)
+    if targetObject:
+      print("__updateDataBaseTarget", target, getattr(self, "__structureTarget"), targetObject[0])
+      targetObject[0].update(target, self, now)
+    else:
+      print("need to Create Target Object")
     print("end")
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
