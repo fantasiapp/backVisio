@@ -551,10 +551,10 @@ class Ciblage(CommonModel):
       fieldName = field.name
       if field.name in listFields:
         print("fieldName", field.name)
+        print("value", self.field)
         if fieldName == "date":
           self.date = now
-        print("value", self.field)
-        if self.getDataFromDict(fieldName, data) != self.field:
+        elif self.getDataFromDict(fieldName, data) != self.field:
           print("update", fieldName, self.getDataFromDict(fieldName, data), self.field)
           self.field = self.getDataFromDict(fieldName, data)
         else:
