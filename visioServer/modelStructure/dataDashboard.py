@@ -231,7 +231,7 @@ class DataDashboard:
       for id, value in data["pdvs"].items():
         pdv = Pdv.objects.get(id=id)
         pdvInRam = getattr(DataDashboard, "__pdvs")[int(id)]
-        self.__updateDataBaseTarget(id, value, pdv, now, pdvInRam)
+        self.__updateDataBaseTarget(value, pdv, now, pdvInRam)
         salesInRam = pdvInRam[indexSales]
         sales = value[indexSales]
         for saleImported in sales:
@@ -252,7 +252,7 @@ class DataDashboard:
     return now
 
 
-  def __updateDataBaseTarget(self, id, valueReceived, pdv, now, pdvInRam):
+  def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
     targetObject = Ciblage.objects.filter(pdv=pdv)
@@ -261,7 +261,7 @@ class DataDashboard:
       print("update target save", target)
       flagSave = targetObject[0].update(target, now)
     else:
-      print("need to Create Target Object")
+      print("need to Create Target Object", target, valueReceived)
       Ciblage.createFromList(target, pdv, now)
     if flagSave:
       pdvInRam[indexTarget] = target

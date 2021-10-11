@@ -535,7 +535,6 @@ class Ciblage(CommonModel):
   COLORS_GREEN_LIGHT_CHOICES = [(GREEN, 'vert'), (ORANGE,'orange'), (RED, 'rouge')] 
   greenLight = models.CharField("Feu Ciblage P2CD", max_length=1, choices=COLORS_GREEN_LIGHT_CHOICES, blank=True, default=None)
   commentTargetP2CD = models.TextField("Commentaires ciblage P2CD", blank=True, default=None)
-  targetsDict = None
 
   @classmethod
   def listFields(cls):
@@ -558,14 +557,15 @@ class Ciblage(CommonModel):
   def createFromList(cls, data, pdv, now):
     print("start")
     flagSave = False
-    kwargs = {}
+    kwargs = {"pdv":pdv}
     for fieldName in cls.listFields():
       if fieldName == "date":
         kwargs["date"] = now
-      elif fieldName == "pdv":
-        kwargs["pdv"] = pdv
-      print(fieldName)
-    print("create", data)
+      else:
+        print(fieldName)
+        kwargs[fieldName] = cls.getDataFromDict(fieldName, data)
+        print(fieldName, cls.getDataFromDict(fieldName, data))
+    print("create", data, kwargs)
 
 
 
