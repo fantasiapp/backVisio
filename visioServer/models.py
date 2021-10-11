@@ -548,14 +548,16 @@ class Ciblage(CommonModel):
     print(self._meta.get_fields(), [field.name for field in self._meta.get_fields()])
     for field in self._meta.get_fields():
       print("field", field)
+      print("value", setattr(self, "redistributed", True))
+      print("done")
       fieldName = field.name
       if field.name in listFields:
         print("fieldName", field.name)
-        print("value", self.field)
+        print("value", field.value_from_object(self))
         if fieldName == "date":
           self.date = now
-        elif self.getDataFromDict(fieldName, data) != self.field:
-          print("update", fieldName, self.getDataFromDict(fieldName, data), self.field)
+        elif self.getDataFromDict(fieldName, data) != field.value_from_object(self):
+          print("update", fieldName, self.getDataFromDict(fieldName, data), field.value_from_object(self))
           self.field = self.getDataFromDict(fieldName, data)
         else:
           print("no update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
