@@ -252,9 +252,7 @@ class DataDashboard:
 
 
   def __updateDataBaseTarget(self, id, valueReceived, pdv, now):
-    print("start __updateDataBaseTarget")
     indexTarget = getattr(self, "__structurePdvs").index("target")
-    print("index", indexTarget, valueReceived)
     target = valueReceived[indexTarget]
     print("target", target)
     targetObject = Ciblage.objects.filter(pdv=pdv)

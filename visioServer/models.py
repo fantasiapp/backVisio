@@ -77,7 +77,8 @@ class CommonModel(models.Model):
     return list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
 
   @classmethod
-  def getDataFromDict(cls, field, data, structureData):
+  def getDataFromDict(cls, field, data):
+    structureData = cls.ListFields
     try:
       indexField = structureData.index(field)
     except ValueError:
@@ -539,12 +540,12 @@ class Ciblage(CommonModel):
   @classmethod
   def listFields(cls):
     lf = super().listFields()
-    del lf[1]
+    del lf[lf.index("pdv")]
     return lf
 
-  def update(self, data, structureData, now):
-    print("update", data, structureData, now)
-    print("update", self.getDataFromDict("redistributed", data, structureData))
+  def update(self, data, now):
+    print("update", data, self.ListFields, now)
+    print("update", self.getDataFromDict("redistributed", data))
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
