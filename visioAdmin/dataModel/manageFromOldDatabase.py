@@ -184,7 +184,6 @@ class ManageFromOldDatabase:
       for indexYear in range(2):
         query = f"SELECT id, name FROM ref_actor_{indexYear}"
         ManageFromOldDatabase.cursor.execute(query)
-        drvCorrespondance = self.__getDrvCorrespondance(listYear[indexYear])
         for (id, name) in ManageFromOldDatabase.cursor:
           existAgent = Agent.objects.filter(name__iexact=name, currentYear=indexYear == 1)
           if not existAgent.exists():
@@ -506,6 +505,7 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.1", typeValue="float")
     ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
     ParamVisio.objects.create(field="isAdOpen", prettyPrint="Ouverture de l'AD", fvalue="True", typeValue="bool")
+    ParamVisio.objects.create(field="delayBetweenUpdates", prettyPrint="Délai entre deux mise à jour", fvalue="10.0", typeValue="float")
     return ("ParamVisio", False)
 
 

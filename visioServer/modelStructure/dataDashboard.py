@@ -186,12 +186,16 @@ class DataDashboard:
   #queries for updates
 
   def getUpdate(self, userProfile, nature):
+    print(userProfile, userProfile.lastUpdate, userProfile.id)
     geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
     data = {"geoTree":geoTree}
+    lastUpdate = userProfile.lastUpdate
     listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, data)
     now = timezone.now()
     if nature == "request":
-      listUpdate = [json.loads(logUpdate.data) for logUpdate in LogUpdate.objects.all()]
+      listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
+      if not listData: return {"message":"nothing to Update"}
+      listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
       if listUpdate:
         jsonToSend = {key:{} for key in listUpdate[0].keys()}
         for dictUpdate in listUpdate:
@@ -202,14 +206,12 @@ class DataDashboard:
                   jsonToSend["pdvs"][id] = listObject
               else:
                 jsonToSend[nature][id] = listObject
-        if userProfile:
-          userProfile.lastUpdate = now
-          userProfile.save()
-        return jsonToSend      
-      return {}
+        return jsonToSend  
     elif nature == "acknowledge":
-      return {"message":"getUpdate acknowledge received"}
-    else:
+        userProfile.lastUpdate = now
+        userProfile.save()
+        return {"message":"getUpdate acknowledge received"}
+    else:    
       return {"error":f"wrong nature received : {nature}"}
 
   def postUpdate(self, userName, jsonString):
@@ -228,11 +230,9 @@ class DataDashboard:
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
-        print("pdv", id, value)
         pdv = Pdv.objects.get(id=id)
         pdvInRam = getattr(DataDashboard, "__pdvs")[int(id)]
         self.__updateDataBaseTarget(id, value, pdv, now, pdvInRam)
-        print("end __updateDataBaseTarget")
         salesInRam = pdvInRam[indexSales]
         sales = value[indexSales]
         for saleImported in sales:

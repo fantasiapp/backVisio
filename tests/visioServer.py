@@ -1,10 +1,29 @@
 import requests
 import json
 import time
+import sys
 
-username, password = "vivian", "pwd"
+username, password = "t", "avisio"
 # address = 'http://localhost:8000'
-address = 'https://visio.fantasiapp.tech:3438'
+address = 'https://visio.fantasiapp.tech:3441'
+get = "dashboard"
+
+arguments = sys.argv
+if len(arguments) > 1:
+    host = arguments[1]
+    if host == "local": address = 'http://localhost:8000'
+    elif host == "temp": address = 'https://visio.fantasiapp.tech:3441'
+    elif host == "work": address = 'https://visio.fantasiapp.tech:3438'
+    elif host == "current": address = 'https://visio.fantasiapp.tech:3439'
+    elif host == "distrib": address = 'https://visio.fantasiapp.tech:3440'
+    elif host == "distrib2": address = 'https://visio.fantasiapp.tech:3442'
+
+if len(arguments) > 2:
+    query = arguments[2]
+    if query == "dashboard": get = "dashboard"
+    elif query == "request": get = "request"
+    elif query == "acknowledge": get = "acknowledge"
+
 tokenUrl = f'{address}/visioServer/api-token-auth/'
 headers = {'Content-Type': 'application/json'}
 data = json.dumps({"username": username, "password": password})
@@ -18,7 +37,7 @@ fileName = 'test.json'
 url = f'{address}/visioServer/data/'
 
 start = time.time()
-if True:
+if get == "dashboard":
     response = requests.get(url, headers=headers, params={"action":"dashboard"})
     print(response.headers)
     try:
@@ -42,8 +61,8 @@ if True:
         else : print("pb in fields, waited : ", len(fields), "got :", len(data))
     else:
         print("pb in data:", data)
-else:
-    response = requests.get(url, headers=headers, params={"action":"update", "nature":"request"})
+elif get == "request" or get == "acknowledge":
+    response = requests.get(url, headers=headers, params={"action":"update", "nature":get})
     # response = requests.post(url, headers=headers, params={"action":"update"}, data={"pdvs":json.dumps({"foo":"bar"})})
 
     try:
