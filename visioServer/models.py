@@ -556,6 +556,7 @@ class Ciblage(CommonModel):
 
   @classmethod
   def createFromList(cls, data, pdv, now):
+    print("start")
     flagSave = False
     kwargs = {}
     for fieldName in cls.listFields():
@@ -563,7 +564,8 @@ class Ciblage(CommonModel):
         kwargs["date"] = now
       elif fieldName == "pdv":
         kwargs["pdv"] = pdv
-      print("create", data)
+      print(fieldName)
+    print("create", data)
 
 
 

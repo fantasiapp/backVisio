@@ -262,6 +262,7 @@ class DataDashboard:
       flagSave = targetObject[0].update(target, now)
     else:
       print("need to Create Target Object")
+      Ciblage.createFromList(target, pdv, now)
     if flagSave:
       pdvInRam[indexTarget] = target
       print("__updateDataBaseTarget saved in Ram", pdvInRam)
