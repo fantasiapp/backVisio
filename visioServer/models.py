@@ -544,19 +544,21 @@ class Ciblage(CommonModel):
     return lf
 
   def update(self, data, now):
+    listFields = self.listFields()
     print(self._meta.get_fields(), [field.name for field in self._meta.get_fields()])
     for field in self._meta.get_fields():
       print("field", field)
       fieldName = field.name
-      print("fieldName", field.name)
-      if fieldName == "date":
-        self.date = now
-      print("value", self.field)
-      if self.getDataFromDict(fieldName, data) != self.field:
-        print("update", fieldName, self.getDataFromDict(fieldName, data), self.field)
-        self.field = self.getDataFromDict(fieldName, data)
-      else:
-        print("no update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
+      if field.name in listFields:
+        print("fieldName", field.name)
+        if fieldName == "date":
+          self.date = now
+        print("value", self.field)
+        if self.getDataFromDict(fieldName, data) != self.field:
+          print("update", fieldName, self.getDataFromDict(fieldName, data), self.field)
+          self.field = self.getDataFromDict(fieldName, data)
+        else:
+          print("no update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
     self.save()
 
 class CiblageLevel(models.Model):
