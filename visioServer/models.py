@@ -545,16 +545,15 @@ class Ciblage(CommonModel):
 
   def update(self, data, now):
     for fieldName in self.listFields():
-      field = getattr(self, fieldName)
-      print("update field", field)
-      if field == "date":
+      print("update field", fieldName, getattr(self, fieldName))
+      if fieldName == "date":
         self.date = now
-      print("value", self.field)
-      if self.getDataFromDict("redistributed", data) != self.field:
-        print("update", field, self.getDataFromDict("redistributed", data), self.field)
-        self.field = self.getDataFromDict("redistributed")
+      print("value", getattr(self, fieldName))
+      if self.getDataFromDict(fieldName, data) != getattr(self, fieldName):
+        print("update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
+        setattr(self, fieldName) = self.getDataFromDict(fieldName, data)
       else:
-        print("no update", field, self.getDataFromDict("redistributed", data), self.field)
+        print("no update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
     self.save()
 
 class CiblageLevel(models.Model):
