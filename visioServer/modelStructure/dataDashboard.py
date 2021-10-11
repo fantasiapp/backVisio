@@ -186,7 +186,6 @@ class DataDashboard:
   #queries for updates
 
   def getUpdate(self, userProfile, nature):
-    print(userProfile, userProfile.lastUpdate, userProfile.id)
     geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
     data = {"geoTree":geoTree}
     lastUpdate = userProfile.lastUpdate
