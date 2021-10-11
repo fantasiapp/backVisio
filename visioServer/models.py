@@ -72,9 +72,20 @@ class CommonModel(models.Model):
     return False
 
   @classmethod
-  def computeTableClass(csl):
+  def computeTableClass(cls):
     listClass= ([cls for cls in CommonModel.__subclasses__() if "nature" in cls.readingData and cls.readingData["nature"] == "normal"])
     return list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
+
+  @classmethod
+  def getDataFromDict(cls, field, data):
+    structureData = cls.listFields()
+    try:
+      indexField = structureData.index(field)
+    except ValueError:
+      return False
+    if len(data) > indexField:
+      return data[indexField]
+    return False
 
 # Information Params
 class ParamVisio(CommonModel):
@@ -389,32 +400,6 @@ class Ventes(CommonModel):
     del lf[1]
     return lf
 
-  @classmethod
-  def createCache(cls):
-    sales = Ventes.objects.all()
-    salesDict = {}
-    for sale in sales:
-      id = str(sale.pdv.id)
-      if id not in salesDict:
-          salesDict[id] = []
-      salesDict[id].append(sale.listValues)
-    return salesDict
-
-  @classmethod
-  def createSalesDict(cls):
-    if cls.isNotOnServer and not cls.salesDict:
-      try:
-        with open(cls.cacheSalesDict, 'r') as jsonFile:
-          cls.salesDict = json.load(jsonFile)
-      except:
-        print('Formating sales...')
-      
-      if not cls.salesDict:
-        cls.salesDict = cls.createCache()
-        if cls.isNotOnServer:
-          with open(cls.cacheSalesDict, 'w') as jsonFile:
-            json.dump(cls.salesDict, jsonFile)
-
 # Modèles pour la navigation
 class TreeNavigation(CommonModel):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
@@ -555,29 +540,28 @@ class Ciblage(CommonModel):
   @classmethod
   def listFields(cls):
     lf = super().listFields()
-    del lf[1]
+    del lf[lf.index("pdv")]
     return lf
 
-  @classmethod
-  def createCache(cls):
-    cls.targetsDict = {target.pdv.id:target.listValues for target in cls.objects.all()}
-
-  @classmethod
-  def createTargetDict(cls):
-    fileName = Ventes.cacheSalesDict.replace("sales", "targets")
-    if Ventes.isNotOnServer and not cls.targetsDict:
-      try:
-        with open(fileName, 'r') as jsonFile:
-          cls.targetsDict = json.load(jsonFile)
-      except:
-        print('Formating targets...')
-      
-      if not cls.targetsDict:
-        cls.createCache()
-        if Ventes.isNotOnServer:
-          with open(fileName, 'w') as jsonFile:
-            json.dump(cls.targetsDict, jsonFile)
-
+  def update(self, data, now):
+    listFields = self.listFields()
+    print(self._meta.get_fields(), [field.name for field in self._meta.get_fields()])
+    for field in self._meta.get_fields():
+      print("field", field)
+      print("value", setattr(self, "redistributed", True))
+      print("done")
+      fieldName = field.name
+      if field.name in listFields:
+        print("fieldName", field.name)
+        print("value", field.value_from_object(self))
+        if fieldName == "date":
+          self.date = now
+        elif self.getDataFromDict(fieldName, data) != field.value_from_object(self):
+          print("update", fieldName, self.getDataFromDict(fieldName, data), field.value_from_object(self))
+          self.field = self.getDataFromDict(fieldName, data)
+        else:
+          print("no update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
+    self.save()
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)

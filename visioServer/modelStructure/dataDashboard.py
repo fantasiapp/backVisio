@@ -1,3 +1,4 @@
+from sys import flags
 from ..models import *
 import json
 from django.conf import settings
@@ -117,7 +118,7 @@ class DataDashboard:
     if self.__userGroup == "root":
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = self.__targetLevelDrv
-      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
+      data["structureTargetLevelAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
@@ -226,7 +227,10 @@ class DataDashboard:
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
+        print("pdv", id, value)
         pdv = Pdv.objects.get(id=id)
+        self.__updateDataBaseTarget(id, value, pdv, now)
+        print("end __updateDataBaseTarget")
         salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
         sales = value[indexSales]
         for saleImported in sales:
@@ -245,6 +249,19 @@ class DataDashboard:
               Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
               salesInRam.append([now.timestamp()] + saleImported[1:])
     return now
+
+
+  def __updateDataBaseTarget(self, id, valueReceived, pdv, now):
+    indexTarget = getattr(self, "__structurePdvs").index("target")
+    target = valueReceived[indexTarget]
+    print("target", target)
+    targetObject = Ciblage.objects.filter(pdv=pdv)
+    if targetObject:
+      print("__updateDataBaseTarget", target, targetObject)
+      targetObject[0].update(target, now)
+    else:
+      print("need to Create Target Object")
+    print("end")
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:
