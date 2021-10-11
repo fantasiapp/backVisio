@@ -554,6 +554,21 @@ class Ciblage(CommonModel):
     self.save()
     return flagSave
 
+  @classmethod
+  def createFromList(cls, data, pdv, now):
+    flagSave = False
+    kwargs = {}
+    for fieldName in cls.listFields():
+      if fieldName == "date":
+        kwargs["date"] = now
+      elif fieldName == "pdv":
+        kwargs["pdv"] = pdv
+      print("create", data)
+
+
+
+
+
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
