@@ -266,7 +266,6 @@ class DataDashboard:
     if flagSave:
       pdvInRam[indexTarget] = target
       print("__updateDataBaseTarget saved in Ram", pdvInRam)
-)
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:
