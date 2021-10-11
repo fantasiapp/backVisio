@@ -546,7 +546,9 @@ class Ciblage(CommonModel):
   def update(self, data, now):
     print(self._meta.get_fields(), [field.name for field in self._meta.get_fields()])
     for field in self._meta.get_fields():
+      print("field", field)
       fieldName = field.name
+      print("fieldName", field.name)
       if fieldName == "date":
         self.date = now
       print("value", self.field)
