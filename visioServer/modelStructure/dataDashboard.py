@@ -207,7 +207,7 @@ class DataDashboard:
                 jsonToSend[nature][id] = listObject
         return jsonToSend  
     elif nature == "acknowledge":
-        userProfile.lastUpdate = now
+        userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
         userProfile.save()
         return {"message":"getUpdate acknowledge received"}
     else:    
@@ -259,10 +259,10 @@ class DataDashboard:
     flagSave = False
     if targetObject:
       print("update target save", target)
-      flagSave = targetObject[0].update(target, now + timezone.timedelta(seconds=5))
+      flagSave = targetObject[0].update(target, now)
     else:
       print("need to Create Target Object", target, valueReceived)
-      flagSave = Ciblage.createFromList(target, pdv, now + timezone.timedelta(seconds=5))
+      flagSave = Ciblage.createFromList(target, pdv, now)
     if flagSave:
       pdvInRam[indexTarget] = target
       print("__updateDataBaseTarget saved in Ram", pdvInRam)

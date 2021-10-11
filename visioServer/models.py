@@ -556,6 +556,7 @@ class Ciblage(CommonModel):
   @classmethod
   def createFromList(cls, data, pdv, now):
     print("start")
+    flagSave = False
     kwargs = {"pdv":pdv}
     for fieldName in cls.listFields():
       if fieldName == "date":
@@ -563,9 +564,14 @@ class Ciblage(CommonModel):
       else:
         print(fieldName)
         kwargs[fieldName] = cls.getDataFromDict(fieldName, data)
+        try:
+          cls.objects.create(**kwargs)
+          flagSave = True
+        except:
+          pass
         print(fieldName, cls.getDataFromDict(fieldName, data))
     print("create", data, kwargs)
-    return True
+    return flagSave
 
 
 
