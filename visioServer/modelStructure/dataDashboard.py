@@ -229,7 +229,7 @@ class DataDashboard:
       for id, value in data["pdvs"].items():
         print("pdv", id, value)
         pdv = Pdv.objects.get(id=id)
-        self.__updateDataBaseTarget(id, value, pdv)
+        self.__updateDataBaseTarget(id, value, pdv, now)
         salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
         sales = value[indexSales]
         for saleImported in sales:
@@ -250,10 +250,11 @@ class DataDashboard:
     return now
 
 
-  def __updateDataBaseTarget(self, id, valueReceived, pdv):
+  def __updateDataBaseTarget(self, id, valueReceived, pdv, now):
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
-    print(target, pdv.target)
+    print("__updateDataBaseTarget", target, pdv.target)
+    target.update(valueReceived, self, now)
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:

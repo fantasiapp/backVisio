@@ -389,32 +389,6 @@ class Ventes(CommonModel):
     del lf[1]
     return lf
 
-  @classmethod
-  def createCache(cls):
-    sales = Ventes.objects.all()
-    salesDict = {}
-    for sale in sales:
-      id = str(sale.pdv.id)
-      if id not in salesDict:
-          salesDict[id] = []
-      salesDict[id].append(sale.listValues)
-    return salesDict
-
-  @classmethod
-  def createSalesDict(cls):
-    if cls.isNotOnServer and not cls.salesDict:
-      try:
-        with open(cls.cacheSalesDict, 'r') as jsonFile:
-          cls.salesDict = json.load(jsonFile)
-      except:
-        print('Formating sales...')
-      
-      if not cls.salesDict:
-        cls.salesDict = cls.createCache()
-        if cls.isNotOnServer:
-          with open(cls.cacheSalesDict, 'w') as jsonFile:
-            json.dump(cls.salesDict, jsonFile)
-
 # Modèles pour la navigation
 class TreeNavigation(CommonModel):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
@@ -558,26 +532,8 @@ class Ciblage(CommonModel):
     del lf[1]
     return lf
 
-  @classmethod
-  def createCache(cls):
-    cls.targetsDict = {target.pdv.id:target.listValues for target in cls.objects.all()}
-
-  @classmethod
-  def createTargetDict(cls):
-    fileName = Ventes.cacheSalesDict.replace("sales", "targets")
-    if Ventes.isNotOnServer and not cls.targetsDict:
-      try:
-        with open(fileName, 'r') as jsonFile:
-          cls.targetsDict = json.load(jsonFile)
-      except:
-        print('Formating targets...')
-      
-      if not cls.targetsDict:
-        cls.createCache()
-        if Ventes.isNotOnServer:
-          with open(fileName, 'w') as jsonFile:
-            json.dump(cls.targetsDict, jsonFile)
-
+  def update(self, data, dataDashboard, now):
+    print(data) 
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
