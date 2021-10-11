@@ -551,7 +551,7 @@ class Ciblage(CommonModel):
       print("value", getattr(self, fieldName))
       if self.getDataFromDict(fieldName, data) != getattr(self, fieldName):
         print("update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
-        setattr(self, fieldName) = self.getDataFromDict(fieldName, data)
+        setattr(self, fieldName, False) = self.getDataFromDict(fieldName, data)
       else:
         print("no update", fieldName, self.getDataFromDict(fieldName, data), getattr(self, fieldName))
     self.save()
