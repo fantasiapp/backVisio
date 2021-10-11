@@ -187,7 +187,8 @@ class DataDashboard:
 
   def getUpdate(self, userProfile, nature):
     geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
-    listIdPdv = False if self.__userGroup == "root" else self.__computeListIdPdv(geoTree, [])
+    data = {"geoTree":geoTree}
+    listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, data)
     now = timezone.now()
     if nature == "request":
       listUpdate = [json.loads(logUpdate.data) for logUpdate in LogUpdate.objects.all()]

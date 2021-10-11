@@ -370,6 +370,7 @@ class ManageFromOldDatabase:
       if not Group.objects.filter(name="root"):
         Group.objects.create(name="root")
       user.groups.add(Group.objects.get(name="root"))
+      UserProfile.objects.create(user=user, idGeo=0)
     for username, userList in dictUser.items():
       user = User.objects.create_user(username=username, password=userList[2])
       groupName = userList[0]
