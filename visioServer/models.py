@@ -544,7 +544,8 @@ class Ciblage(CommonModel):
     return lf
 
   def update(self, data, now):
-    for field in self.listFields():
+    for fieldName in self.listFields():
+      field = getattr(self, fieldName)
       print("update field", field)
       if field == "date":
         self.date = now
