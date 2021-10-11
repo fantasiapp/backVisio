@@ -78,7 +78,7 @@ class CommonModel(models.Model):
 
   @classmethod
   def getDataFromDict(cls, field, data):
-    structureData = cls.ListFields
+    structureData = cls.ListFields()
     try:
       indexField = structureData.index(field)
     except ValueError:
@@ -544,7 +544,7 @@ class Ciblage(CommonModel):
     return lf
 
   def update(self, data, now):
-    print("update", data, self.ListFields, now)
+    print("update", data, self.ListFields(), now)
     print("update", self.getDataFromDict("redistributed", data))
 
 class CiblageLevel(models.Model):
