@@ -252,7 +252,8 @@ class DataDashboard:
 
 
   def __updateDataBaseTarget(self, id, valueReceived, pdv, now):
-    print("start __updateDataBaseTarget")
+    print("start __updateDataBaseTarget", getattr(self, "__structurePdvs", False))
+    print("", getattr(self, "__structurePdvs"))
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
     print("__updateDataBaseTarget", target, pdv.target)
