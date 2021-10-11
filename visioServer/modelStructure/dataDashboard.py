@@ -259,13 +259,14 @@ class DataDashboard:
     flagSave = False
     if targetObject:
       print("update target save", target)
-      flagSave = targetObject[0].update(target, now)
+      flagSave = targetObject[0].update(target, now + timezone.timedelta(seconds=5))
     else:
       print("need to Create Target Object", target, valueReceived)
-      Ciblage.createFromList(target, pdv, now)
+      flagSave = Ciblage.createFromList(target, pdv, now + timezone.timedelta(seconds=5))
     if flagSave:
       pdvInRam[indexTarget] = target
       print("__updateDataBaseTarget saved in Ram", pdvInRam)
+)
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:
