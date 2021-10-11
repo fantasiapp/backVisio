@@ -18,6 +18,7 @@ class Data(DefaultView):
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         else:
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
+        print("getData", currentUser, userGroup, currentProfile, userIdGeo)
         if 'action' in request.GET:
             #request.META['SERVER_PORT'] == '8000' check if server is local
             dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
