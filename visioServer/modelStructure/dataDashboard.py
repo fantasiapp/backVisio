@@ -118,7 +118,7 @@ class DataDashboard:
     if self.__userGroup == "root":
       data["structureTargetLevelDrv"] = self.__structureTargetLevelDrv
       data["targetLevelDrv"] = self.__targetLevelDrv
-      data["structureTargetAgentP2CD"] = self.__structureTargetLevelAgentP2CD
+      data["structureTargetLevelAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
