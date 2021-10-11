@@ -254,10 +254,11 @@ class DataDashboard:
   def __updateDataBaseTarget(self, id, valueReceived, pdv, now):
     print("start __updateDataBaseTarget")
     indexTarget = getattr(self, "__structurePdvs").index("target")
-    print("index", indexTarget, valueReceived)
+    print("index", indexTarget, len(), valueReceived)
     target = valueReceived[indexTarget]
-    print("__updateDataBaseTarget", target, pdv.target)
-    target.update(valueReceived, self, now)
+    targetObject = Ciblage.objects.get(pdv=pdv)
+    print("__updateDataBaseTarget", target, targetObject)
+    targetObject.update(valueReceived, self, now)
     print("end")
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
