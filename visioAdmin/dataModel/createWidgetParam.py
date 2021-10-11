@@ -90,9 +90,9 @@ class CreateWidgetParam:
     if not cls.__colors:
       cls.__colors={}
       data = [
-        ["segment", "Généralistes", "#888888"],
-        ["segment", "Multi Spécialistes", "#E1962A"],
         ["segment", "Purs Spécialistes", "#DEDEDE"],
+        ["segment", "Multi Spécialistes", "#E1962A"],
+        ["segment", "Généralistes", "#888888"],
         ["segment", "Autres", "#DC6206"],
 
         ["industry","Siniat", "#B3007E"],
