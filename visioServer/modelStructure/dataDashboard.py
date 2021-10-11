@@ -259,7 +259,7 @@ class DataDashboard:
     print("target", target)
     targetObject = Ciblage.objects.filter(pdv=pdv)
     if targetObject:
-      print("__updateDataBaseTarget", target, getattr(self, "__structureTarget"), targetObject[0])
+      print("__updateDataBaseTarget", target, targetObject)
       targetObject[0].update(target, self, now)
     else:
       print("need to Create Target Object")
