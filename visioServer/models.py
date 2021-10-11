@@ -544,9 +544,15 @@ class Ciblage(CommonModel):
     return lf
 
   def update(self, data, now):
-    print("update")
-    print("update", data, self.listFields(), now)
-    print("update", self.getDataFromDict("redistributed", data))
+    for field in self.listFields():
+      if field == "date":
+        self.date = now
+      if self.getDataFromDict("redistributed", data) != self.field:
+        print("update", field, self.getDataFromDict("redistributed", data), self.field)
+        self.field = self.getDataFromDict("redistributed")
+      else:
+        print("no update", field, self.getDataFromDict("redistributed", data), self.field)
+    self.save()
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
