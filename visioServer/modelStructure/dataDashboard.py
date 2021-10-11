@@ -227,6 +227,7 @@ class DataDashboard:
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
+        print("pdv", id, value)
         pdv = Pdv.objects.get(id=id)
         self.__updateDataBaseTarget(id, value, pdv)
         salesInRam = getattr(DataDashboard, "__pdvs")[int(id)][indexSales]
