@@ -545,8 +545,10 @@ class Ciblage(CommonModel):
 
   def update(self, data, now):
     for field in self.listFields():
+      print("update field", field)
       if field == "date":
         self.date = now
+      print("value", self.field)
       if self.getDataFromDict("redistributed", data) != self.field:
         print("update", field, self.getDataFromDict("redistributed", data), self.field)
         self.field = self.getDataFromDict("redistributed")
