@@ -533,7 +533,7 @@ class Ciblage(CommonModel):
     return lf
 
   def update(self, data, dataDashboard, now):
-    print(data) 
+    print("update", data) 
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)

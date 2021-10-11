@@ -252,12 +252,13 @@ class DataDashboard:
 
 
   def __updateDataBaseTarget(self, id, valueReceived, pdv, now):
-    print("start __updateDataBaseTarget", getattr(self, "__structurePdvs", False))
-    print("", getattr(self, "__structurePdvs"))
+    print("start __updateDataBaseTarget")
     indexTarget = getattr(self, "__structurePdvs").index("target")
+    print("index", indexTarget, valueReceived)
     target = valueReceived[indexTarget]
     print("__updateDataBaseTarget", target, pdv.target)
     target.update(valueReceived, self, now)
+    print("end")
 
   def __updateSaleRam(self, salesInRam, saleImported, now):
     for saleInRam in salesInRam:
