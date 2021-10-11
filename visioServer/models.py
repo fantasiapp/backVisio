@@ -316,8 +316,6 @@ class Pdv(CommonModel):
     idDat, idNbV, idTar, idSal = lf.index("closedAt"), lf.index("nbVisits"), lf.index("target"), lf.index("sales")
     if isinstance(lv[idDat], datetime.datetime):
       lv[idDat] = lv[idDat].isoformat()
-    if self.id == 7041:
-      print("pdv",idNbV, sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)]), [visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)])
     lv[idNbV] = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)])
     target = Ciblage.objects.filter(pdv = self)
     if target:
