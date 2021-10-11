@@ -72,9 +72,19 @@ class CommonModel(models.Model):
     return False
 
   @classmethod
-  def computeTableClass(csl):
+  def computeTableClass(cls):
     listClass= ([cls for cls in CommonModel.__subclasses__() if "nature" in cls.readingData and cls.readingData["nature"] == "normal"])
     return list(dict(sorted({cls.readingData["position"]:(cls.readingData["name"], cls) for cls in listClass}.items())).values())
+
+  @classmethod
+  def getDataFromDict(cls, field, data, structureData):
+    try:
+      indexField = structureData.index(field)
+    except ValueError:
+      return False
+    if len(data) > indexField:
+      return data[indexField]
+    return False
 
 # Information Params
 class ParamVisio(CommonModel):
@@ -532,8 +542,9 @@ class Ciblage(CommonModel):
     del lf[1]
     return lf
 
-  def update(self, data, dataDashboard, now):
-    print("update", data) 
+  def update(self, data, structureData, now):
+    print("update", data, structureData, now)
+    print("update", self.getDataFromDict("redistributed", data, structureData))
 
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
