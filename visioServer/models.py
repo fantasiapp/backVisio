@@ -4,6 +4,7 @@ from datetime import date
 import json
 # from django.db.models.fields import Field
 import datetime
+from django.utils import timezone
 import inspect
 
 # from django.forms.models import model_to_dict
@@ -87,6 +88,25 @@ class CommonModel(models.Model):
       return data[indexField]
     return False
 
+  def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
+    kwargs = {}
+    for fieldName in self.listFields():
+      if fieldName == "date":
+        self.date = date
+      newValue = self.getDataFromDict(fieldName, valueReceived)
+      test = update == False or newValue != getattr(self, fieldName)
+      if test:
+        kwargs[fieldName] = newValue
+    return kwargs
+
+  def update(self, valueReceived, now):
+    kwargs = self.createKwargsToSave(valueReceived, now)
+    if kwargs:
+      for fieldName, value in kwargs.items():
+        setattr(self, fieldName, self.getDataFromDict(fieldName, value))
+        return True
+    return False
+      
 # Information Params
 class ParamVisio(CommonModel):
   field = models.CharField(max_length=64, unique=True, blank=False)
@@ -542,16 +562,16 @@ class Ciblage(CommonModel):
     del lf[lf.index("pdv")]
     return lf
 
-  def update(self, data, now):
-    flagSave = False
-    for fieldName in self.listFields():
-      if fieldName == "date":
-        self.date = now
-      elif self.getDataFromDict(fieldName, data) != getattr(self, fieldName):
-        setattr(self, fieldName, self.getDataFromDict(fieldName, data))
-        flagSave = True
-    self.save()
-    return flagSave
+  # def update(self, data, now):
+  #   flagSave = False
+  #   for fieldName in self.listFields():
+  #     if fieldName == "date":
+  #       self.date = now
+  #     elif self.getDataFromDict(fieldName, data) != getattr(self, fieldName):
+  #       setattr(self, fieldName, self.getDataFromDict(fieldName, data))
+  #       flagSave = True
+  #   self.save()
+  #   return flagSave
 
   @classmethod
   def createFromList(cls, data, pdv, now):
@@ -569,10 +589,6 @@ class Ciblage(CommonModel):
       pass
     return flagSave
 
-
-
-
-
 class CiblageLevel(models.Model):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
@@ -581,6 +597,9 @@ class CiblageLevel(models.Model):
   dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
+
+
+
 
 class LogUpdate(models.Model):
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
