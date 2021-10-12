@@ -89,7 +89,6 @@ class CommonModel(models.Model):
     return False
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
-    print("createKwargsToSave Common")
     kwargs = {}
     for fieldName in self.listFields():
       if fieldName == "date":
@@ -592,10 +591,11 @@ class CiblageLevel(CommonModel):
     print("createKwargsToSave local")
     listFields = self.listFields()
     valueReceived = [date, self.agent, self.drv] + valueReceived
-    print(valueReceived)
-    print(listFields)
     result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}
-    return result
+    for field, value in result.items():
+      if value == getattr(self, field):
+        del result[field]
+    return result if len(result) > 1 else {}
 
 
 
