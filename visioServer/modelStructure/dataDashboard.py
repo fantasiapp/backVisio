@@ -204,7 +204,7 @@ class DataDashboard:
           for nature, dictNature in dictUpdate.items():
             for id, listObject in dictNature.items():
               if nature == "pdvs":
-                print("listIdPdv",listIdPdv, id)
+                print("listIdPdv",listIdPdv, id, type(id), type(listIdPdv[0]))
                 if not listIdPdv or id in listIdPdv:
                   jsonToSend["pdvs"][id] = listObject
               else:
