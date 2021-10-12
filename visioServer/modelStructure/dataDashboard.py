@@ -219,6 +219,7 @@ class DataDashboard:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
+      print("__updateDatabaseTargetLevel done")
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
       return {"message":"postUpdate received"}
     except:
@@ -284,19 +285,21 @@ class DataDashboard:
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
-            print("__updateDatabaseTargetLevel Drv", targetLevel.createKwargsToSave(listTargetLevel, date=now))
-            targetLevel.date = now
-            targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
-            targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
-            targetLevel.volFinition = float(listTargetLevel[2]) if listTargetLevel[2] else 0.0
-            targetLevel.save()
+            targetLevel.update(listTargetLevel, now)
+            # print("__updateDatabaseTargetLevel Drv", targetLevel.createKwargsToSave(listTargetLevel, date=now))
+            # targetLevel.date = now
+            # targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
+            # targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
+            # targetLevel.volFinition = float(listTargetLevel[2]) if listTargetLevel[2] else 0.0
+            # targetLevel.save()
             DataDashboard.__targetLevelDrv[idDrv] = listTargetLevel
         if key == "targetLevelAgentP2CD":
           for idAgent, listTargetLevel in dictTargetLevel.items():
             agent = Agent.objects.get(id=idAgent)
             targetLevel = CiblageLevel.objects.get(agent=agent)
-            targetLevel.date = now
-            targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
-            targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
-            targetLevel.save()
+            targetLevel.update(listTargetLevel, now)
+            # targetLevel.date = now
+            # targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
+            # targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0
+            # targetLevel.save()
             DataDashboard.__targetLevelAgentP2CD[idAgent] = listTargetLevel

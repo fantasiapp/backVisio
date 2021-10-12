@@ -101,10 +101,12 @@ class CommonModel(models.Model):
 
   def update(self, valueReceived, now):
     kwargs = self.createKwargsToSave(valueReceived, now)
+    print("update", kwargs)
     if kwargs:
       for fieldName, value in kwargs.items():
-        setattr(self, fieldName, self.getDataFromDict(fieldName, value))
-        return True
+        setattr(self, fieldName, value)
+      self.save()
+      return True
     return False
       
 # Information Params
@@ -588,22 +590,13 @@ class CiblageLevel(CommonModel):
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
-    print("createKwargsToSave local")
     listFields = self.listFields()
     valueReceived = [date, self.agent, self.drv] + valueReceived
     complete, result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
     for field, value in complete.items():
-      print(field, value)
-      print(getattr(self, field))
       if value != getattr(self, field):
         result[field] = value
-        print("inside", result)
     return result if len(result) > 1 else {}
-
-
-
-
-
 
 class LogUpdate(models.Model):
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
