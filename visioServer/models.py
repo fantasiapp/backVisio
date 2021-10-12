@@ -89,6 +89,7 @@ class CommonModel(models.Model):
     return False
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
+    print("createKwargsToSave Common")
     kwargs = {}
     for fieldName in self.listFields():
       if fieldName == "date":
@@ -588,7 +589,7 @@ class CiblageLevel(CommonModel):
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
 def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
-  print("createKwargsToSave")
+  print("createKwargsToSave local")
   listFields = self.listFields()
   valueReceived = [date, self.agent, self.drv] + valueReceived
   print(valueReceived)
