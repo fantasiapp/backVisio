@@ -269,8 +269,8 @@ class ManageFromOldDatabase:
     try:
       for indexYear in range(2):
         query = f"SELECT id, name FROM ref_{type}_{indexYear}"
-        ManageFromOldDatabase.cursor.execute(query)
-        for (id, name) in ManageFromOldDatabase.cursor:
+        ManageFromOldDatabase.cursor.execute(query, type)
+        for (id, name) in self.computeHoldingOrder(ManageFromOldDatabase.cursor, type):
           name, currentYear = self.unProtect(name), listYear[indexYear] == "currentYear"
           kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[type], "currentYear", False) else {"name__iexact":name}
           existobject = self.typeObject[type].objects.filter(**kwargs)
@@ -287,6 +287,17 @@ class ManageFromOldDatabase:
     except db.Error as e:
       return (False, f"Error getObject {type} {repr(e)}")
     return (type, False)
+
+  def computeHoldingOrder(self, cursor, nature):
+    if nature != "holding":
+      return cursor
+    dataWithOrder = ["CMEM", "POINT P", "MCD", "Chausson", "Gédimat", "SFIC","SIG France","Bois & Mat.","Nég Mtx Cons","Group. Rég.","Altéral",
+              "La Platef.","Nég ancien PdV","DMBP","SGDB France","Négoce Platec","Autres","Non identifié"]
+    for (_, name) in cursor:
+      if not name in dataWithOrder:
+        dataWithOrder.append(name)
+    return [(index, dataWithOrder[index]) for index in range(len(dataWithOrder))]
+  
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
