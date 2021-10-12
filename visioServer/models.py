@@ -588,14 +588,14 @@ class CiblageLevel(CommonModel):
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
 
-def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
-  print("createKwargsToSave local")
-  listFields = self.listFields()
-  valueReceived = [date, self.agent, self.drv] + valueReceived
-  print(valueReceived)
-  print(listFields)
-  result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}
-  return result
+  def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
+    print("createKwargsToSave local")
+    listFields = self.listFields()
+    valueReceived = [date, self.agent, self.drv] + valueReceived
+    print(valueReceived)
+    print(listFields)
+    result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}
+    return result
 
 
 
