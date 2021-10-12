@@ -593,7 +593,10 @@ class CiblageLevel(CommonModel):
     valueReceived = [date, self.agent, self.drv] + valueReceived
     result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}
     for field, value in result.items():
+      print(field, value)
+      print(getattr(self, field))
       if value == getattr(self, field):
+        print("inside")
         del result[field]
     return result if len(result) > 1 else {}
 
