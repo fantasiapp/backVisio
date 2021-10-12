@@ -284,7 +284,7 @@ class DataDashboard:
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
-            print("__updateDatabaseTargetLevel Drv", targetLevel.createKwargsToSave(dictTargetLevel, date=now))
+            print("__updateDatabaseTargetLevel Drv", targetLevel.createKwargsToSave(listTargetLevel, date=now))
             targetLevel.date = now
             targetLevel.volP2CD = float(listTargetLevel[0]) if listTargetLevel[0] else 0.0
             targetLevel.dnP2CD = int(listTargetLevel[1]) if listTargetLevel[1] else 0

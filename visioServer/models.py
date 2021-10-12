@@ -90,7 +90,7 @@ class CommonModel(models.Model):
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     kwargs = {}
-    print("createKwargsToSave", self.listFields, valueReceived)
+    print("createKwargsToSave", self.listFields(), valueReceived)
     for fieldName in self.listFields():
       if fieldName == "date":
         kwargs[fieldName] = date
