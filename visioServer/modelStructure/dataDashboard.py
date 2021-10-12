@@ -279,6 +279,7 @@ class DataDashboard:
     for key, dictTargetLevel in data.items():
       if key != "pdvs" and dictTargetLevel:
         if key == "targetLevelDrv":
+          print("__updateDatabaseTargetLevel Drv", CiblageLevel.createKwargsToSave(data, now))
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
