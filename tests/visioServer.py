@@ -4,8 +4,8 @@ import time
 import sys
 
 username, password = "t", "avisio"
-# address = 'http://localhost:8000'
-address = 'https://visio.fantasiapp.tech:3441'
+address = 'http://localhost:8000'
+# address = 'https://visio.fantasiapp.tech:3441'
 get = "dashboard"
 
 arguments = sys.argv

@@ -192,7 +192,9 @@ class DataDashboard:
     listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, data)
     now = timezone.now()
     if nature == "request":
+      print("getUpdate", userProfile.user, lastUpdate)
       listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
+      print("getUpdate", listData)
       if not listData: return {"message":"nothing to Update"}
       listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
       if listUpdate:
