@@ -90,7 +90,6 @@ class CommonModel(models.Model):
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     kwargs = {}
-    print("createKwargsToSave", self.listFields(), valueReceived)
     for fieldName in self.listFields():
       if fieldName == "date":
         kwargs[fieldName] = date
@@ -587,6 +586,14 @@ class CiblageLevel(CommonModel):
   dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
   volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
   dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
+
+def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
+    listFields = self.listFields()
+    valueReceived = [date, self.agent, self.drv] + valueReceived
+    result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}
+    return result
+
+
 
 
 
