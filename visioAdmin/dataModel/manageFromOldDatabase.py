@@ -264,39 +264,41 @@ class ManageFromOldDatabase:
           classObject.objects.create(name=nameField, currentYear=indexYear==1)
     return (classObject.__name__, False)
 
-  def getObject(self, type:str):
+  def getObject(self, nature:str):
     listYear = ["lastYear", "currentYear"]
     try:
       for indexYear in range(2):
-        query = f"SELECT id, name FROM ref_{type}_{indexYear}"
-        ManageFromOldDatabase.cursor.execute(query, type)
-        for (id, name) in self.computeHoldingOrder(ManageFromOldDatabase.cursor, type):
+        query = f"SELECT id, name FROM ref_{nature}_{indexYear}"
+        ManageFromOldDatabase.cursor.execute(query)
+        for (id, name) in self.computeHoldingOrder(ManageFromOldDatabase.cursor, nature):
           name, currentYear = self.unProtect(name), listYear[indexYear] == "currentYear"
-          kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[type], "currentYear", False) else {"name__iexact":name}
-          existobject = self.typeObject[type].objects.filter(**kwargs)
+          kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name__iexact":name}
+          existobject = self.typeObject[nature].objects.filter(**kwargs)
           if not existobject.exists():
-            kwargs = {"name":name, "currentYear":currentYear} if getattr(self.typeObject[type], "currentYear", False) else {"name":name}
-            self.typeObject[type].objects.create(**kwargs)
-          dict = getattr(self, "dict" + type.capitalize())
-          if type in ["ville", "product", "industry"] and not id in dict:
+            kwargs = {"name":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name":name}
+            self.typeObject[nature].objects.create(**kwargs)
+          dict = getattr(self, "dict" + nature.capitalize())
+          if nature in ["ville", "product", "industry"] and not id in dict:
             dict[id] = name
           else:
             if not listYear[indexYear] in dict:
               dict[listYear[indexYear]] = {}
             dict[listYear[indexYear]][id] = name
     except db.Error as e:
-      return (False, f"Error getObject {type} {repr(e)}")
-    return (type, False)
+      return (False, f"Error getObject {nature} {repr(e)}")
+    return (nature, False)
 
   def computeHoldingOrder(self, cursor, nature):
     if nature != "holding":
       return cursor
     dataWithOrder = ["CMEM", "POINT P", "MCD", "Chausson", "Gédimat", "SFIC","SIG France","Bois & Mat.","Nég Mtx Cons","Group. Rég.","Altéral",
               "La Platef.","Nég ancien PdV","DMBP","SGDB France","Négoce Platec","Autres","Non identifié"]
-    for (_, name) in cursor:
+    dictId = {}
+    for (id, name) in cursor:
       if not name in dataWithOrder:
         dataWithOrder.append(name)
-    return [(index, dataWithOrder[index]) for index in range(len(dataWithOrder))]
+      dictId[name] = id
+    return [(dictId[dataWithOrder[index]], dataWithOrder[index]) for index in range(len(dataWithOrder))]
   
 
 # Création des données de navigation
