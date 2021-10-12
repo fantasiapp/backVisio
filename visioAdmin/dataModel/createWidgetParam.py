@@ -114,6 +114,7 @@ class CreateWidgetParam:
         ["industryP2CD","Sopreba", "#888888"],
         ["industryP2CD","Norgyps", "#888888"],
         ["industryP2CD","Pladur", "#888888"],
+        ["industryP2CD","IsoVer", "#888888"],
 
         ["industryTarget","Siniat", "#B3007E"],
         ["industryTarget","Potentiel ciblé", "#CD77E2"],
