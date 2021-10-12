@@ -591,13 +591,13 @@ class CiblageLevel(CommonModel):
     print("createKwargsToSave local")
     listFields = self.listFields()
     valueReceived = [date, self.agent, self.drv] + valueReceived
-    result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}
-    for field, value in result.items():
+    complete, result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
+    for field, value in complete.items():
       print(field, value)
       print(getattr(self, field))
-      if value == getattr(self, field):
-        print("inside")
-        del result[field]
+      if value != getattr(self, field):
+        result[field] = value
+        print("inside", result)
     return result if len(result) > 1 else {}
 
 
