@@ -562,17 +562,6 @@ class Ciblage(CommonModel):
     del lf[lf.index("pdv")]
     return lf
 
-  # def update(self, data, now):
-  #   flagSave = False
-  #   for fieldName in self.listFields():
-  #     if fieldName == "date":
-  #       self.date = now
-  #     elif self.getDataFromDict(fieldName, data) != getattr(self, fieldName):
-  #       setattr(self, fieldName, self.getDataFromDict(fieldName, data))
-  #       flagSave = True
-  #   self.save()
-  #   return flagSave
-
   @classmethod
   def createFromList(cls, data, pdv, now):
     flagSave = False

@@ -276,11 +276,13 @@ class DataDashboard:
       return False
 
   def __updateDatabaseTargetLevel(self, data, now):
+    print("start __updateDatabaseTargetLevel", data)
     for key, dictTargetLevel in data.items():
       if key != "pdvs" and dictTargetLevel:
+        print("follow", key, dictTargetLevel)
         if key == "targetLevelDrv":
-          print("__updateDatabaseTargetLevel Drv", CiblageLevel.createKwargsToSave(data, now))
           for idDrv, listTargetLevel in dictTargetLevel.items():
+            print("__updateDatabaseTargetLevel Drv", CiblageLevel.createKwargsToSave(dictTargetLevel, now))
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
             targetLevel.date = now
