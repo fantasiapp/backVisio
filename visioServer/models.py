@@ -579,7 +579,7 @@ class Ciblage(CommonModel):
       pass
     return flagSave
 
-class CiblageLevel(models.Model):
+class CiblageLevel(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
