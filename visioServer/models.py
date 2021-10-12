@@ -90,9 +90,10 @@ class CommonModel(models.Model):
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     kwargs = {}
+    print("createKwargsToSave", self.listFields, valueReceived)
     for fieldName in self.listFields():
       if fieldName == "date":
-        self.date = date
+        kwargs[fieldName] = date
       newValue = self.getDataFromDict(fieldName, valueReceived)
       test = update == False or newValue != getattr(self, fieldName)
       if test:
