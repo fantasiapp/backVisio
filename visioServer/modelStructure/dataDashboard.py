@@ -282,7 +282,7 @@ class DataDashboard:
         print("follow", key, dictTargetLevel)
         if key == "targetLevelDrv":
           for idDrv, listTargetLevel in dictTargetLevel.items():
-            print("__updateDatabaseTargetLevel Drv", CiblageLevel.createKwargsToSave(dictTargetLevel, now))
+            print("__updateDatabaseTargetLevel Drv", CiblageLevel.createKwargsToSave(dictTargetLevel, date=now))
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
             targetLevel.date = now
