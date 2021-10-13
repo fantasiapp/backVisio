@@ -355,17 +355,15 @@ class Visit(CommonModel):
   nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
   currentYear = None
-  try:
-    currentYear = ParamVisio.objects.filter(field="currentYear")
-    currentYear = currentYear[0].value if currentYear else None
-  except:
-    pass
 
   class Meta:
     verbose_name = "Visites Mensuels"
 
   @property
   def nbVisitCurrentYear(self):
+    if not self.currentYear:
+      currentYear = ParamVisio.objects.filter(field="currentYear")
+      Visit.currentYear = currentYear[0].value if currentYear else None
     print("nbVisitCurrentYear", self.date.year, self.currentYear)
     if self.date.year == self.currentYear:
       return self.nbVisit
