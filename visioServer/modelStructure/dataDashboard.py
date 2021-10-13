@@ -223,7 +223,7 @@ class DataDashboard:
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
       del jsonData["logs"]
-      print(1, jsonData)
+      print(1, jsonData, type(jsonData))
       flagSave = False
       for key, value in jsonData.items():
         if key != "logs" and value:
