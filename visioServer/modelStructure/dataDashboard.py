@@ -223,15 +223,12 @@ class DataDashboard:
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
       del jsonData["logs"]
-      print(1, jsonData, type(jsonData))
+      print(1, jsonData)
       flagSave = False
       for key, value in jsonData.items():
         if key != "logs" and value:
           flagSave = True
-      print(2, flagSave)
-      if flagSave:
-        print(3, jsonData, type(jsonData))
-        print(4, json.dumps(jsonData))
+      if flagSave and False:
         LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       return {"message":"postUpdate received"}
     except:
