@@ -276,7 +276,6 @@ class DataDashboard:
 
 
   def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
-    print(pdvInRam)
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
     targetObject = Ciblage.objects.filter(pdv=pdv)
@@ -284,7 +283,7 @@ class DataDashboard:
     if targetObject:
       print("update target save", target)
       flagSave = targetObject[0].update(target, now)
-      print(flagSave)
+      print("flagSave", flagSave)
     else:
       print("creation target", target)
       flagSave = Ciblage.createFromList(target, pdv, now)

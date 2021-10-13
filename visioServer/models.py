@@ -89,20 +89,27 @@ class CommonModel(models.Model):
     return False
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
+    print("createKwargsToSave")
     kwargs = {}
     for fieldName in self.listFields():
+      print(fieldName)
       if fieldName == "date":
         kwargs[fieldName] = date
       newValue = self.getDataFromDict(fieldName, valueReceived)
       test = update == False or newValue != getattr(self, fieldName)
+      print("test", test)
       if test:
         kwargs[fieldName] = newValue
+    print("end", kwargs)
     return kwargs
 
   def update(self, valueReceived, now):
+    print("start update")
     kwargs = self.createKwargsToSave(valueReceived, now)
+    print("kwargs, kwargs")
     if kwargs:
       for fieldName, value in kwargs.items():
+        print("setattr", fieldName, value)
         setattr(self, fieldName, value)
       self.save()
       return True
