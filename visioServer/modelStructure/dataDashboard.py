@@ -280,7 +280,7 @@ class DataDashboard:
 
   def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():
-      if key != "pdvs" and dictTargetLevel:
+      if key != "pdvs" and key != "logs" and dictTargetLevel:
         if key == "targetLevelDrv":
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
