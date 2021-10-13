@@ -534,17 +534,17 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    listModel = [CiblageLevel]
+    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    # listModel = [CiblageLevel]
     for model in listModel:
       for element in model.objects.all():
         element.delete()
     print("start")
-    self.getCiblageLevel()
-    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
-    # print(Layout.listFields())
-    # print(Layout.listIndexes())
-    # print(Layout.dictValues())
+    # self.getCiblageLevel()
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    print(Layout.listFields())
+    print(Layout.listIndexes())
+    print(Layout.dictValues())
 
     print("end")
     return {"test":False}

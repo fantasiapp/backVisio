@@ -71,6 +71,7 @@ class CreateWidgetParam:
 
   @classmethod
   def initialize(cls):
+    print("initialize")
     if not cls.__dictWidget:
       for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "gauge", "histoCurve"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
@@ -85,6 +86,7 @@ class CreateWidgetParam:
         "row:2:2":[["a","b"], ["c", "d"]]
       }
       for name, jsonLayout in data.items():
+        print("create layout", name, json.dumps(jsonLayout))
         object = Layout.objects.create(name=name, template=json.dumps(jsonLayout))
         cls.dictLayout[name] = object
     if not cls.__colors:
