@@ -21,6 +21,7 @@ class DataDashboard:
 
   def __init__(self, userProfile, userGeoId, userGroup, isNotOnServer):
     """engendre les données complètes (niveau national) et sauve les données dans des attributs de classe"""
+    print("__init__")
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     self.__userProfile = userProfile
@@ -44,6 +45,7 @@ class DataDashboard:
     indexes = model.listIndexes()
     if len(indexes) != 0:
       setattr(cls, f"__indexes{name.capitalize()}", indexes)
+    print("name", name)
     setattr(cls, f"__{name}", model.dictValues())
 
   @classmethod
