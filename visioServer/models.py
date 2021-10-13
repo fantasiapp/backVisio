@@ -95,11 +95,12 @@ class CommonModel(models.Model):
       print(fieldName)
       if fieldName == "date":
         kwargs[fieldName] = date
-      newValue = self.getDataFromDict(fieldName, valueReceived)
-      test = update == False or newValue != getattr(self, fieldName)
-      print("test", test)
-      if test:
-        kwargs[fieldName] = newValue
+      else:
+        newValue = self.getDataFromDict(fieldName, valueReceived)
+        test = update == False or newValue != getattr(self, fieldName)
+        print("test", test)
+        if test:
+          kwargs[fieldName] = newValue
     print("end", kwargs)
     return kwargs
 
