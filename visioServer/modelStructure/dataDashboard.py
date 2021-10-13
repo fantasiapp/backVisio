@@ -230,7 +230,8 @@ class DataDashboard:
           flagSave = True
       print(2, flagSave)
       if flagSave:
-        print(3, json.dumps(jsonData))
+        print(3, jsonData, type(jsonData))
+        print(4, json.dumps(jsonData))
         LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       return {"message":"postUpdate received"}
     except:
