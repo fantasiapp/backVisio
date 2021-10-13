@@ -101,7 +101,6 @@ class CommonModel(models.Model):
 
   def update(self, valueReceived, now):
     kwargs = self.createKwargsToSave(valueReceived, now)
-    print("update", kwargs)
     if kwargs:
       for fieldName, value in kwargs.items():
         setattr(self, fieldName, value)
@@ -592,6 +591,7 @@ class CiblageLevel(CommonModel):
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     listFields = self.listFields()
     valueReceived = [date, self.agent, self.drv] + valueReceived
+    if self.agent: valueReceived = valueReceived + [0.0, 0.0]
     complete, result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
     for field, value in complete.items():
       if value != getattr(self, field):
