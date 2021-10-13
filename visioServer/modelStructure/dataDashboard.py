@@ -222,6 +222,7 @@ class DataDashboard:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
+      print(0, jsonData)
       del jsonData["logs"]
       print(1, jsonData)
       print(2, json.dumps(jsonData))
