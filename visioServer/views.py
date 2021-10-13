@@ -31,6 +31,7 @@ class Data(DefaultView):
         return Response({"error":f"no action defined"})
 
     def post(self, request):
+        print("post")
         jsonBin = request.body
         jsonString = jsonBin.decode("utf8")
         currentUser = request.user
