@@ -19,10 +19,11 @@ class DataDashboard:
   __structureTargetLevelAgentFinition = ["volFinition", "dnFinition"]
   
 
-  def __init__(self, userGeoId, userGroup, isNotOnServer):
+  def __init__(self, userProfile, userGeoId, userGroup, isNotOnServer):
     """engendre les données complètes (niveau national) et sauve les données dans des attributs de classe"""
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
+    self.__userProfile = userProfile
     if not DataDashboard.__levelGeo:
       for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)
@@ -83,6 +84,9 @@ class DataDashboard:
     for name, model in CommonModel.computeTableClass():
       self.insertModel(data, name, model)
     self. _computeLocalTargetLevel(data)
+    self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
+    self.__userProfile.save()
+    data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     return data
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -185,11 +189,10 @@ class DataDashboard:
 
   #queries for updates
 
-  def getUpdate(self, userProfile, nature):
+  def getUpdate(self, nature):
     geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
-    data = {"geoTree":geoTree}
-    lastUpdate = userProfile.lastUpdate
-    listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, data)
+    lastUpdate = self.__userProfile.lastUpdate
+    listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, {"geoTree":geoTree})
     now = timezone.now()
     if nature == "request":
       listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
@@ -207,9 +210,9 @@ class DataDashboard:
                 jsonToSend[nature][id] = listObject
         return jsonToSend  
     elif nature == "acknowledge":
-        userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
-        userProfile.save()
-        return {"message":"getUpdate acknowledge received"}
+        self.__userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
+        self.__userProfile.save()
+        return {"message":"getUpdate acknowledge received", "timestamp":self.__userProfile.lastUpdate.timestamp()}
     else:    
       return {"error":f"wrong nature received : {nature}"}
 

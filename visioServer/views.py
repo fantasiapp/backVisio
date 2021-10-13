@@ -20,12 +20,12 @@ class Data(DefaultView):
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if 'action' in request.GET:
             #request.META['SERVER_PORT'] == '8000' check if server is local
-            dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+            dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
             action = request.GET["action"]
             if action == "dashboard":
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
-                answer = dataDashBoard.getUpdate(currentProfile[0] if currentProfile else None, request.GET["nature"])
+                answer = dataDashBoard.getUpdate(request.GET["nature"])
                 return Response(answer)
             return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})
@@ -41,6 +41,6 @@ class Data(DefaultView):
         else:
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if jsonString:
-            dataDashBoard = DataDashboard(userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+            dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
             return Response(dataDashBoard.postUpdate(currentUser, jsonString))
         return Response({"error":"empty body"})
