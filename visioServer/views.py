@@ -32,16 +32,16 @@ class Data(DefaultView):
 
     def post(self, request):
         print(1)
-        # jsonBin = request.body
-        # jsonString = jsonBin.decode("utf8")
-        # currentUser = request.user
-        # userGroup = request.user.groups.values_list('name', flat=True)
-        # currentProfile = UserProfile.objects.filter(user=currentUser)
-        # if userGroup:
-        #     userIdGeo = currentProfile[0].idGeo if currentProfile else None
-        # else:
-        #     return Response({"error":f"no profile defined for {currentUser.username} defined"})
-        # if jsonString:
-        #     dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
-        #     return Response(dataDashBoard.postUpdate(currentUser, jsonString))
+        jsonBin = request.body
+        jsonString = jsonBin.decode("utf8")
+        currentUser = request.user
+        userGroup = request.user.groups.values_list('name', flat=True)
+        currentProfile = UserProfile.objects.filter(user=currentUser)
+        if userGroup:
+            userIdGeo = currentProfile[0].idGeo if currentProfile else None
+        else:
+            return Response({"error":f"no profile defined for {currentUser.username} defined"})
+        if jsonString:
+            dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+            return Response(dataDashBoard.postUpdate(currentUser, jsonString))
         return Response({"error":"empty body"})
