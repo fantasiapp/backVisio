@@ -222,6 +222,7 @@ class DataDashboard:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
+      del jsonData["logs"]
       LogUpdate.objects.create(date=now, user=user, data=jsonString)
       return {"message":"postUpdate received"}
     except:
