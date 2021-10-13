@@ -333,6 +333,7 @@ class Pdv(CommonModel):
 
   @property
   def listValues(self):
+    print("pdv listValues")
     lv, lf = super().listValues, self.listFields()
     idDat, idNbV, idTar, idSal = lf.index("closedAt"), lf.index("nbVisits"), lf.index("target"), lf.index("sales")
     if isinstance(lv[idDat], datetime.datetime):
@@ -373,11 +374,11 @@ class Visit(CommonModel):
   def __str__(self) ->str:
     return self.date.strftime("%Y-%m") + " " + self.pdv.code
 
-  # @property
-  # def listValues(self):
-  #   raw = super().listValues
-  #   del raw[2]
-  #   return raw
+  @property
+  def listValues(self):
+    raw = super().listValues
+    del raw[2]
+    return raw
 
 
 # Modèles pour l'AD
