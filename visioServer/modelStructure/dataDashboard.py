@@ -202,12 +202,13 @@ class DataDashboard:
         jsonToSend = {key:{} for key in listUpdate[0].keys()}
         for dictUpdate in listUpdate:
           for nature, dictNature in dictUpdate.items():
-            for id, listObject in dictNature.items():
-              if nature == "pdvs":
-                if not listIdPdv or int(id) in listIdPdv:
-                  jsonToSend["pdvs"][id] = listObject
-              else:
-                jsonToSend[nature][id] = listObject
+            if isinstance(dictNature, dict):
+              for id, listObject in dictNature.items():
+                if nature == "pdvs":
+                  if not listIdPdv or int(id) in listIdPdv:
+                    jsonToSend["pdvs"][id] = listObject
+                else:
+                  jsonToSend[nature][id] = listObject
         return jsonToSend  
     elif nature == "acknowledge":
         self.__userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
