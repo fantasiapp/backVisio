@@ -355,22 +355,21 @@ class Visit(CommonModel):
 
   @property
   def nbVisitCurrentYear(self):
-    if not self.currentYear:
+    if not Visit.currentYear:
       currentYear = ParamVisio.objects.filter(field="currentYear")
       Visit.currentYear = currentYear[0].value if currentYear else None
-    if self.date.year == self.currentYear:
+    if self.date.year == Visit.currentYear:
       return self.nbVisit
     return 0
 
   def __str__(self) ->str:
     return self.date.strftime("%Y-%m") + " " + self.pdv.code
 
-  @property
-  def listValues(self):
-    raw = super().listValues
-    del raw[2]
-    return raw
-
+  @classmethod
+  def listFields(cls):
+      listFields = super().listFields()
+      del listFields["pdv"]
+      return listFields
 
 # Modèles pour l'AD
 
