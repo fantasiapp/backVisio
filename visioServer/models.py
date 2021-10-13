@@ -89,7 +89,7 @@ class CommonModel(models.Model):
     return False
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
-    print("createKwargsToSave")
+    print("createKwargsToSave", self.listFields())
     kwargs = {}
     for fieldName in self.listFields():
       print(fieldName)
