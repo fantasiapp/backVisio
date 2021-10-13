@@ -373,11 +373,11 @@ class Visit(CommonModel):
   def __str__(self) ->str:
     return self.date.strftime("%Y-%m") + " " + self.pdv.code
 
-  @property
-  def listValues(self):
-    raw = super().listValues
-    del raw[2]
-    return raw
+  # @property
+  # def listValues(self):
+  #   raw = super().listValues
+  #   del raw[2]
+  #   return raw
 
 
 # Modèles pour l'AD
