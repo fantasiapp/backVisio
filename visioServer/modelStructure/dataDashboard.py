@@ -242,8 +242,9 @@ class DataDashboard:
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
-        pdv = Pdv.objects.get(id=id)
+        pdv = Pdv.objects.get(id=int(id))
         pdvInRam = getattr(DataDashboard, "__pdvs")[int(id)]
+        print("start", pdvInRam, pdv)
         self.__updateDataBaseTarget(value, pdv, now, pdvInRam)
         salesInRam = pdvInRam[indexSales]
         sales = value[indexSales]
@@ -274,6 +275,7 @@ class DataDashboard:
 
 
   def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
+    print(pdvInRam)
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
     targetObject = Ciblage.objects.filter(pdv=pdv)
@@ -285,7 +287,7 @@ class DataDashboard:
       print("creation target", target)
       flagSave = Ciblage.createFromList(target, pdv, now)
     if flagSave:
-      print(pdvInRam, target)
+      print(target)
       pdvInRam[indexTarget] = target
       print("__updateDataBaseTarget saved in Ram", pdvInRam)
 
