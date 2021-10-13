@@ -333,7 +333,6 @@ class Pdv(CommonModel):
 
   @property
   def listValues(self):
-    print("pdv listValues")
     lv, lf = super().listValues, self.listFields()
     idDat, idNbV, idTar, idSal = lf.index("closedAt"), lf.index("nbVisits"), lf.index("target"), lf.index("sales")
     if isinstance(lv[idDat], datetime.datetime):
