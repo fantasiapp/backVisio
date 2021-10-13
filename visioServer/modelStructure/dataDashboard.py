@@ -223,7 +223,7 @@ class DataDashboard:
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
       del jsonData["logs"]
-      LogUpdate.objects.create(date=now, user=user, data=jsonString)
+      LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
