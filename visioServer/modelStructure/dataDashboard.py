@@ -224,7 +224,7 @@ class DataDashboard:
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
       print(0, jsonData)
-      if "log" in jsonData:
+      if "logs" in jsonData:
         del jsonData["logs"]
       print(1, jsonData)
       print(2, json.dumps(jsonData))
