@@ -246,6 +246,7 @@ class DataDashboard:
         pdvInRam = getattr(DataDashboard, "__pdvs")[int(id)]
         print("start", pdvInRam, pdv)
         self.__updateDataBaseTarget(value, pdv, now, pdvInRam)
+        print("after")
         salesInRam = pdvInRam[indexSales]
         sales = value[indexSales]
         for saleImported in sales:
@@ -283,6 +284,7 @@ class DataDashboard:
     if targetObject:
       print("update target save", target)
       flagSave = targetObject[0].update(target, now)
+      print(flagSave)
     else:
       print("creation target", target)
       flagSave = Ciblage.createFromList(target, pdv, now)
