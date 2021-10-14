@@ -621,6 +621,7 @@ class LogClient(CommonModel):
     kwargs, data = {}, [False, False] + data
     listFields = cls.listFields()
     print(listFields, len(listFields), len(data))
+    print(data)
     for index in range(len(listFields)):
       field = listFields[index]
       if field == "date":

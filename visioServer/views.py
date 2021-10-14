@@ -32,8 +32,8 @@ class Data(DefaultView):
                 elif action == "update":
                     answer = dataDashBoard.getUpdate(request.GET["nature"])
                     return Response(answer)
-                print("queries are not blocked", Data.blocked)
                 Data.blocked = False
+                print("queries are not blocked", Data.blocked)
                 return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})
 
@@ -50,5 +50,8 @@ class Data(DefaultView):
                 return Response({"error":f"no profile defined for {currentUser.username} defined"})
             if jsonString:
                 dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+
                 return Response(dataDashBoard.postUpdate(currentUser, jsonString))
+        else:
+            print("data is blocked")
         return Response({"error":"empty body"})
