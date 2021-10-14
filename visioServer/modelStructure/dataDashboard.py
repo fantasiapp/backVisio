@@ -302,16 +302,16 @@ class DataDashboard:
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
             targetLevel.update(listTargetLevel, now)
-            DataDashboard.__targetLevelDrv[idDrv] = listTargetLevel
+            DataDashboard.__targetLevelDrv[int(idDrv)] = listTargetLevel
         if key == "targetLevelAgentP2CD":
           print("targetLevelAgentP2CD")
           for idAgent, listTargetLevel in dictTargetLevel.items():
-            print(1)
+            print("idAgent", idAgent, type(idAgent))
             agent = Agent.objects.get(id=idAgent)
             print("0")
             targetLevel = CiblageLevel.objects.get(agent=agent)
             print("before", targetLevel)
             targetLevel.update(listTargetLevel, now)
             print("save in ram", DataDashboard.__targetLevelAgentP2CD, listTargetLevel)
-            DataDashboard.__targetLevelAgentP2CD[idAgent] = listTargetLevel
+            DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = listTargetLevel
             print(2)
