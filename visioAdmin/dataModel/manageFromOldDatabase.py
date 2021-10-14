@@ -49,8 +49,9 @@ class ManageFromOldDatabase:
       )
       self.cursorNew = self.connectionNew.cursor()
       self.typeObjectList = list(self.typeObject.values())
+      for classObject in [LogUpdate, LogClient]:
+        classObject.objects.all().delete()
 
-    LogUpdate.objects.all().delete()
     if self.typeObjectList:
       model = self.typeObjectList.pop(0)
       table = model.objects.model._meta.db_table
@@ -539,12 +540,12 @@ class ManageFromOldDatabase:
     for model in listModel:
       for element in model.objects.all():
         element.delete()
-    print("start")
+    # print("start")
     # self.getCiblageLevel()
     manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
-    print(Layout.listFields())
-    print(Layout.listIndexes())
-    print(Layout.dictValues())
+    # print(Layout.listFields())
+    # print(Layout.listIndexes())
+    # print(Layout.dictValues())
 
     print("end")
     return {"test":False}

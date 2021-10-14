@@ -601,5 +601,21 @@ class LogUpdate(models.Model):
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
   data = models.TextField("Json des updates reçus", blank=True, default="")
 
+class LogClient(CommonModel):
+  jsonFields = ["navigation", "mapFilter"]
+  date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
+  user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+  navigation = models.CharField("Navigation", max_length=64, unique=False, blank=False, default=None)
+  year = models.BooleanField('Année selectionnée', unique=False, blank=False, default=False)
+  dbVsMap = models.BooleanField('Tableau de bord ou cartographie', unique=False, blank=False, default=False)
+  dashBoard = models.ForeignKey(Dashboard, on_delete=models.DO_NOTHING, null=True, default=None)
+  widgetParams = models.ForeignKey(WidgetParams, on_delete=models.DO_NOTHING, null=True, default=None)
+  pdv = models.ForeignKey(Pdv, on_delete=models.DO_NOTHING, null=True, default=None)
+  mapFilter = models.CharField("CategorieSelectionnée", max_length=1024, unique=False, blank=False, default=None)
+
+  @classmethod
+  def createFromList(cls, data, pdv, now):
+    print("createFromList", data)
+
 
 

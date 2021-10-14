@@ -223,17 +223,24 @@ class DataDashboard:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
-      if "logs" in jsonData:
-        del jsonData["logs"]
+      self.__updateLogClient(jsonData["logs"], now)
+      # if "logs" in jsonData:
+      del jsonData["logs"]
       flagSave = False
-      for key, value in jsonData.items():
-        if key != "logs" and value:
-          flagSave = True
+      for value in jsonData.values():
+        if value: flagSave = True
       if flagSave:
         LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       return {"message":"postUpdate received"}
     except:
       return {"error":"postUpdate body is not json"}
+
+  def __updateLogClient(listLogs, now):
+    print("__updateLogClient", LogClient.listFields)
+    for log in listLogs:
+      LogClient.createFromList(log, False, now)
+      
+
 
   def __updateDatabasePdv(self, data):
     now = timezone.now()
