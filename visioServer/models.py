@@ -620,6 +620,7 @@ class LogClient(CommonModel):
   def createFromList(cls, data, user, now):
     kwargs, data = {}, [False, False] + data
     listFields = cls.listFields()
+    print("log data kwargs", listFields, data)
     for index in range(len(listFields)):
       field = listFields[index]
       if field == "date":
@@ -635,7 +636,6 @@ class LogClient(CommonModel):
         kwargs[field] = True if data[index] else False
       else:
         kwargs[field] = data[index]
-    print("log data kwargs", kwargs)
     cls.objects.create(**kwargs)
 
 
