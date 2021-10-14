@@ -102,8 +102,10 @@ class CommonModel(models.Model):
 
   def update(self, valueReceived, now):
     kwargs = self.createKwargsToSave(valueReceived, now)
+    print(kwargs)
     if kwargs:
       for fieldName, value in kwargs.items():
+        print(fieldName, value)
         setattr(self, fieldName, value)
       self.save()
       return True
