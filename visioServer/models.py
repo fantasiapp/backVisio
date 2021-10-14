@@ -602,7 +602,7 @@ class LogUpdate(models.Model):
   data = models.TextField("Json des updates reçus", blank=True, default="")
 
 class LogClient(CommonModel):
-  jsonFields = ["navigation", "mapFilter"]
+  jsonFields = ["path", "mapFilters"]
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
   view = models.BooleanField('Année selectionnée', unique=False, blank=False, default=False)
@@ -618,12 +618,17 @@ class LogClient(CommonModel):
 
   @classmethod
   def createFromList(cls, data, user, now):
-    kwargs = {}
-    for field in cls.listFields():
+    kwargs, data = {}, [False, False] + data
+    listFields = cls.listFields()
+    print(listFields, len(listFields), len(data))
+    for index in range(len(listFields)):
+      field = listFields[index]
       if field == "date":
         kwargs[field] = now
       elif field == "user":
         kwargs[field] = user.user
+      elif field in cls.jsonFields:
+        kwargs[field] = json.dumps(data[index])
     print("log data kwargs", kwargs)
     print("log data", data, now)
 

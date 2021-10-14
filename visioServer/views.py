@@ -32,6 +32,7 @@ class Data(DefaultView):
                 elif action == "update":
                     answer = dataDashBoard.getUpdate(request.GET["nature"])
                     return Response(answer)
+                print("queries are not blocked", Data.blocked)
                 Data.blocked = False
                 return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         return Response({"error":f"no action defined"})
