@@ -633,6 +633,9 @@ class LogClient(CommonModel):
         kwargs[field] = user.user
       elif field in cls.jsonFields:
         kwargs[field] = json.dumps(data[index])
+      elif isinstance(getattr(cls, field), models.BooleanField):
+        print(field, data[index])
+        kwargs[field] = True if data[index] else False
       else:
         kwargs[field] = data[index]
     print("log data kwargs", kwargs)
