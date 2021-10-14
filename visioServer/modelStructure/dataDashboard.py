@@ -224,7 +224,7 @@ class DataDashboard:
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
       print(jsonData)
-      print(jsonData["logs"])
+      print(jsonData["logs"], now)
       self.__updateLogClient(jsonData["logs"], now)
       del jsonData["logs"]
       flagSave = False
@@ -236,8 +236,8 @@ class DataDashboard:
     except:
       return {"error":"postUpdate body is not json"}
 
-  def __updateLogClient(listLogs, now):
-    print("__updateLogClient", LogClient.listFields())
+  def __updateLogClient(self, listLogs, now):
+    print("__updateLogClient")
     for log in listLogs:
       LogClient.createFromList(log, False, now)
       
