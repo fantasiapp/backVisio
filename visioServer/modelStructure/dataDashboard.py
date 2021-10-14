@@ -237,7 +237,7 @@ class DataDashboard:
       return {"error":"postUpdate body is not json"}
 
   def __updateLogClient(listLogs, now):
-    print("__updateLogClient", LogClient.listFields)
+    print("__updateLogClient", LogClient.listFields())
     for log in listLogs:
       LogClient.createFromList(log, False, now)
       
