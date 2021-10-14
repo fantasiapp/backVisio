@@ -107,7 +107,9 @@ class CommonModel(models.Model):
       for fieldName, value in kwargs.items():
         print(fieldName, value)
         setattr(self, fieldName, value)
+      print("after")
       self.save()
+      print("after save")
       return True
     return False
       
