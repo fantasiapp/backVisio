@@ -13,6 +13,7 @@ class DefaultView(APIView):
 class Data(DefaultView):
     def get(self, request):
         if not Data.isBlocked:
+            print(Data.isBlocked)
             currentUser = request.user
             userGroup = request.user.groups.values_list('name', flat=True)
             currentProfile = UserProfile.objects.filter(user=currentUser)
@@ -41,6 +42,7 @@ class Data(DefaultView):
 
     def post(self, request):
         if not Data.isBlocked:
+            print(Data.isBlocked)
             jsonBin = request.body
             jsonString = jsonBin.decode("utf8")
             currentUser = request.user
@@ -52,7 +54,6 @@ class Data(DefaultView):
                 return Response({"error":f"no profile defined for {currentUser.username} defined"})
             if jsonString:
                 dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
-
                 return Response(dataDashBoard.postUpdate(currentUser, jsonString))
         else:
             print("queries are blocked")
