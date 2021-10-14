@@ -623,6 +623,7 @@ class LogClient(CommonModel):
     print(listFields, len(listFields), len(data))
     print(data)
     for index in range(listFields):
+      print(index)
       field = listFields[index]
       print(index, field)
       if field == "date":
