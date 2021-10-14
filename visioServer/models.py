@@ -605,7 +605,7 @@ class LogClient(CommonModel):
   jsonFields = ["path", "mapFilters"]
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-  view = models.ForeignKey(Dashboard, on_delete=models.DO_NOTHING)
+  view = models.BooleanField('Geo ou Enseigne', unique=False, blank=False, default=False)
   year = models.BooleanField('Année selectionnée', unique=False, blank=False, default=False)
   path = models.CharField("Navigation", max_length=64, unique=False, blank=False, default=None)
   dashboard = models.ForeignKey(Dashboard, on_delete=models.DO_NOTHING, null=True, default=None)
