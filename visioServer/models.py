@@ -19,7 +19,6 @@ class CommonModel(models.Model):
 
   @classmethod
   def listFields(cls):
-    print("listFields", cls._meta.fields)
     return [field.name for field in cls._meta.fields if field.name != "currentYear"][1:]
 
   @classmethod
@@ -617,6 +616,7 @@ class LogClient(CommonModel):
   @classmethod
   def createFromList(cls, data, pdv, now):
     print("createFromList", data)
+    print("__updateLogClient", cls.listFields())
 
 
 
