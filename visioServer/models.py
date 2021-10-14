@@ -614,9 +614,15 @@ class LogClient(CommonModel):
   mapFilter = models.CharField("CategorieSelectionnée", max_length=1024, unique=False, blank=False, default=None)
 
   @classmethod
-  def createFromList(cls, data, pdv, now):
-    print("createFromList", data)
-    print("__updateLogClient", cls.listFields())
+  def createFromList(cls, data, user, now):
+    kwargs = {}
+    for field in cls.listFields():
+      if field == "date":
+        kwargs[field] = now
+      elif field == "user":
+        kwargs[field] = user.user
+    print("log data", data)
+    print("log createFromList", kwargs)
 
 
 
