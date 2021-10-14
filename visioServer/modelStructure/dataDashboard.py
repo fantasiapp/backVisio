@@ -243,14 +243,11 @@ class DataDashboard:
 
   def __updateDatabasePdv(self, data):
     now = timezone.now()
-    print("__updateDatabasePdv", data)
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
-        print("pdv", id, value)
         pdv = Pdv.objects.get(id=int(id))
         pdvInRam = getattr(DataDashboard, "__pdvs")[int(id)]
-        print("ici")
         self.__updateDataBaseTarget(value, pdv, now, pdvInRam)
         salesInRam = pdvInRam[indexSales]
         sales = value[indexSales]
@@ -281,7 +278,6 @@ class DataDashboard:
 
 
   def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
-    print("__updateDataBaseTarget")
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
     targetObject = Ciblage.objects.filter(pdv=pdv)
