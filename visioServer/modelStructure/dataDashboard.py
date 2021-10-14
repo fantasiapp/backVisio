@@ -218,6 +218,7 @@ class DataDashboard:
       return {"error":f"wrong nature received : {nature}"}
 
   def postUpdate(self, userName, jsonString):
+    print("postUpdate")
     user = User.objects.get(username=userName)
     try:
       jsonData = json.loads(jsonString)
@@ -242,6 +243,7 @@ class DataDashboard:
 
   def __updateDatabasePdv(self, data):
     now = timezone.now()
+    print("__updateDatabasePdv", data)
     if "pdvs" in data:
       indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
@@ -289,7 +291,6 @@ class DataDashboard:
       flagSave = Ciblage.createFromList(target, pdv, now)
     if flagSave:
       pdvInRam[indexTarget] = target
-      # print("__updateDataBaseTarget saved in Ram", pdvInRam)
 
   def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():
