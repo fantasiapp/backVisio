@@ -626,7 +626,7 @@ class LogClient(CommonModel):
     for index in range(len(listFields)):
       print(index)
       field = listFields[index]
-      print(index, field)
+      print(index, field, getattr(cls, field))
       if field == "date":
         kwargs[field] = now
       elif field == "user":
@@ -634,7 +634,7 @@ class LogClient(CommonModel):
       elif field in cls.jsonFields:
         kwargs[field] = json.dumps(data[index])
       elif isinstance(getattr(cls, field), models.BooleanField):
-        print(field, data[index])
+        print("Bool", field, data[index])
         kwargs[field] = True if data[index] else False
       else:
         kwargs[field] = data[index]
