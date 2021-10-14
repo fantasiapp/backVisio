@@ -621,10 +621,8 @@ class LogClient(CommonModel):
     kwargs, data = {}, [False, False] + data
     listFields = cls.listFields()
     print("listFields", listFields, len(listFields), len(data))
-    print("data", data)
     print(range(len(listFields)))
     for index in range(len(listFields)):
-      print(index)
       field = listFields[index]
       print(index, field, getattr(cls, field))
       if field == "date":
@@ -633,14 +631,19 @@ class LogClient(CommonModel):
         kwargs[field] = user.user
       elif field in cls.jsonFields:
         kwargs[field] = json.dumps(data[index])
+      elif isinstance(cls._meta.get_field(field), models.ForeignKey):
+        print("Foreign", data[index])
+        objectField = Dashboard.objects.get(id=data[index]) if data[index] else None
+        print(objectField)
+        kwargs[field] = objectField
       elif isinstance(cls._meta.get_field(field), models.BooleanField):
         print("Bool", field, data[index])
         kwargs[field] = True if data[index] else False
       else:
         kwargs[field] = data[index]
     print("log data kwargs", kwargs)
-    print("log data", data, now)
     cls.objects.create(**kwargs)
+    print("after")
 
 
 
