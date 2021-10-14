@@ -624,6 +624,7 @@ class LogClient(CommonModel):
         kwargs[field] = now
       elif field == "user":
         kwargs[field] = user.user
+    print("log data kwargs", kwargs)
     print("log data", data, now)
 
 

@@ -22,6 +22,7 @@ class Data(DefaultView):
                 return Response({"error":f"no profile defined for {currentUser.username} defined"})
             if 'blocked' in request.GET:
                 Data.blocked = True
+                print("queries are blocked", Data.blocked)
             if 'action' in request.GET:
                 #request.META['SERVER_PORT'] == '8000' check if server is local
                 dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
