@@ -289,7 +289,7 @@ class DataDashboard:
       flagSave = Ciblage.createFromList(target, pdv, now)
     if flagSave:
       pdvInRam[indexTarget] = target
-      print("__updateDataBaseTarget saved in Ram", pdvInRam)
+      # print("__updateDataBaseTarget saved in Ram", pdvInRam)
 
   def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():

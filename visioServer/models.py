@@ -605,13 +605,16 @@ class LogClient(CommonModel):
   jsonFields = ["navigation", "mapFilter"]
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
-  navigation = models.CharField("Navigation", max_length=64, unique=False, blank=False, default=None)
+  view = models.BooleanField('Année selectionnée', unique=False, blank=False, default=False)
   year = models.BooleanField('Année selectionnée', unique=False, blank=False, default=False)
-  dbVsMap = models.BooleanField('Tableau de bord ou cartographie', unique=False, blank=False, default=False)
-  dashBoard = models.ForeignKey(Dashboard, on_delete=models.DO_NOTHING, null=True, default=None)
-  widgetParams = models.ForeignKey(WidgetParams, on_delete=models.DO_NOTHING, null=True, default=None)
+  path = models.CharField("Navigation", max_length=64, unique=False, blank=False, default=None)
+  dashboard = models.ForeignKey(Dashboard, on_delete=models.DO_NOTHING, null=True, default=None)
   pdv = models.ForeignKey(Pdv, on_delete=models.DO_NOTHING, null=True, default=None)
-  mapFilter = models.CharField("CategorieSelectionnée", max_length=1024, unique=False, blank=False, default=None)
+  mapVisible = models.BooleanField('Tableau de bord ou cartographie', unique=False, blank=False, default=False)
+  mapFilters = models.CharField("CategorieSelectionnée", max_length=1024, unique=False, blank=False, default=None)
+  # widgetParams = models.ForeignKey(WidgetParams, on_delete=models.DO_NOTHING, null=True, default=None)
+  # stayConnected = models.BooleanField('Resté connecté', unique=False, blank=False, default=False)
+  
 
   @classmethod
   def createFromList(cls, data, user, now):
@@ -621,8 +624,7 @@ class LogClient(CommonModel):
         kwargs[field] = now
       elif field == "user":
         kwargs[field] = user.user
-    print("log data", data)
-    print("log createFromList", kwargs)
+    print("log data", data, now)
 
 
 

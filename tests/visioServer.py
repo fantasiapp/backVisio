@@ -38,7 +38,7 @@ url = f'{address}/visioServer/data/'
 
 start = time.time()
 if get == "dashboard":
-    response = requests.get(url, headers=headers, params={"action":"dashboard"})
+    response = requests.get(url, headers=headers, params={"action":"dashboard", "blocked":"True"})
     print(response.headers)
     try:
         data = json.loads(response.text)
