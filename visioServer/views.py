@@ -13,7 +13,6 @@ class DefaultView(APIView):
 class Data(DefaultView):
     def get(self, request):
         if not Data.isBlocked:
-            print(Data.isBlocked)
             currentUser = request.user
             userGroup = request.user.groups.values_list('name', flat=True)
             currentProfile = UserProfile.objects.filter(user=currentUser)
@@ -42,7 +41,6 @@ class Data(DefaultView):
 
     def post(self, request):
         if not Data.isBlocked:
-            print(Data.isBlocked)
             jsonBin = request.body
             jsonString = jsonBin.decode("utf8")
             currentUser = request.user

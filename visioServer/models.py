@@ -620,8 +620,9 @@ class LogClient(CommonModel):
   def createFromList(cls, data, user, now):
     kwargs, data = {}, [False, False] + data
     listFields = cls.listFields()
-    print(listFields, len(listFields), len(data))
-    print(data)
+    print("listFields", listFields, len(listFields), len(data))
+    print("data", data)
+    print(range(listFields))
     for index in range(listFields):
       print(index)
       field = listFields[index]
