@@ -629,6 +629,9 @@ class LogClient(CommonModel):
         kwargs[field] = user.user
       elif field in cls.jsonFields:
         kwargs[field] = json.dumps(data[index])
+      else:
+        kwargs[field] = data[index]
+    cls.objects.create(**kwargs)
     print("log data kwargs", kwargs)
     print("log data", data, now)
 
