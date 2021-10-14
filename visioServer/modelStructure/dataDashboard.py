@@ -305,4 +305,5 @@ class DataDashboard:
             agent = Agent.objects.get(id=idAgent)
             targetLevel = CiblageLevel.objects.get(agent=agent)
             targetLevel.update(listTargetLevel, now)
+            print("save in ram", DataDashboard.__targetLevelAgentP2CD[idAgent], listTargetLevel)
             DataDashboard.__targetLevelAgentP2CD[idAgent] = listTargetLevel
