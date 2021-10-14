@@ -622,8 +622,8 @@ class LogClient(CommonModel):
     listFields = cls.listFields()
     print("listFields", listFields, len(listFields), len(data))
     print("data", data)
-    print(range(listFields))
-    for index in range(listFields):
+    print(range(len(listFields)))
+    for index in range(len(listFields)):
       print(index)
       field = listFields[index]
       print(index, field)
