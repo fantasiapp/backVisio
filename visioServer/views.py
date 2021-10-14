@@ -22,21 +22,21 @@ class Data(DefaultView):
                 return Response({"error":f"no profile defined for {currentUser.username} defined"})
             if 'blocked' in request.GET:
                 Data.blocked = True
-                print("queries are blocked", Data.blocked)
+                print("queries are blocked")
             if 'action' in request.GET:
                 #request.META['SERVER_PORT'] == '8000' check if server is local
                 dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
                 action = request.GET["action"]
                 if action == "dashboard":
                     Data.blocked = False
-                    print("queries are not blocked", Data.blocked)
+                    print("queries are not blocked")
                     return Response(dataDashBoard.dataQuery)
                 elif action == "update":
                     answer = dataDashBoard.getUpdate(request.GET["nature"])
                     return Response(answer)
                 return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
         else:
-            print("data is blocked")
+            print("queries are blocked")
         return Response({"error":f"no action defined"})
 
     def post(self, request):
@@ -55,5 +55,5 @@ class Data(DefaultView):
 
                 return Response(dataDashBoard.postUpdate(currentUser, jsonString))
         else:
-            print("data is blocked")
+            print("queries are blocked")
         return Response({"error":"empty body"})
