@@ -623,6 +623,7 @@ class LogClient(CommonModel):
     print(listFields, len(listFields), len(data))
     print(data)
     for index in range(cls.listFields()):
+      print(index, field)
       field = listFields[index]
       if field == "date":
         kwargs[field] = now
