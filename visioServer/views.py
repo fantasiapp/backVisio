@@ -28,13 +28,15 @@ class Data(DefaultView):
                 dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
                 action = request.GET["action"]
                 if action == "dashboard":
+                    Data.blocked = False
+                    print("queries are not blocked", Data.blocked)
                     return Response(dataDashBoard.dataQuery)
                 elif action == "update":
                     answer = dataDashBoard.getUpdate(request.GET["nature"])
                     return Response(answer)
-                Data.blocked = False
-                print("queries are not blocked", Data.blocked)
                 return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
+        else:
+            print("data is blocked")
         return Response({"error":f"no action defined"})
 
     def post(self, request):
