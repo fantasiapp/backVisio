@@ -612,8 +612,8 @@ class LogClient(CommonModel):
   pdv = models.ForeignKey(Pdv, on_delete=models.DO_NOTHING, null=True, default=None)
   mapVisible = models.BooleanField('Tableau de bord ou cartographie', unique=False, blank=False, default=False)
   mapFilters = models.CharField("CategorieSelectionnée", max_length=1024, unique=False, blank=False, default=None)
-  # widgetParams = models.ForeignKey(WidgetParams, on_delete=models.DO_NOTHING, null=True, default=None)
-  # stayConnected = models.BooleanField('Resté connecté', unique=False, blank=False, default=False)
+  widgetParams = models.ForeignKey(WidgetParams, on_delete=models.DO_NOTHING, null=True, default=None)
+  stayConnected = models.BooleanField('Resté connecté', unique=False, blank=False, default=False)
   
 
   @classmethod
