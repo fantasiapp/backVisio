@@ -102,14 +102,10 @@ class CommonModel(models.Model):
 
   def update(self, valueReceived, now):
     kwargs = self.createKwargsToSave(valueReceived, now)
-    print(kwargs)
     if kwargs:
       for fieldName, value in kwargs.items():
-        print(fieldName, value)
         setattr(self, fieldName, value)
-      print("after")
       self.save()
-      print("after save")
       return True
     return False
       
@@ -624,7 +620,7 @@ class LogClient(CommonModel):
   def createFromList(cls, data, user, now):
     kwargs, data = {}, [False, False] + data
     listFields = cls.listFields()
-    print("log data kwargs", listFields, data)
+    print("createFromList", len(data), len(listFields))
     for index in range(len(listFields)):
       field = listFields[index]
       if field == "date":
