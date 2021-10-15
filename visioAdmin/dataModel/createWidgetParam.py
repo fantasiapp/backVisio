@@ -275,7 +275,7 @@ class CreateWidgetParam:
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
         ["lt-1", "clientProspect", "dn", [], AxisForGraph.objects.get(name="clientProspect").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
       ], "DN Enduit Enseigne":[
-        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "DN totale", "", "a", "PdV", "donut"],
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
         ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
         ["lt-1", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="dnFinition").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
       ],"Points de Vente P2CD Enseigne":[
