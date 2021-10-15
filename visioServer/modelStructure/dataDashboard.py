@@ -77,10 +77,11 @@ class DataDashboard:
       "levelGeo":self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup),
       "levelTrade": DataDashboard.__levelTrade,
       "geoTree":self._computeLocalGeoTree(),
-      "tradeTree":DataDashboard.__tradeTree,
+      "tradeTree":list(DataDashboard.__tradeTree),
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
       }
+    data["tradeTree"][0] = data["geoTree"][0]
     for name, model in CommonModel.computeTableClass():
       self.insertModel(data, name, model)
     self. _computeLocalTargetLevel(data)
@@ -218,7 +219,6 @@ class DataDashboard:
       return {"error":f"wrong nature received : {nature}"}
 
   def postUpdate(self, userName, jsonString):
-    print("postUpdate")
     user = User.objects.get(username=userName)
     try:
       jsonData = json.loads(jsonString)
@@ -253,18 +253,18 @@ class DataDashboard:
         sales = value[indexSales]
         for saleImported in sales:
           if saleImported[3]:
-            salesObject = Ventes.objects.filter(pdv=id, industry=saleImported[1], product=saleImported[2])
+            salesObject = Ventes.objects.filter(pdv=id, industry=Ventes.getDataFromDict("industry", saleImported), product=Ventes.getDataFromDict("product", saleImported))
             if salesObject:
               saleObject = salesObject[0]
-              if abs(saleObject.volume - saleImported[3]) >= 1:
+              if abs(saleObject.volume - Ventes.getDataFromDict("volume", saleImported)) >= 1:
                 if self.__updateSaleRam(salesInRam, saleImported, now):
-                  saleObject.volume = saleImported[3]
+                  saleObject.volume = Ventes.getDataFromDict("volume", saleImported)
                   saleObject.date = now
                   saleObject.save()
             else:
-              industry = Industrie.objects.get(id=saleImported[1])
-              product = Produit.objects.get(id=saleImported[2])
-              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(saleImported[3]), currentYear=True)
+              industry = Industrie.objects.get(id=Ventes.getDataFromDict("industry", saleImported))
+              product = Produit.objects.get(id=Ventes.getDataFromDict("product", saleImported))
+              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(Ventes.getDataFromDict("volume", saleImported)), currentYear=True)
               salesInRam.append([now.timestamp()] + saleImported[1:])
     return now
 
@@ -280,12 +280,13 @@ class DataDashboard:
   def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
+    print("__updateDataBaseTarget", target)
     targetObject = Ciblage.objects.filter(pdv=pdv)
     flagSave = False
     if targetObject:
       print("update target save", target)
       flagSave = targetObject[0].update(target, now)
-    else:
+    elif target:
       print("creation target", target)
       flagSave = Ciblage.createFromList(target, pdv, now)
     if flagSave:
@@ -293,25 +294,16 @@ class DataDashboard:
 
   def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():
-      print("__updateDatabaseTargetLevel")
       if key != "pdvs" and key != "logs" and dictTargetLevel:
-        print(key)
         if key == "targetLevelDrv":
-          print("targetLevelDrv")
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
             targetLevel = CiblageLevel.objects.get(drv=drv)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelDrv[int(idDrv)] = listTargetLevel
         if key == "targetLevelAgentP2CD":
-          print("targetLevelAgentP2CD")
           for idAgent, listTargetLevel in dictTargetLevel.items():
-            print("idAgent", idAgent, type(idAgent))
             agent = Agent.objects.get(id=idAgent)
-            print("0")
             targetLevel = CiblageLevel.objects.get(agent=agent)
-            print("before", targetLevel)
             targetLevel.update(listTargetLevel, now)
-            print("save in ram", DataDashboard.__targetLevelAgentP2CD, listTargetLevel)
             DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = listTargetLevel
-            print(2)

@@ -8,9 +8,10 @@ import json
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
-    isBlocked = False
 
 class Data(DefaultView):
+    isBlocked = False
+
     def get(self, request):
         if not Data.isBlocked:
             currentUser = request.user
@@ -43,6 +44,7 @@ class Data(DefaultView):
         if not Data.isBlocked:
             jsonBin = request.body
             jsonString = jsonBin.decode("utf8")
+            print(jsonString)
             currentUser = request.user
             userGroup = request.user.groups.values_list('name', flat=True)
             currentProfile = UserProfile.objects.filter(user=currentUser)

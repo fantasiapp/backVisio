@@ -19,10 +19,7 @@ if len(arguments) > 1:
     elif host == "distrib2": address = 'https://visio.fantasiapp.tech:3442'
 
 if len(arguments) > 2:
-    query = arguments[2]
-    if query == "dashboard": get = "dashboard"
-    elif query == "request": get = "request"
-    elif query == "acknowledge": get = "acknowledge"
+    get = arguments[2]
 
 tokenUrl = f'{address}/visioServer/api-token-auth/'
 headers = {'Content-Type': 'application/json'}
@@ -69,6 +66,20 @@ elif get == "request" or get == "acknowledge":
         data = json.loads(response.text)
     except:
         print("pb")
+elif get == "post":
+    response = requests.post(url, headers=headers, json={
+        "targetLevelAgentP2CD": {},
+        "targetLevelAgentFinition": {},
+        "targetLevelDrv": {"10": [1000, 50, 150, 30]},
+        "pdvs": {"7207": ["702739", "VM MATERIAUX CHÂTEAU-D'OLONNE",11,42,155,483,1363,46.4925,-1.72913,30,8,25,136,516,1638,
+            True,True,True,True,True,True,None,0,False,[[1613420553.0,3,1,70000.0]]]},
+        "logs":[]
+        })
+    try:
+        data = json.loads(response.text)
+    except:
+        data = response.text
+    print(data)
 
 print(f"Durée : {time.time() - start} s")
 
