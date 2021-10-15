@@ -438,7 +438,7 @@ class Widget(CommonModel):
   
 class WidgetParams(CommonModel):
   jsonFields = ["subTitle"]
-  title = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  title = models.CharField(max_length=128, unique=False, blank=False, default=None)
   subTitle = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   position = models.CharField(max_length=1, unique=False, blank=False, default=None)
   unity = models.CharField("Unité", max_length=32, unique=False, blank=False, default=None)
