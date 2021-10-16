@@ -80,13 +80,14 @@ class CommonModel(models.Model):
 
   @classmethod
   def getDataFromDict(cls, field, data):
-    structureData = cls.listFields()
-    try:
-      indexField = structureData.index(field)
-    except ValueError:
-      return False
-    if len(data) > indexField:
-      return data[indexField]
+    if data:
+      structureData = cls.listFields()
+      try:
+        indexField = structureData.index(field)
+      except ValueError:
+        return False
+      if len(data) > indexField:
+        return data[indexField]
     return False
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
@@ -355,10 +356,13 @@ class Pdv(CommonModel):
     return lv
 
   def update(self, valueReceived, now):
-    print("update", valueReceived)
+    print("update")
     super().update(valueReceived, now)
+    print("super")
     self.__updateTarget(valueReceived, now)
+    print("target")
     for saleReceived in self.getDataFromDict("sales", valueReceived):
+      print("saleReceived", saleReceived)
       self.__updateSale(saleReceived, now)
     print("update pdv", self.id, self.listValues)
     return self.listValues
