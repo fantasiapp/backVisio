@@ -225,9 +225,11 @@ class DataDashboard:
       return jsonToSend
 
   def postUpdate(self, userName, jsonString):
+    print("postUpdqte", jsonString)
     user = User.objects.get(username=userName)
     try:
       jsonData = json.loads(jsonString)
+      print("postUpdate", jsonData)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
       self.__updateLogClient(jsonData["logs"], now)
