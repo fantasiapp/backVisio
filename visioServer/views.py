@@ -42,6 +42,7 @@ class Data(DefaultView):
 
     def post(self, request):
         if not Data.isBlocked:
+            print("query post received")
             jsonBin = request.body
             jsonString = jsonBin.decode("utf8")
             currentUser = request.user

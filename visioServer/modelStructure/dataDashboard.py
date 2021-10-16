@@ -225,7 +225,6 @@ class DataDashboard:
       return jsonToSend
 
   def postUpdate(self, userName, jsonString):
-    print("postUpdqte", jsonString)
     user = User.objects.get(username=userName)
     try:
       jsonData = json.loads(jsonString)
@@ -243,11 +242,8 @@ class DataDashboard:
     except:
       return {"error":"postUpdate body is not json"}
 
-  def __updateLogClient(self, listLogs, now):
-    for log in listLogs:
-      LogClient.createFromList(log, self.__userProfile, now)
-      
   def __updateDatabasePdv(self, data):
+    print("__updateDatabasePdv")
     now = timezone.now()
     if "pdvs" in data:
       for id, value in data["pdvs"].items():
@@ -271,3 +267,7 @@ class DataDashboard:
             targetLevel = CiblageLevel.objects.get(agent=agent)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = listTargetLevel
+
+  def __updateLogClient(self, listLogs, now):
+    for log in listLogs:
+      LogClient.createFromList(log, self.__userProfile, now)
