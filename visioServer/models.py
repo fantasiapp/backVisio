@@ -383,7 +383,9 @@ class Pdv(CommonModel):
     if sale:
       sale[0].update(saleReceived, now)
     else:
+      print(now, self, Industrie.objects.get(id=industryId), Produit.objects.get(id=productId), Ventes.getDataFromDict("volume", saleReceived))
       sale = Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=Ventes.getDataFromDict("volume", saleReceived))
+      print(sale)
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
