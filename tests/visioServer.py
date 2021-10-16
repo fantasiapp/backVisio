@@ -3,7 +3,7 @@ import json
 import time
 import sys
 
-username, password = "ribierep2cd", "ovisio"
+username, password = "all", "avisio"
 address = 'http://localhost:8000'
 # address = 'https://visio.fantasiapp.tech:3441'
 get = "dashboard"
