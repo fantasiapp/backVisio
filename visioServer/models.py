@@ -356,13 +356,9 @@ class Pdv(CommonModel):
     return lv
 
   def update(self, valueReceived, now):
-    print("update")
     super().update(valueReceived, now)
-    print("super")
     self.__updateTarget(valueReceived, now)
-    print("target")
     for saleReceived in self.getDataFromDict("sales", valueReceived):
-      print("saleReceived", saleReceived)
       self.__updateSale(saleReceived, now)
     print("update pdv", self.id, self.listValues)
     return self.listValues
@@ -379,13 +375,13 @@ class Pdv(CommonModel):
   def __updateSale(self, saleReceived, now):
     industryId = Ventes.getDataFromDict("industry", saleReceived)
     productId = Ventes.getDataFromDict("product", saleReceived)
+    volume = Ventes.getDataFromDict("volume", saleReceived)
     sale = Ventes.objects.filter(pdv=self, industry=industryId, product=productId)
     if sale:
-      sale[0].update(saleReceived, now)
-    else:
-      print(now, self, Industrie.objects.get(id=industryId), Produit.objects.get(id=productId), Ventes.getDataFromDict("volume", saleReceived))
-      sale = Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=Ventes.getDataFromDict("volume", saleReceived))
-      print(sale)
+      sale[0].update(saleReceived, now) if volume else sale[0].delete()
+    elif volume:
+      # Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=volume)
+      Ventes.objects.create(date=now, pdv=self, industry=industryId, product=productId, volume=volume)
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
