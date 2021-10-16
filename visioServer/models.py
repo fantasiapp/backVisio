@@ -360,7 +360,6 @@ class Pdv(CommonModel):
     self.__updateTarget(valueReceived, now)
     for saleReceived in self.getDataFromDict("sales", valueReceived):
       self.__updateSale(saleReceived, now)
-    print("update pdv", self.id, self.listValues)
     return self.listValues
 
   def __updateTarget(self, valueReceived, now):
@@ -376,14 +375,11 @@ class Pdv(CommonModel):
     industryId = Ventes.getDataFromDict("industry", saleReceived)
     productId = Ventes.getDataFromDict("product", saleReceived)
     volume = Ventes.getDataFromDict("volume", saleReceived)
-    print("volume", volume, saleReceived)
     sale = Ventes.objects.filter(pdv=self, industry=industryId, product=productId)
     if sale:
       sale[0].update(saleReceived, now) if volume else sale[0].delete()
     elif volume:
-      print("ici")
       Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=volume)
-      # Ventes.objects.create(date=now, pdv=self, industry=industryId, product=productId, volume=volume)
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
