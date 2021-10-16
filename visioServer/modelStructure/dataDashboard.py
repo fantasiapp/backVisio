@@ -251,6 +251,7 @@ class DataDashboard:
     now = timezone.now()
     if "pdvs" in data:
       for id, value in data["pdvs"].items():
+        print("pdv", id, value)
         pdv = Pdv.objects.get(id=int(id)) 
         getattr(self, "__pdvs")[int(id)] = pdv.update(value, now)
     return now

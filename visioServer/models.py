@@ -355,6 +355,7 @@ class Pdv(CommonModel):
     return lv
 
   def update(self, valueReceived, now):
+    print("update", valueReceived)
     super().update(valueReceived, now)
     self.__updateTarget(valueReceived, now)
     for saleReceived in self.getDataFromDict("sales", valueReceived):
