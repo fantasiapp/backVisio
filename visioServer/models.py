@@ -239,7 +239,7 @@ class SegmentCommercial(CommonModel):
 class Enseigne(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":11, "name":"enseigne"}
+  readingData = {"nature":"normal", "position":11, "name":"enseigne", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Enseigne"
@@ -250,7 +250,7 @@ class Enseigne(CommonModel):
 class Ensemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":12, "name":"ensemble"}
+  readingData = {"nature":"normal", "position":12, "name":"ensemble", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Ensemble"
@@ -261,7 +261,7 @@ class Ensemble(CommonModel):
 class SousEnsemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":13, "name":"sousEnsemble"}
+  readingData = {"nature":"normal", "position":13, "name":"sousEnsemble", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Sous-Ensemble"

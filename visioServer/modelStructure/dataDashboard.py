@@ -77,14 +77,16 @@ class DataDashboard:
       "levelGeo":self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup),
       "levelTrade": DataDashboard.__levelTrade,
       "geoTree":self._computeLocalGeoTree(),
-      "tradeTree":list(DataDashboard.__tradeTree),
+      "tradeTree":False,
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
       }
-    data["tradeTree"][0] = data["geoTree"][0]
     for name, model in CommonModel.computeTableClass():
       self.insertModel(data, name, model)
     self. _computeLocalTargetLevel(data)
+    for index in range(2):
+      data["levelTrade"][index] = data["levelGeo"][index]
+    data["tradeTree"] = self._buildTree(data["geoTree"][0], DataDashboard.__tradeTreeStructure, data["pdvs"])
     self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
     self.__userProfile.save()
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
@@ -109,7 +111,7 @@ class DataDashboard:
           for agent in drv[1]:
             if agent[0] == self.__userGeoId:
               return agent
-
+    
   def __computeHierarchy(self) -> list:
     """Hierachy is a list of couples containing drvId dans agentId"""
     hierarchy = []
@@ -280,7 +282,6 @@ class DataDashboard:
   def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
     indexTarget = getattr(self, "__structurePdvs").index("target")
     target = valueReceived[indexTarget]
-    print("__updateDataBaseTarget", target)
     targetObject = Ciblage.objects.filter(pdv=pdv)
     flagSave = False
     if targetObject:
