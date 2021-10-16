@@ -4,6 +4,7 @@ from datetime import date
 import json
 # from django.db.models.fields import Field
 import datetime
+from django.db.models.lookups import IntegerFieldFloatRounding
 from django.utils import timezone
 import inspect
 
@@ -95,7 +96,15 @@ class CommonModel(models.Model):
         kwargs[fieldName] = date
       else:
         newValue = self.getDataFromDict(fieldName, valueReceived)
-        test = update == False or newValue != getattr(self, fieldName)
+        test = True
+        if update:
+          if getattr(self, fieldName, None) != None:
+            if isinstance(self._meta.get_field(fieldName), models.ForeignKey):
+              test = newValue != getattr(self, fieldName).id
+            else:
+              test = newValue != getattr(self, fieldName)
+          else:
+            test = False
         if test:
           kwargs[fieldName] = newValue
     return kwargs
@@ -344,6 +353,33 @@ class Pdv(CommonModel):
       lv[idTar] = target[0].listValues
     lv[idSal] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
     return lv
+
+  def update(self, valueReceived, now):
+    super().update(valueReceived, now)
+    self.__updateTarget(valueReceived, now)
+    for saleReceived in self.getDataFromDict("sales", valueReceived):
+      self.__updateSale(saleReceived, now)
+    return self.listValues
+
+  def __updateTarget(self, valueReceived, now):
+    targetReceived = self.getDataFromDict("target", valueReceived)
+    targetObject = Ciblage.objects.filter(pdv=self)
+    if targetReceived:
+      if targetObject:
+        print("update target save", targetReceived)
+        targetObject[0].update(targetReceived, now)
+      else:
+        print("creation target", targetReceived)
+        Ciblage.createFromList(targetReceived, self, now)
+
+  def __updateSale(self, saleReceived, now):
+    industryId = Ventes.getDataFromDict("industry", saleReceived)
+    productId = Ventes.getDataFromDict("product", saleReceived)
+    sale = Ventes.objects.filter(pdv=self, industry=industryId, product=productId)
+    if sale:
+      sale[0].update(saleReceived, now)
+    else:
+      sale = Ventes.objects.create(date=now, pdv=self, industry=industryId, product=productId, volume=Ventes.getDataFromDict("volume", saleReceived))
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
@@ -620,7 +656,6 @@ class LogClient(CommonModel):
   def createFromList(cls, data, user, now):
     kwargs, data = {}, [False, False] + data
     listFields = cls.listFields()
-    print("createFromList", len(data), len(listFields))
     for index in range(len(listFields)):
       field = listFields[index]
       if field == "date":

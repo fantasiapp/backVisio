@@ -60,26 +60,35 @@ if get == "dashboard":
         print("pb in data:", data)
 elif get == "request" or get == "acknowledge":
     response = requests.get(url, headers=headers, params={"action":"update", "nature":get})
-    # response = requests.post(url, headers=headers, params={"action":"update"}, data={"pdvs":json.dumps({"foo":"bar"})})
 
     try:
         data = json.loads(response.text)
     except:
         print("pb")
 elif get == "post":
-    response = requests.post(url, headers=headers, json={
+    post = {
         "targetLevelAgentP2CD": {},
         "targetLevelAgentFinition": {},
-        "targetLevelDrv": {"10": [1000, 50, 150, 30]},
-        "pdvs": {"7207": ["702739", "VM MATERIAUX CHÂTEAU-D'OLONNE",11,42,155,483,1363,46.4925,-1.72913,30,8,25,136,516,1638,
-            True,True,True,True,True,True,None,0,False,[[1613420553.0,3,1,70000.0]]]},
+        "targetLevelDrv": {},
+        "pdvs": {
+                "3777":
+                ["685658", "POINT P - DOCKS DE L'OISE COMPIEGNE", 9, 71, 149, 468, 83, 49.3922, 2.79104, 25, 8, 24, 71, 468, 1090,
+                True, True, True, True, False, False, None, 0,
+                [1634385823, True, False, 11111, False, "g", "Ceci est un commentaire de test"],
+                [[None, 1, 1, 12408], [None, 1, 2, 8697.6],
+                [None, 1, 3, 3262.08], [1611672332, 3, 1, 222222],
+                [1611672332, 4, 2, 17425], [1611672332, 3, 3, 17800], [1611672332, 3, 4, 28900],[1611672332, 3, 5, 26350], [1634375855.552321, 6, 1, 100000],
+                [1634375855.552321, 6, 2, 100000], [1634375855.552321, 6, 3, 100000], [None, 7, 3, 4000], [None, 10, 4, 2025], [None, 10, 5, 2500],
+                [None, 15, 4, 22500], [None, 15, 5, 23500], [None, 18, 3, 4000], [None, 21, 4, 1250]]]
+                },
         "logs":[]
-        })
+        }
+    response = requests.post(url, headers=headers, json=post)
     try:
         data = json.loads(response.text)
     except:
         data = response.text
-    print(data)
+    print("post", data)
 
 print(f"Durée : {time.time() - start} s")
 

@@ -195,31 +195,34 @@ class DataDashboard:
 
   def getUpdate(self, nature):
     geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
-    lastUpdate = self.__userProfile.lastUpdate
     listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, {"geoTree":geoTree})
+    lastUpdate = self.__userProfile.lastUpdate
     now = timezone.now()
     if nature == "request":
-      listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
-      if not listData: return {"message":"nothing to Update"}
-      listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
-      if listUpdate:
-        jsonToSend = {key:{} for key in listUpdate[0].keys()}
-        for dictUpdate in listUpdate:
-          for nature, dictNature in dictUpdate.items():
-            if isinstance(dictNature, dict):
-              for id, listObject in dictNature.items():
-                if nature == "pdvs":
-                  if not listIdPdv or int(id) in listIdPdv:
-                    jsonToSend["pdvs"][id] = listObject
-                else:
-                  jsonToSend[nature][id] = listObject
-        return jsonToSend  
+      return self.__getUpdateRequest(lastUpdate, listIdPdv)
     elif nature == "acknowledge":
         self.__userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
         self.__userProfile.save()
         return {"message":"getUpdate acknowledge received", "timestamp":self.__userProfile.lastUpdate.timestamp()}
-    else:    
+    else:
       return {"error":f"wrong nature received : {nature}"}
+
+  def __getUpdateRequest(self,lastUpdate, listIdPdv):
+    listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
+    if not listData: return {"message":"nothing to Update"}
+    listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
+    if listUpdate:
+      jsonToSend = {key:{} for key in listUpdate[0].keys()}
+      for dictUpdate in listUpdate:
+        for nature, dictNature in dictUpdate.items():
+          if isinstance(dictNature, dict):
+            for id, listObject in dictNature.items():
+              if nature == "pdvs":
+                if not listIdPdv or int(id) in listIdPdv:
+                  jsonToSend["pdvs"][id] = listObject
+              else:
+                jsonToSend[nature][id] = listObject
+      return jsonToSend
 
   def postUpdate(self, userName, jsonString):
     user = User.objects.get(username=userName)
@@ -242,57 +245,13 @@ class DataDashboard:
     for log in listLogs:
       LogClient.createFromList(log, self.__userProfile, now)
       
-
-
   def __updateDatabasePdv(self, data):
     now = timezone.now()
     if "pdvs" in data:
-      indexSales = getattr(self, "__structurePdvs").index("sales")
       for id, value in data["pdvs"].items():
-        pdv = Pdv.objects.get(id=int(id))
-        pdvInRam = getattr(DataDashboard, "__pdvs")[int(id)]
-        self.__updateDataBaseTarget(value, pdv, now, pdvInRam)
-        salesInRam = pdvInRam[indexSales]
-        sales = value[indexSales]
-        for saleImported in sales:
-          if saleImported[3]:
-            salesObject = Ventes.objects.filter(pdv=id, industry=Ventes.getDataFromDict("industry", saleImported), product=Ventes.getDataFromDict("product", saleImported))
-            if salesObject:
-              saleObject = salesObject[0]
-              if abs(saleObject.volume - Ventes.getDataFromDict("volume", saleImported)) >= 1:
-                if self.__updateSaleRam(salesInRam, saleImported, now):
-                  saleObject.volume = Ventes.getDataFromDict("volume", saleImported)
-                  saleObject.date = now
-                  saleObject.save()
-            else:
-              industry = Industrie.objects.get(id=Ventes.getDataFromDict("industry", saleImported))
-              product = Produit.objects.get(id=Ventes.getDataFromDict("product", saleImported))
-              Ventes.objects.create(date=now, pdv=pdv, industry=industry, product=product, volume=float(Ventes.getDataFromDict("volume", saleImported)), currentYear=True)
-              salesInRam.append([now.timestamp()] + saleImported[1:])
+        pdv = Pdv.objects.get(id=int(id)) 
+        getattr(self, "__pdvs")[int(id)] = pdv.update(value, now)
     return now
-
-  def __updateSaleRam(self, salesInRam, saleImported, now):
-    for saleInRam in salesInRam:
-      if saleInRam[1]  == saleImported[1] and saleInRam[2]  == saleImported[2]:
-        saleInRam[0] = now.timestamp()
-        saleInRam[3] = saleImported[3]
-        return True
-      return False
-
-
-  def __updateDataBaseTarget(self, valueReceived, pdv, now, pdvInRam):
-    indexTarget = getattr(self, "__structurePdvs").index("target")
-    target = valueReceived[indexTarget]
-    targetObject = Ciblage.objects.filter(pdv=pdv)
-    flagSave = False
-    if targetObject:
-      print("update target save", target)
-      flagSave = targetObject[0].update(target, now)
-    elif target:
-      print("creation target", target)
-      flagSave = Ciblage.createFromList(target, pdv, now)
-    if flagSave:
-      pdvInRam[indexTarget] = target
 
   def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():
