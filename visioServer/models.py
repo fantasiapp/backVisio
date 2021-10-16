@@ -359,6 +359,7 @@ class Pdv(CommonModel):
     self.__updateTarget(valueReceived, now)
     for saleReceived in self.getDataFromDict("sales", valueReceived):
       self.__updateSale(saleReceived, now)
+    print("update pdv", self.id, self.listValues)
     return self.listValues
 
   def __updateTarget(self, valueReceived, now):
@@ -366,10 +367,8 @@ class Pdv(CommonModel):
     targetObject = Ciblage.objects.filter(pdv=self)
     if targetReceived:
       if targetObject:
-        print("update target save", targetReceived)
         targetObject[0].update(targetReceived, now)
       else:
-        print("creation target", targetReceived)
         Ciblage.createFromList(targetReceived, self, now)
 
   def __updateSale(self, saleReceived, now):
