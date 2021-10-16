@@ -382,8 +382,8 @@ class Pdv(CommonModel):
       sale[0].update(saleReceived, now) if volume else sale[0].delete()
     elif volume:
       print("ici")
-      # Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=volume)
-      Ventes.objects.create(date=now, pdv=self, industry=industryId, product=productId, volume=volume)
+      Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=volume)
+      # Ventes.objects.create(date=now, pdv=self, industry=industryId, product=productId, volume=volume)
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
