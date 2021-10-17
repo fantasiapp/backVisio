@@ -127,6 +127,7 @@ class ManageFromOldDatabase:
     return (False, False)
 
   def getPdvNew(self):
+    dictDepIdFinition = self.__computeDepIdFinition()
     listYear = ["lastYear", "currentYear"]
     for indexYear in range(2):
       year = listYear[indexYear]
@@ -136,6 +137,7 @@ class ManageFromOldDatabase:
         keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, year, line, Agent)
         # keyValues["agentFinitions"] = self.__computeFinition("id_actor", self.dictAgent, year, line, Agent)
         keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
+        keyValues["agentFinitions"] = AgentFinitions.objects.get(id=dictDepIdFinition[keyValues["dep"].id])
         keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
         keyValues["ville"] = self.__findObject("id_ville", self.dictVille, year, line, Ville)
         keyValues["enseigne"] = self.__findObject("id_holding", self.dictHolding, year, line, Enseigne)
@@ -164,7 +166,7 @@ class ManageFromOldDatabase:
           Pdv.objects.create(**keyValues)
         else:
           return (False, "Pdv {}, code {} allready exists".format(keyValues["name"], keyValues["code"]))
-    self.__insertAgentFinitionInPdv()
+    # self.__insertAgentFinitionInPdv()
     return ("Pdv", False)
 
   def __insertAgentFinitionInPdv(self):
