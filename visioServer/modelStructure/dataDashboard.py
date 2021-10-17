@@ -33,9 +33,7 @@ class DataDashboard:
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
-    self.dictLocalPdv = self.computeListPdv()
-    self.listLocalIdPdv = list(self.dictLocalPdv.keys())
-    self.listLocalPdv = list(self.dictLocalPdv.values())
+    self.dictLocalPdv = self.__computeListPdv()
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
@@ -97,7 +95,7 @@ class DataDashboard:
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     return data
 
-  def computeListPdv(self):
+  def __computeListPdv(self):
     if self.__userGroup in ["drv", "agent"]:
       indexPdv = Pdv.listFields().index(self.__userGroup)
       return {id:values for id, values in getattr(self, "__pdvs").items() if values[indexPdv] == self.__userGeoId}
@@ -204,7 +202,7 @@ class DataDashboard:
   #queries for updates
 
   def getUpdate(self, nature):
-    listIdPdv = self.listLocalIdPdv if self.__userGroup != "root" else False
+    listIdPdv = list(self.dictLocalPdv.keys()) if self.__userGroup != "root" else False
     lastUpdate = self.__userProfile.lastUpdate
     now = timezone.now()
     if nature == "request":

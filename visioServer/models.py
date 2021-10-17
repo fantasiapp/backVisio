@@ -68,7 +68,7 @@ class CommonModel(models.Model):
       del data["drv"]
     if "pdvFiltered" in cls.readingData:
       indexField = data["structurePdvs"].index(name)
-      return set([line[indexField] for line in dataDashBoard.listLocalPdv])
+      return set([line[indexField] for line in dataDashBoard.dictLocalPdv.values()])
     return False
 
   @classmethod
@@ -328,7 +328,7 @@ class Pdv(CommonModel):
 
   @classmethod
   def computeListId(cls, dataDashBoard, data):
-    return dataDashBoard.listLocalIdPdv if dataDashBoard.userGroup != "root" else False
+    return list(dataDashBoard.dictLocalPdv.keys()) if dataDashBoard.userGroup != "root" else False
 
   @property
   def listValues(self):
