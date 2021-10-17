@@ -27,6 +27,15 @@ class ManageFromOldDatabase:
   dictProduct = {}
   dictIndustry = {}
   dictUsers = {}
+  __depFinition = {
+    8:[64,40,33,17,16,24,47,32,65,9,31,81,82,46,87,23],
+    9:[29,22,56,35,44,85,49,53,50,14,61,72,37,79,86,36,41,18],
+    10:[28,27,76,80,60,95,78,91,77,75,92,94,93],
+    11:[13,84,83,4,5,6],
+    12:[19,15,63,3,43,42,69,71,1,38,26,7,73,74],
+    13:[66,11,34,12,30,48],
+    14:[62,59,2,8,51,10,89,45,58,21,52,55,54,57,88,70,39,25,90,68,67]
+    }
 
   typeObject = {
      "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
@@ -125,6 +134,7 @@ class ManageFromOldDatabase:
         keyValues = {}
         keyValues["drv"] = self.__findObject("id_drv", self.dictDrv, year, line, Drv)
         keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, year, line, Agent)
+        # keyValues["agentFinitions"] = self.__computeFinition("id_actor", self.dictAgent, year, line, Agent)
         keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
         keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
         keyValues["ville"] = self.__findObject("id_ville", self.dictVille, year, line, Ville)
@@ -154,7 +164,31 @@ class ManageFromOldDatabase:
           Pdv.objects.create(**keyValues)
         else:
           return (False, "Pdv {}, code {} allready exists".format(keyValues["name"], keyValues["code"]))
+    self.__insertAgentFinitionInPdv()
     return ("Pdv", False)
+
+  def __insertAgentFinitionInPdv(self):
+    dictDepIdFinition = self.__computeDepIdFinition()
+    listPdv = Pdv.objects.all()
+    for pdv in listPdv:
+      agentFinitions = AgentFinitions.objects.get(id=dictDepIdFinition[pdv.dep.id])
+      pdv.agentFinitions = agentFinitions
+      pdv.save()
+
+  def __computeDepIdFinition(self):
+    listDepIdFinition = {}
+    for currentYear in [True, False]:
+      if not currentYear:
+        decal = len(self.__depFinition)
+        self.__depFinition = {id - decal:value for id, value in self.__depFinition.items()}
+      dictDep = {dep.name:dep.id for dep in Dep.objects.filter(currentYear=currentYear)}
+      for idFinition, listDep in self.__depFinition.items():
+        listDepStr = {str(dep) if dep > 9 else f"0{str(dep)}" for dep in listDep}
+        listDepId = [dictDep[depName] for depName in listDepStr]
+        for idDep in listDepId:
+          listDepIdFinition[idDep] = idFinition
+    # result = dict(sorted(listDepIdFinition.items()))
+    return listDepIdFinition
 
   def __computeBoolean(self, line:list, field:str, valueIfNotExist:str, inverse:bool=False) -> bool:
     valueFound = line[self.fieldsPdv.index(field)]
@@ -195,16 +229,6 @@ class ManageFromOldDatabase:
     except db.Error as e:
       return "Error getAgent" + repr(e)
     return ("Agent", False)
-
-  def __getDrvCorrespondance(self, year):
-    IndexAgent = self.fieldsPdv.index("id_actor")
-    IndexDrv =  self.fieldsPdv.index("id_drv")
-    drvCorrespondance = {}
-    for line in self.listPdv[year]:
-      idAgent = line[IndexAgent]
-      if not idAgent in drvCorrespondance:
-        drvCorrespondance[idAgent] = line[IndexDrv]
-    return drvCorrespondance
 
   def getAgentFinitions(self):
     try:
@@ -535,20 +559,16 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    # listModel = [CiblageLevel]
-    for model in listModel:
-      for element in model.objects.all():
-        element.delete()
-    # print("start")
-    # self.getCiblageLevel()
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
-    # print(Layout.listFields())
-    # print(Layout.listIndexes())
-    # print(Layout.dictValues())
-
+    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    # for model in listModel:
+    #   for element in model.objects.all():
+    #     element.delete()
+    print("start")
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
+    
+
       
 
 

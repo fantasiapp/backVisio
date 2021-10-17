@@ -295,6 +295,7 @@ class Pdv(CommonModel):
   name = models.CharField('PDV', max_length=64, blank=False, default="Inconnu")
   drv = models.ForeignKey('drv', verbose_name='Région', on_delete=models.PROTECT,  blank=False)
   agent = models.ForeignKey('agent', verbose_name='Secteur', on_delete=models.PROTECT, blank=False)
+  agentFinitions = models.ForeignKey('agentFinitions', verbose_name='Secteur Finition', on_delete=models.DO_NOTHING, null=True, default=None)
   dep = models.ForeignKey("dep", verbose_name='Département', on_delete=models.PROTECT, blank=False)
   bassin = models.ForeignKey("bassin", verbose_name='Bassin', on_delete=models.PROTECT, blank=False)
   ville = models.ForeignKey("ville", on_delete=models.PROTECT, blank=False)

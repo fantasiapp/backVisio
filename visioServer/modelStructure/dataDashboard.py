@@ -211,18 +211,16 @@ class DataDashboard:
     listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
     if not listData: return {"message":"nothing to Update"}
     listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
-    if listUpdate:
-      jsonToSend = {key:{} for key in listUpdate[0].keys()}
-      for dictUpdate in listUpdate:
-        for nature, dictNature in dictUpdate.items():
-          if isinstance(dictNature, dict):
-            for id, listObject in dictNature.items():
-              if nature == "pdvs":
-                if not listIdPdv or int(id) in listIdPdv:
-                  jsonToSend["pdvs"][id] = listObject
-              else:
-                jsonToSend[nature][id] = listObject
-      return jsonToSend
+    jsonToSend = {key:{} for key in listUpdate[0].keys()}
+    for dictUpdate in listUpdate:
+      for nature, dictNature in dictUpdate.items():
+        for id, listObject in dictNature.items():
+          if nature == "pdvs":
+            if not listIdPdv or int(id) in listIdPdv:
+              jsonToSend["pdvs"][id] = listObject
+          else:
+            jsonToSend[nature][id] = listObject
+    return jsonToSend
 
   def postUpdate(self, userName, jsonString):
     user = User.objects.get(username=userName)
