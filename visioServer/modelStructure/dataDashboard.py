@@ -32,8 +32,10 @@ class DataDashboard:
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
-      DataDashboard.__tradeTree = self._buildTree(0, DataDashboard.__tradeTreeStructure, getattr(DataDashboard, "__pdvs"))
       self._computeTargetLevel()
+    self.dictLocalPdv = self.computeListPdv()
+    self.listLocalIdPdv = list(self.dictLocalPdv.keys())
+    self.listLocalPdv = list(self.dictLocalPdv.values())
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
@@ -63,6 +65,8 @@ class DataDashboard:
       if hasattr(self, attr):
         listId = model.computeListId(self, data)
         if attr == f"__{name}" and (isinstance(listId, list) or isinstance(listId, set)):
+          if attr == "__pdvs":
+            print("OK", len(listId))
           data[attr[2:]] = {id:value for id, value in getattr(self, attr).items() if id in listId}
         else:
           data[attr[2:]] = getattr(self, attr)
@@ -72,12 +76,13 @@ class DataDashboard:
   
   @property
   def dataQuery(self):
+    firstLevel = self.__userGeoId if self.__userGroup != "root" else 0
     data = {
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup),
       "levelTrade": json.loads(json.dumps(DataDashboard.__levelTrade)),
       "geoTree":self._computeLocalGeoTree(),
-      "tradeTree":DataDashboard.__tradeTree,
+      "tradeTree":self._buildTree(firstLevel, DataDashboard.__tradeTreeStructure, self.dictLocalPdv),
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
       }
@@ -87,11 +92,16 @@ class DataDashboard:
     if self.__userGroup != "root":
       for index in range(2):
         data["levelTrade"][index] = data["levelGeo"][index]
-      data["tradeTree"] = self._buildTree(data["geoTree"][0], DataDashboard.__tradeTreeStructure, data["pdvs"])
     self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
     self.__userProfile.save()
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     return data
+
+  def computeListPdv(self):
+    if self.__userGroup in ["drv", "agent"]:
+      indexPdv = Pdv.listFields().index(self.__userGroup)
+      return {id:values for id, values in getattr(self, "__pdvs").items() if values[indexPdv] == self.__userGeoId}
+    return getattr(self, "__pdvs")
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
     if originLevel[0] == selectedLevel:
@@ -160,15 +170,15 @@ class DataDashboard:
     return list(dictLevelWithDashBoard.values())[0]
 
   @classmethod
-  def _buildTree(cls, name, steps:list, pdvs:dict):
-    """name = name of first node, root for instance
+  def _buildTree(cls, idLevel, steps:list, pdvs:dict):
+    """idLevel = idLevel of first node, root for instance
     step = the list of stepId following the root node
     pdvs is a dictionary with keys : the ids and the list of values with dataSales"""
     if not steps:
-        return [name, list(pdvs.keys())]
+        return [idLevel, list(pdvs.keys())]
     nextKey = steps[0]
-    children = [cls._buildTree(name, steps[1:], associatedPdvs) for name, associatedPdvs in cls._diceByKey(nextKey, pdvs).items()]
-    return [name, children]
+    children = [cls._buildTree(idLevel, steps[1:], associatedPdvs) for idLevel, associatedPdvs in cls._diceByKey(nextKey, pdvs).items()]
+    return [idLevel, children]
   
   @classmethod
   def _diceByKey(cls, index:int, pdvs:dict):
@@ -194,8 +204,7 @@ class DataDashboard:
   #queries for updates
 
   def getUpdate(self, nature):
-    geoTree = False if self.__userGroup == "root" else self._computeLocalGeoTree()
-    listIdPdv = False if self.__userGroup == "root" else Pdv.computeListId(self, {"geoTree":geoTree})
+    listIdPdv = self.listLocalIdPdv if self.__userGroup != "root" else False
     lastUpdate = self.__userProfile.lastUpdate
     now = timezone.now()
     if nature == "request":

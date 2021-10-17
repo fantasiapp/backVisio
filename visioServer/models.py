@@ -67,10 +67,8 @@ class CommonModel(models.Model):
     if dataDashBoard.userGroup == "agent" and name == "agent":
       del data["drv"]
     if "pdvFiltered" in cls.readingData:
-      if isinstance(dataDashBoard.listIdPdv[0], int):
-        dataDashBoard.listIdPdv = [data["pdvs"][id] for id in dataDashBoard.listIdPdv]
       indexField = data["structurePdvs"].index(name)
-      return set([line[indexField] for line in dataDashBoard.listIdPdv])
+      return set([line[indexField] for line in dataDashBoard.listLocalPdv])
     return False
 
   @classmethod
@@ -330,18 +328,7 @@ class Pdv(CommonModel):
 
   @classmethod
   def computeListId(cls, dataDashBoard, data):
-    if dataDashBoard.userGroup == "root": return False
-    dataDashBoard.listIdPdv = cls.__computeListIdRecursive (data["geoTree"], [])
-    return dataDashBoard.listIdPdv
-
-  @classmethod
-  def __computeListIdRecursive(cls, geoTree, listId:list):
-    if isinstance(geoTree, list):
-      for subLevel in geoTree[1]:
-        cls.__computeListIdRecursive(subLevel, listId)
-    else:
-      listId.append(geoTree)
-    return listId
+    return dataDashBoard.listLocalIdPdv if dataDashBoard.userGroup != "root" else False
 
   @property
   def listValues(self):
