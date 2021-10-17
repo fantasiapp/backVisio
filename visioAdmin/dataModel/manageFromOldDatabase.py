@@ -38,7 +38,7 @@ class ManageFromOldDatabase:
     }
 
   typeObject = {
-     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentfinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
+     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentFinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
@@ -77,7 +77,11 @@ class ManageFromOldDatabase:
     for user in User.objects.all():
       if not user.username in ["vivian", "jlw"]:
         user.delete()
+      else:
+        user.groups.clear()
+    Group.objects.all().delete()
     self.cursorNew.execute("ALTER TABLE `auth_user` AUTO_INCREMENT=3;")
+    self.cursorNew.execute("ALTER TABLE `auth_group` AUTO_INCREMENT=1;")
     self.connectionNew.close()
     return {'query':'emptyDatabase', 'message':"<b>La base de données a été vidée</b>", 'end':True, 'errors':[]}
 
@@ -135,7 +139,6 @@ class ManageFromOldDatabase:
         keyValues = {}
         keyValues["drv"] = self.__findObject("id_drv", self.dictDrv, year, line, Drv)
         keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, year, line, Agent)
-        # keyValues["agentFinitions"] = self.__computeFinition("id_actor", self.dictAgent, year, line, Agent)
         keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
         keyValues["agentFinitions"] = AgentFinitions.objects.get(id=dictDepIdFinition[keyValues["dep"].id])
         keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
@@ -166,16 +169,7 @@ class ManageFromOldDatabase:
           Pdv.objects.create(**keyValues)
         else:
           return (False, "Pdv {}, code {} allready exists".format(keyValues["name"], keyValues["code"]))
-    # self.__insertAgentFinitionInPdv()
     return ("Pdv", False)
-
-  def __insertAgentFinitionInPdv(self):
-    dictDepIdFinition = self.__computeDepIdFinition()
-    listPdv = Pdv.objects.all()
-    for pdv in listPdv:
-      agentFinitions = AgentFinitions.objects.get(id=dictDepIdFinition[pdv.dep.id])
-      pdv.agentFinitions = agentFinitions
-      pdv.save()
 
   def __computeDepIdFinition(self):
     listDepIdFinition = {}
@@ -189,7 +183,6 @@ class ManageFromOldDatabase:
         listDepId = [dictDep[depName] for depName in listDepStr]
         for idDep in listDepId:
           listDepIdFinition[idDep] = idFinition
-    # result = dict(sorted(listDepIdFinition.items()))
     return listDepIdFinition
 
   def __computeBoolean(self, line:list, field:str, valueIfNotExist:str, inverse:bool=False) -> bool:
@@ -404,10 +397,8 @@ class ManageFromOldDatabase:
 
   def getUsers(self):
     dictUser = self.__computeListUser()
+    Group.objects.create(name="root")
     for user in User.objects.all():
-      user.groups.clear()
-      if not Group.objects.filter(name="root"):
-        Group.objects.create(name="root")
       user.groups.add(Group.objects.get(name="root"))
       UserProfile.objects.create(user=user, idGeo=0)
     for username, userList in dictUser.items():
@@ -424,20 +415,25 @@ class ManageFromOldDatabase:
     ManageFromOldDatabase.cursor.execute(query)
     dictUser = {line[0]:[line[1], line[2]] for line in ManageFromOldDatabase.cursor}
 
-    data, table, listUser = {"drv":{}, "actor":{}}, {"drv":{}, "actor":{}}, {}
+    data, table, listUser = {"drv":{}, "actor":{}, "finition":{}}, {"drv":{}, "actor":{}, "finition":{}}, {}
     for field in data.keys():
       query = f'SELECT `id`, `name` FROM `ref_{field}_0`;'
       ManageFromOldDatabase.cursor.execute(query)
       data[field] = {line[0]:line[1] for line in ManageFromOldDatabase.cursor}
       newField = field if field == "drv" else "agent"
+      if field == "finition":
+        newField = "agentFinitions"
       for oldId, value in data[field].items():
+        print(list(self.typeObject.keys()))
+        print(newField, self.typeObject[newField], value)
         newObject = self.typeObject[newField].objects.filter(name=value, currentYear=True).first()
         if newObject:
           table[field][oldId] = newObject.id
       table[newField] = table[field]
     del table["actor"]
-
-    dictEquiv = {"All":"root", "DRV":"drv", "Secteur":"agent", "Finition":"finition"}
+    del table["finition"]
+    print(table)
+    dictEquiv = {"All":"root", "DRV":"drv", "Secteur":"agent", "Finition":"agentFinitions"}
     for pseudo, profilePassword in dictUser.items():
       profile = profilePassword[0]
       listProfile = list(profile.split(":"))
@@ -561,11 +557,29 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
+    for user in User.objects.all():
+      if not user.username in ["vivian", "jlw"]:
+        user.delete()
+      else:
+        user.groups.clear()
+    Group.objects.all().delete()
+
+    ManageFromOldDatabase.connection = db.connect(
+      user = os.getenv('DB_USERNAME_ORI'),
+      password = os.getenv('DB_PASSWORD_ORI'),
+      host = os.getenv('DB_HOST_ORI'),
+      database = os.getenv('DB_NAME_ORI')
+      )
+    ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
+
+
     # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
     # for model in listModel:
     #   for element in model.objects.all():
     #     element.delete()
     print("start")
+    self.getUsers()
+    ManageFromOldDatabase.connection.close()
     # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}

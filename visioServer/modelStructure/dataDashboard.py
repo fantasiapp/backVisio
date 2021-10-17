@@ -30,7 +30,6 @@ class DataDashboard:
       DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
       DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
-      DataDashboard.__geoTree = self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
     self.dictLocalPdv = self.__computeListPdv()
@@ -63,8 +62,6 @@ class DataDashboard:
       if hasattr(self, attr):
         listId = model.computeListId(self, data)
         if attr == f"__{name}" and (isinstance(listId, list) or isinstance(listId, set)):
-          if attr == "__pdvs":
-            print("OK", len(listId))
           data[attr[2:]] = {id:value for id, value in getattr(self, attr).items() if id in listId}
         else:
           data[attr[2:]] = getattr(self, attr)
@@ -86,49 +83,44 @@ class DataDashboard:
       }
     for name, model in CommonModel.computeTableClass():
       self.insertModel(data, name, model)
-    self. _computeLocalTargetLevel(data)
-    if self.__userGroup != "root":
-      for index in range(2):
-        data["levelTrade"][index] = data["levelGeo"][index]
+    self._computeLocalTargetLevel(data)
+    self._setupFinitions(data)
     self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
     self.__userProfile.save()
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     return data
 
   def __computeListPdv(self):
-    if self.__userGroup in ["drv", "agent"]:
+    print("userGroup", self.__userGroup)
+    if self.__userGroup in ["drv", "agent", "agentFinitions"]:
       indexPdv = Pdv.listFields().index(self.__userGroup)
+      print("indexPdv, userIdGeo", indexPdv, self.__userGeoId)
       return {id:values for id, values in getattr(self, "__pdvs").items() if values[indexPdv] == self.__userGeoId}
     return getattr(self, "__pdvs")
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
+    sLevel = "agent" if selectedLevel == "agentFinitions" else selectedLevel
+    localLevel = self.__computeLocalLevels(originLevel, sLevel)
+    if selectedLevel == "agentFinitions":
+      localLevel = ["agentFinitions", "Secteur Finitions"] + localLevel[2:]
+    return localLevel
+
+  def __computeLocalLevels(self, originLevel:list, selectedLevel:str):
     if originLevel[0] == selectedLevel:
       return originLevel
-    return self._computeLocalLevels(originLevel[3], selectedLevel)
+    return self.__computeLocalLevels(originLevel[3], selectedLevel)
 
   def _computeLocalGeoTree(self):
-    if self.__userGroup == "root":
-      return DataDashboard.__geoTree
-    if self.__userGroup == "drv":
-      for drv in DataDashboard.__geoTree[1]:
-        if drv[0] == self.__userGeoId:
-          return drv
-    hierarchy = self.__computeHierarchy()
-    drvId = [couple[0] for couple in hierarchy if couple[1] == self.__userGeoId][0]
-    for drv in DataDashboard.__geoTree[1]:
-        if drv[0] == drvId:
-          for agent in drv[1]:
-            if agent[0] == self.__userGeoId:
-              return agent
-    
-  def __computeHierarchy(self) -> list:
-    """Hierachy is a list of couples containing drvId dans agentId"""
-    hierarchy = []
-    for drv in DataDashboard.__geoTree[1]:
-      drvId = drv[0]
-      for agent in drv[1]:
-        hierarchy.append((drvId, agent[0]))
-    return hierarchy
+    if self.userGroup == "root":
+      return self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
+    if self.userGroup == "drv":
+      return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[1:], self.dictLocalPdv)
+    if self.userGroup == "agent":
+      return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[2:], self.dictLocalPdv)
+    if self.userGroup == "agentFinitions":
+      indexFinitions = Pdv.listFields().index("agentFinitions")
+      structure = [indexFinitions] + DataDashboard.__geoTreeStructure[3:]
+      return self._buildTree(self.__userGeoId, structure, self.dictLocalPdv)
 
   def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":
@@ -150,6 +142,20 @@ class DataDashboard:
     elif self.__userGroup == "agent":
       data["structureTargetLevelAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
+
+  def _setupFinitions(self, data):
+    if self.__userGroup == "root":
+      data["root"] = {0:""}
+    else:
+      for index in range(2):
+        data["levelTrade"][index] = data["levelGeo"][index]
+      if self.__userGroup == "agentFinitions":
+        del data["drv"]
+        del data["agent"]
+      else:
+        del data["agentFinitions"]
+        if self.__userGroup == "agent":
+          del data["drv"]
   
   @classmethod
   def _computeLevels(cls, classObject, geoOrTrade):

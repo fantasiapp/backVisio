@@ -61,11 +61,7 @@ class CommonModel(models.Model):
   def computeListId(cls, dataDashBoard, data):
     name = cls.readingData["name"] if "name" in cls.readingData else None
     if dataDashBoard.userGroup == "root":
-      if name and name == "drv":
-        data["root"] = {0:""}
       return False
-    if dataDashBoard.userGroup == "agent" and name == "agent":
-      del data["drv"]
     if "pdvFiltered" in cls.readingData:
       indexField = data["structurePdvs"].index(name)
       return set([line[indexField] for line in dataDashBoard.dictLocalPdv.values()])
@@ -179,6 +175,7 @@ class Agent(CommonModel):
 class AgentFinitions(CommonModel):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
+  readingData = {"nature":"normal", "position":19, "name":"agentFinitions", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Agent Finitions"
@@ -189,7 +186,7 @@ class AgentFinitions(CommonModel):
 class Dep(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":19, "name":"dep", "pdvFiltered":True}
+  readingData = {"nature":"normal", "position":20, "name":"dep", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Département"
@@ -200,7 +197,7 @@ class Dep(CommonModel):
 class Bassin(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
   currentYear = models.BooleanField("Année courante", default=True)
-  readingData = {"nature":"normal", "position":20, "name":"bassin", "pdvFiltered":True}
+  readingData = {"nature":"normal", "position":21, "name":"bassin", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Bassin"
@@ -214,7 +211,7 @@ class Bassin(CommonModel):
 
 class Ville(CommonModel):
   name = models.CharField('ville', max_length=128, unique=True)
-  readingData = {"nature":"normal", "position":21, "name":"ville", "pdvFiltered":True}
+  readingData = {"nature":"normal", "position":22, "name":"ville", "pdvFiltered":True}
 
   class Meta:
     verbose_name = "Ville"
