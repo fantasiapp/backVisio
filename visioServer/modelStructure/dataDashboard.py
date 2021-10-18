@@ -91,10 +91,8 @@ class DataDashboard:
     return data
 
   def __computeListPdv(self):
-    print("userGroup", self.__userGroup)
     if self.__userGroup in ["drv", "agent", "agentFinitions"]:
       indexPdv = Pdv.listFields().index(self.__userGroup)
-      print("indexPdv, userIdGeo", indexPdv, self.__userGeoId)
       return {id:values for id, values in getattr(self, "__pdvs").items() if values[indexPdv] == self.__userGeoId}
     return getattr(self, "__pdvs")
 
