@@ -174,6 +174,8 @@ class Agent(CommonModel):
 
 class AgentFinitions(CommonModel):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
+  ratioTargetedVisit = models.FloatField('Ratio des visites ciblées', unique=False, blank=False, default=0.3)
+  TargetedNbVisit = models.IntegerField('Ratio des visites ciblées', unique=False, blank=False, default=800)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":19, "name":"agentFinitions", "pdvFiltered":True}
 
