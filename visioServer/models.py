@@ -174,6 +174,7 @@ class Agent(CommonModel):
 
 class AgentFinitions(CommonModel):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
+  drv = models.ForeignKey('drv', on_delete=models.DO_NOTHING, blank=False, default=None)
   ratioTargetedVisit = models.FloatField('Ratio des visites ciblées', unique=False, blank=False, default=0.3)
   TargetedNbVisit = models.IntegerField('Ratio des visites ciblées', unique=False, blank=False, default=800)
   currentYear = models.BooleanField("Année courante", default=True)
@@ -500,6 +501,7 @@ class WidgetCompute(CommonModel):
 class Dashboard(CommonModel):
   jsonFields = ["comment"]
   name = models.CharField(max_length=64, unique=False, blank=False, default=None)
+  geoOrTrade = models.CharField(max_length=6, blank=False, default="geo")
   layout = models.ForeignKey('Layout', on_delete=models.PROTECT, blank=False, default=1)
   comment = models.CharField(max_length=2048, unique=False, blank=False, default=None)
   widgetParams = models.ManyToManyField("WidgetParams")
@@ -526,7 +528,7 @@ class Dashboard(CommonModel):
       return lv
 
 class DashboardTree(models.Model):
-  geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
+  geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="geo")
   profile = models.CharField(max_length=32, blank=False, default=None)
   level = models.ForeignKey("TreeNavigation", on_delete=models.PROTECT, blank=False, default=None)
   dashboards = models.ManyToManyField("Dashboard")

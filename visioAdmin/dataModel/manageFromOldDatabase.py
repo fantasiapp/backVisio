@@ -38,7 +38,8 @@ class ManageFromOldDatabase:
     }
 
   typeObject = {
-     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentFinitions":AgentFinitions, "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
+     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentFinitions":AgentFinitions,
+     "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
     "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
     "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
@@ -226,14 +227,16 @@ class ManageFromOldDatabase:
     return ("Agent", False)
 
   def getAgentFinitions(self):
+    listYear = ["lastYear", "currentYear"]
     try:
       for indexYear in range(2):
-        query = "SELECT id, name FROM ref_finition_1"
+        query = "SELECT id, name, id_drv FROM ref_finition_1"
         ManageFromOldDatabase.cursor.execute(query)
-        for (id, name) in ManageFromOldDatabase.cursor:
+        for (id, name, idDrv) in ManageFromOldDatabase.cursor:
+          drv = Drv.objects.get(name=self.dictDrv[listYear[indexYear]][idDrv], currentYear=indexYear==1)
           existsAgent = AgentFinitions.objects.filter(name__iexact=name, currentYear=indexYear==1)
           if not existsAgent.exists():
-            AgentFinitions.objects.create(name=name, currentYear=indexYear==1)
+            AgentFinitions.objects.create(name=name, drv=drv, currentYear=indexYear==1)
           self.dictAgentFinitions[id] = name
     except db.Error as e:
       return "Error getAgentFinitions" + repr(e)
@@ -332,7 +335,7 @@ class ManageFromOldDatabase:
       for level, listDashBoard in dashboardsLevel.items():
         levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
         if levelObject.exists():
-          dashboards = [Dashboard.objects.get(name=name) for name in listDashBoard]
+          dashboards = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashBoard]
           object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
           for dashboard in dashboards:
             object.dashboards.add(dashboard)
@@ -347,18 +350,17 @@ class ManageFromOldDatabase:
       listLevelName.append((fields[fieldId + 1].name, fields[fieldId + 1].verbose_name))
     return listLevelName
 
-#Création des tableaux de bord
   def createDashboards(self, geoOrTrade):
     if geoOrTrade == "geo":
       CreateWidgetParam.initialize()
-    for name, value in CreateWidgetParam.dashboards[geoOrTrade].items():
-      layoutName, comment = value[0], value[1]
+    for value in CreateWidgetParam.dashBoardsList[geoOrTrade]:
+      name, layoutName, comment = value[0], value[1], value[2]
       comment = json.dumps(comment if isinstance(comment, list) else [comment])
-      object = Dashboard.objects.create(name=name, layout=CreateWidgetParam.dictLayout[layoutName], comment=comment)
+      object = Dashboard.objects.create(name=name, geoOrTrade=geoOrTrade, layout=CreateWidgetParam.dictLayout[layoutName], comment=comment)
       templateFlat = []
       for listPos in json.loads(CreateWidgetParam.dictLayout[layoutName].template):
         templateFlat += listPos
-      listWidgetParam = CreateWidgetParam.create(name)
+      listWidgetParam = CreateWidgetParam.create(name, geoOrTrade)
       for widgetParam in listWidgetParam[:len(set(templateFlat))]:
         object.widgetParams.add(widgetParam)
     return CreateWidgetParam.dashboardsLevel[geoOrTrade]
@@ -554,37 +556,13 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    UserProfile.objects.all().delete()
-    for user in User.objects.all():
-      if not user.username in ["vivian", "jlw"]:
-        user.delete()
-      else:
-        user.groups.clear()
-    Group.objects.all().delete()
-
-    ManageFromOldDatabase.connection = db.connect(
-      user = os.getenv('DB_USERNAME_ORI'),
-      password = os.getenv('DB_PASSWORD_ORI'),
-      host = os.getenv('DB_HOST_ORI'),
-      database = os.getenv('DB_NAME_ORI')
-      )
-    ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-
-
-    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    # for model in listModel:
-    #   for element in model.objects.all():
-    #     element.delete()
+    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    for model in listModel:
+      for element in model.objects.all():
+        element.delete()
     print("start")
-    self.getUsers()
-    ManageFromOldDatabase.connection.close()
-    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
-    
-
-      
-
-
 
 manageFromOldDatabase = ManageFromOldDatabase()

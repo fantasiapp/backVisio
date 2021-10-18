@@ -147,7 +147,6 @@ class DataDashboard:
         del data["drv"]
         del data["agent"]
       else:
-        del data["agentFinitions"]
         if self.__userGroup == "agent":
           del data["drv"]
   
