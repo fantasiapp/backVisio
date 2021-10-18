@@ -417,22 +417,19 @@ class ManageFromOldDatabase:
 
     data, table, listUser = {"drv":{}, "actor":{}, "finition":{}}, {"drv":{}, "actor":{}, "finition":{}}, {}
     for field in data.keys():
-      query = f'SELECT `id`, `name` FROM `ref_{field}_0`;'
+      query = f'SELECT `{"id_drv" if field == "finition" else "id"}`, `name` FROM `ref_{field}_0`;'
       ManageFromOldDatabase.cursor.execute(query)
       data[field] = {line[0]:line[1] for line in ManageFromOldDatabase.cursor}
       newField = field if field == "drv" else "agent"
       if field == "finition":
         newField = "agentFinitions"
-      for oldId, value in data[field].items():
-        print(list(self.typeObject.keys()))
-        print(newField, self.typeObject[newField], value)
-        newObject = self.typeObject[newField].objects.filter(name=value, currentYear=True).first()
+      for oldId, name in data[field].items():
+        newObject = self.typeObject[newField].objects.filter(name=name, currentYear=True).first()
         if newObject:
           table[field][oldId] = newObject.id
       table[newField] = table[field]
     del table["actor"]
     del table["finition"]
-    print(table)
     dictEquiv = {"All":"root", "DRV":"drv", "Secteur":"agent", "Finition":"agentFinitions"}
     for pseudo, profilePassword in dictUser.items():
       profile = profilePassword[0]
@@ -482,8 +479,8 @@ class ManageFromOldDatabase:
           kwargs['date'] = datetime.datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris")) if line[0] else None
           code = dictPdv[idOld][indexCode]
           kwargs['pdv'] = Pdv.objects.filter(code=code, currentYear=True).first()
-          kwargs['redistributed'] = line[2] == "does not exist"
-          kwargs['sale'] = line[3] == "does not exist"
+          kwargs['redistributed'] = line[2] != "does not exist"
+          kwargs['sale'] = line[3] != "does not exist"
           kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
           kwargs['targetFinition'] = line[5] == "yes"
           kwargs['greenLight'] = line[6][0]
@@ -557,6 +554,7 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
+    UserProfile.objects.all().delete()
     for user in User.objects.all():
       if not user.username in ["vivian", "jlw"]:
         user.delete()
