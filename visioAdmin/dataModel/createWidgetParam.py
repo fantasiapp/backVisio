@@ -283,13 +283,13 @@ class CreateWidgetParam:
       ], "Points de Vente Enduit Enseigne":[
         ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD Enseigne":[
-        ["industrie", "drv", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volume de vente par division géographique", "", "a", "km²", "histoColumn"],
-        ["industrie", "drv", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
-        ["clientProspect", "drv", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
+        ["industrie", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volume de vente par division géographique", "", "a", "km²", "histoColumn"],
+        ["industrie", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["clientProspect", "lgp-1", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse Enduit Enseigne":[
-        ["enduitIndustrie", "drv", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "no", "Volume de vente par division géographique", "", "a", "T", "histoColumn"],
-        ["enduitIndustrie", "drv", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
-        ["segmentDnEnduit", "drv", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
+        ["enduitIndustrie", "lgp-1", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "no", "Volume de vente par division géographique", "", "a", "T", "histoColumn"],
+        ["enduitIndustrie", "lgp-1", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduit", "lgp-1", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], 
       'other':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
