@@ -113,12 +113,8 @@ class DataDashboard:
       return self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
     if self.userGroup == "drv":
       return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[1:], self.dictLocalPdv)
-    if self.userGroup == "agent":
+    if self.userGroup in ["agent","agentFinitions" ]:
       return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[2:], self.dictLocalPdv)
-    if self.userGroup == "agentFinitions":
-      indexFinitions = Pdv.listFields().index("agentFinitions")
-      structure = [indexFinitions] + DataDashboard.__geoTreeStructure[3:]
-      return self._buildTree(self.__userGeoId, structure, self.dictLocalPdv)
 
   def _computeLocalTargetLevel(self, data):
     if self.__userGroup == "root":
