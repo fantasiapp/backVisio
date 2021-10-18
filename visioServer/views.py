@@ -16,7 +16,6 @@ class Data(DefaultView):
         if not Data.isBlocked:
             currentUser = request.user
             userGroup = request.user.groups.values_list('name', flat=True)
-            print(userGroup)
             currentProfile = UserProfile.objects.filter(user=currentUser)
             if userGroup:
                 userIdGeo = currentProfile[0].idGeo if currentProfile else None

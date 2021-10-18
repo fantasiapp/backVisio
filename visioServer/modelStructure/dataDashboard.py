@@ -136,6 +136,10 @@ class DataDashboard:
     elif self.__userGroup == "agent":
       data["structureTargetLevelAgentP2CD"] = self.__structureTargetLevelAgentP2CD
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
+    elif self.__userGroup == "agentFinitions":
+      data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
+      data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
+
 
   def _setupFinitions(self, data):
     if self.__userGroup == "root":
@@ -143,12 +147,18 @@ class DataDashboard:
     else:
       for index in range(2):
         data["levelTrade"][index] = data["levelGeo"][index]
-      if self.__userGroup == "agentFinitions":
+      if self.__userGroup in ["agentFinitions", "agent"]:
         del data["drv"]
-        del data["agent"]
-      else:
-        if self.__userGroup == "agent":
-          del data["drv"]
+        levelTrade = data["levelTrade"]
+        while True:
+          del levelTrade[2][9]
+          del levelTrade[2][8]
+          if len(levelTrade) == 4:
+            levelTrade = levelTrade[3]
+          else:
+            break
+        if self.__userGroup == "agentFinitions":
+          del data["agent"]
   
   @classmethod
   def _computeLevels(cls, classObject, geoOrTrade):
@@ -199,7 +209,6 @@ class DataDashboard:
           cls.__targetLevelAgentFinition[tlObject.agent.id] = [tlObject.volFinition, tlObject.dnFinition]
 
   #queries for updates
-
   def getUpdate(self, nature):
     listIdPdv = list(self.dictLocalPdv.keys()) if self.__userGroup != "root" else False
     lastUpdate = self.__userProfile.lastUpdate
