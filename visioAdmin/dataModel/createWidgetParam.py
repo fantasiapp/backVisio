@@ -335,6 +335,8 @@ class CreateWidgetParam:
       ]
       }
     }
+    print("create", geoOrTrade, name)
+    print("check", len(dictParam[geoOrTrade]), name in dictParam[geoOrTrade])
     params = dictParam[geoOrTrade][name] if name in dictParam else dictParam['trade']['other']
     paramName = ["axis1", "axis2", "ind", "grAx1", "grAx2", "percent", "title", "subTitle", "pos", "unity", "widget"]
     return [cls.executeCreation(**{paramName[i]:param[i] for i in range(len(param))}) for param in params]
