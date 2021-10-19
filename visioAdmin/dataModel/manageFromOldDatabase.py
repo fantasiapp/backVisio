@@ -326,15 +326,19 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
+    print("geoOrTradeList", geoOrTradeList)
     for geoOrTrade in geoOrTradeList:
+      print("type", geoOrTrade)
       levelRoot = "root" if geoOrTrade == "geo" else "rootTrade"
       object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
       for level, name in self.createNavigationLevelName(geoOrTrade):
         object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
         print("TreeNavigation", geoOrTrade, level, name)
       dashboardsLevel = self.createDashboards(geoOrTrade)
+      print(dashboardsLevel)
       for level, listDashBoard in dashboardsLevel.items():
         levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
+        print("exists", geoOrTrade, level)
         if levelObject.exists():
           dashboards = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashBoard]
           object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
@@ -342,6 +346,7 @@ class ManageFromOldDatabase:
           for dashboard in dashboards:
             object.dashboards.add(dashboard)
         else:
+          print("Error getTreeNavigation {level} does not exist")
           return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
 
