@@ -342,11 +342,11 @@ class ManageFromOldDatabase:
         if levelObject.exists():
           dashboards = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashBoard]
           object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
-          print("DashboardTree", geoOrTrade, levelRoot, level)
+          print("DashboardTree", name, geoOrTrade, levelRoot, level)
           for dashboard in dashboards:
             object.dashboards.add(dashboard)
         else:
-          print("Error getTreeNavigation {level} does not exist")
+          print(f"Error getTreeNavigation {level} does not exist")
           return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
 
@@ -574,13 +574,13 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    # for model in listModel:
-    #   model.objects.all().delete()
+    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    for model in listModel:
+      model.objects.all().delete()
     print("start")
-    CiblageLevel.objects.all().delete
+    # CiblageLevel.objects.all().delete
     self.getCiblageLevel()
-    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
 
