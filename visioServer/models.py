@@ -29,12 +29,14 @@ class CommonModel(models.Model):
     return [listName.index(name) for name in listNameF]
 
   @classmethod
-  def dictValues(cls):
+  def dictValues(cls, currentYear=True):
     length = len(cls.listFields()) == 1
     if getattr(cls, "currentYear", False):
-      result = {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.filter(currentYear=True)}
+      result = {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.filter(currentYear=currentYear)}
       return result
-    return {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.all()}
+    if currentYear == True:
+      return {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.all()}
+    return False
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
@@ -64,7 +66,7 @@ class CommonModel(models.Model):
       return False
     if "pdvFiltered" in cls.readingData:
       indexField = data["structurePdvs"].index(name)
-      return set([line[indexField] for line in dataDashBoard.dictLocalPdv.values()])
+      return set([line[indexField] for line in dataDashBoard.dictLocalPdv["currentYear"].values()])
     return False
 
   @classmethod
@@ -322,13 +324,13 @@ class Pdv(CommonModel):
     return super().listFields() + ["nbVisits", "target", "sales"]
 
   @classmethod
-  def dictValues(cls):
+  def dictValues(cls, currentYear=True):
     indexSale = cls.listFields().index("sale")
-    return {id:value for id, value in super().dictValues().items() if value[indexSale]}
+    return {id:value for id, value in super().dictValues(currentYear=currentYear).items() if value[indexSale]}
 
   @classmethod
   def computeListId(cls, dataDashBoard, data):
-    return list(dataDashBoard.dictLocalPdv.keys()) if dataDashBoard.userGroup != "root" else False
+    return list(dataDashBoard.dictLocalPdv["currentYear"].keys()) if dataDashBoard.userGroup != "root" else False
 
   @property
   def listValues(self):
@@ -609,6 +611,7 @@ class CiblageLevel(CommonModel):
   drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   vol = models.FloatField('Cible visée en Volume P2CD', unique=False, blank=False, default=0.0)
   dn = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     listFields = self.listFields()

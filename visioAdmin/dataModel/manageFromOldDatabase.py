@@ -326,27 +326,20 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
-    print("geoOrTradeList", geoOrTradeList)
     for geoOrTrade in geoOrTradeList:
-      print("type", geoOrTrade)
       levelRoot = "root" if geoOrTrade == "geo" else "rootTrade"
       object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
       for level, name in self.createNavigationLevelName(geoOrTrade):
         object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
-        print("TreeNavigation", geoOrTrade, level, name)
       dashboardsLevel = self.createDashboards(geoOrTrade)
-      print(dashboardsLevel)
       for level, listDashBoard in dashboardsLevel.items():
         levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
-        print("exists", geoOrTrade, level)
         if levelObject.exists():
           dashboards = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashBoard]
           object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
-          print("DashboardTree", name, geoOrTrade, levelRoot, level)
           for dashboard in dashboards:
             object.dashboards.add(dashboard)
         else:
-          print(f"Error getTreeNavigation {level} does not exist")
           return (False, f"Error getTreeNavigation {level} does not exist")
     return ("TreeNavigation", False)
 
@@ -502,35 +495,36 @@ class ManageFromOldDatabase:
 
   def getCiblageLevel(self):
     volP2CD, dnP2CD, volFinition, dnFinition = 1000.0, 50, 150, 30
-    dictAgent, now = {}, timezone.now()
-    listDrv = {drv.id:drv for drv in Drv.objects.filter(currentYear=True)}
-    for drv in listDrv.values():
-      dictAgent[drv.id] = set([pdv.agent for pdv in Pdv.objects.filter(sale=True, currentYear=True, drv=drv)])
-    for drvId, listAgent in dictAgent.items():
-      drv = listDrv[drvId]
-      CiblageLevel.objects.create(date=now, drv=drv, vol=volP2CD, dn=dnP2CD)
-      dvP2CD = volP2CD / len(listAgent)
-      ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
-      dvFinition = volFinition / len(listAgent)
-      ddFinition, rdFinition = dnFinition // len(listAgent), dnFinition % len(listAgent)
-      flagStart = True
-      for agent in listAgent:
-        if flagStart:
-          flagStart = False
-          CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD + rdP2CD)
-        else:
-          CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD)
-      flagStart = True
-      listAgentFinitions = AgentFinitions.objects.filter(currentYear=True)
-      dvFinition = volFinition / len(listAgentFinitions)
-      ddFinition, rdFinition = dnFinition // len(listAgentFinitions), dnFinition % len(listAgentFinitions)
-      for agentFinition in listAgentFinitions:
-        if flagStart:
-          flagStart = False
-          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition + rdFinition)
-        else:
-          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition)
-
+    now = timezone.now()
+    for currentYear in [True, False]:
+      dictAgent = {}
+      listDrv = {drv.id:drv for drv in Drv.objects.filter(currentYear=currentYear)}
+      for id, drv in listDrv.items():
+        dictAgent[id] = set([pdv.agent for pdv in Pdv.objects.filter(sale=True, currentYear=currentYear, drv=drv)])
+      for drvId, listAgent in dictAgent.items():
+        drv = listDrv[drvId]
+        CiblageLevel.objects.create(date=now, drv=drv, vol=volP2CD, dn=dnP2CD, currentYear=currentYear)
+        dvP2CD = volP2CD / len(listAgent)
+        ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
+        dvFinition = volFinition / len(listAgent)
+        ddFinition, rdFinition = dnFinition // len(listAgent), dnFinition % len(listAgent)
+        flagStart = True
+        for agent in listAgent:
+          if flagStart:
+            flagStart = False
+            CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD + rdP2CD, currentYear=currentYear)
+          else:
+            CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD, currentYear=currentYear)
+        flagStart = True
+        listAgentFinitions = AgentFinitions.objects.filter(currentYear=currentYear)
+        dvFinition = volFinition / len(listAgentFinitions)
+        ddFinition, rdFinition = dnFinition // len(listAgentFinitions), dnFinition % len(listAgentFinitions)
+        for agentFinition in listAgentFinitions:
+          if flagStart:
+            flagStart = False
+            CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition + rdFinition, currentYear=currentYear)
+          else:
+            CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition, currentYear=currentYear)
     return ("CiblageLevel", False)
 
   def getVisit(self):
@@ -578,9 +572,9 @@ class ManageFromOldDatabase:
     for model in listModel:
       model.objects.all().delete()
     print("start")
-    # CiblageLevel.objects.all().delete
+    CiblageLevel.objects.all().delete
     self.getCiblageLevel()
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
 
