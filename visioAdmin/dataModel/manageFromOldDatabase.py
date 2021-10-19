@@ -331,11 +331,9 @@ class ManageFromOldDatabase:
       object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
       for level, name in self.createNavigationLevelName(geoOrTrade):
         object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
-        print("TreeNavigation", geoOrTrade, level, name)
       dashboardsLevel = self.createDashboards(geoOrTrade)
       for level, listDashBoard in dashboardsLevel.items():
         levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
-        print("getTreeNavigation", geoOrTrade, levelObject)
         if levelObject.exists():
           dashboards = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashBoard]
           object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
