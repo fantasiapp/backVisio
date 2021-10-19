@@ -139,6 +139,9 @@ class DataDashboard:
     elif self.__userGroup == "agentFinitions":
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
       data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
+      print(self.__userGeoId)
+      print(self.__targetLevelAgentFinition)
+      print(data["targetLevelAgentFinition"])
 
 
   def _setupFinitions(self, data):
@@ -206,7 +209,7 @@ class DataDashboard:
         if tlObject.volP2CD or tlObject.dnP2CD:
           cls.__targetLevelAgentP2CD[tlObject.agent.id] = [tlObject.volP2CD, tlObject.dnP2CD]
         if tlObject.volFinition or tlObject.volFinition:
-          cls.__targetLevelAgentFinition[tlObject.agent.id] = [tlObject.volFinition, tlObject.dnFinition]
+          cls.__targetLevelAgentFinition[tlObject.agentFinitions.id] = [tlObject.volFinition, tlObject.dnFinition]
 
   #queries for updates
   def getUpdate(self, nature):

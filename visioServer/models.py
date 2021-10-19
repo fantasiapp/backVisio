@@ -605,6 +605,7 @@ class Ciblage(CommonModel):
 class CiblageLevel(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
+  agentFinitions = models.ForeignKey('AgentFinitions', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   volP2CD = models.FloatField('Cible visée en Volume P2CD', unique=False, blank=False, default=0.0)
   dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)

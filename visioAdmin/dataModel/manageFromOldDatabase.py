@@ -510,9 +510,20 @@ class ManageFromOldDatabase:
       for agent in listAgent:
         if flagStart:
           flagStart = False
-          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD + rdP2CD, volFinition=dvFinition, dnFinition=ddFinition + rdFinition)
+          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD + rdP2CD)
         else:
-          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD, volFinition=dvFinition, dnFinition=ddFinition)
+          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD)
+      flagStart = True
+      listAgentFinitions = AgentFinitions.objects.filter(currentYear=True)
+      dvFinition = volFinition / len(listAgentFinitions)
+      ddFinition, rdFinition = dnFinition // len(listAgentFinitions), dnFinition % len(listAgentFinitions)
+      for agentFinition in listAgentFinitions:
+        if flagStart:
+          flagStart = False
+          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, volFinition=dvFinition, dnFinition=ddFinition + rdFinition)
+        else:
+          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, volFinition=dvFinition, dnFinition=ddFinition)
+
     return ("CiblageLevel", False)
 
   def getVisit(self):
@@ -556,12 +567,13 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    for model in listModel:
-      for element in model.objects.all():
-        element.delete()
+    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    # for model in listModel:
+    #   model.objects.all().delete()
     print("start")
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    CiblageLevel.objects.all().delete()
+    self.getCiblageLevel()
     print("end")
     return {"test":False}
 
