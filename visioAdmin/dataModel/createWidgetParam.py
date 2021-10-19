@@ -251,10 +251,10 @@ class CreateWidgetParam:
         ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, ["@other"], "no", "Evolution de l'AD", "Nb de PdV par sem. et cumul en %", "b", "", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
-        ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Mesure du nb de visites", "", "a", "", "gauge"],
-        ["targetedVisits", "segmentCommercial", "dn", [], ["@other"], "no", "Mesure des PdV cibles", "", "b", "", "gauge"],
-        ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites (vol)", "@sum", "c", "T"],
-        ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites (nb)", "@sum", "d", "visites"]
+        ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
+        ["targetedVisits", "segmentCommercial", "dn", [], ["@other"], "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
+        ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites en volume", "@sum", "c", "T"],
+        ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites en DN", "@sum", "d", "visites"]
       ]
       }, "trade":{
       "Marché P2CD":[
