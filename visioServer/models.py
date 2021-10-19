@@ -607,10 +607,8 @@ class CiblageLevel(CommonModel):
   agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   agentFinitions = models.ForeignKey('AgentFinitions', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
-  volP2CD = models.FloatField('Cible visée en Volume P2CD', unique=False, blank=False, default=0.0)
-  dnP2CD = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
-  volFinition= models.FloatField('Cible visée en Volume Enduit', unique=False, blank=False, default=0.0)
-  dnFinition = models.IntegerField('Cible visée en dn Enduit', unique=False, blank=False, default=0)
+  vol = models.FloatField('Cible visée en Volume P2CD', unique=False, blank=False, default=0.0)
+  dn = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     listFields = self.listFields()

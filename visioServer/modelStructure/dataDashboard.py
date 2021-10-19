@@ -14,7 +14,7 @@ load_dotenv()
 class DataDashboard:
   __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
-  __structureTargetLevelDrv = ["volP2CD", "dnP2CD", "volFinition", "dnFinition"]
+  __structureTargetLevelDrv = ["volP2CD", "dnP2CD"]
   __structureTargetLevelAgentP2CD = ["volP2CD", "dnP2CD"]
   __structureTargetLevelAgentFinition = ["volFinition", "dnFinition"]
   
@@ -138,10 +138,8 @@ class DataDashboard:
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
     elif self.__userGroup == "agentFinitions":
       data["structureTargetLevelAgentFinition"] = self.__structureTargetLevelAgentFinition
-      data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
-      print(self.__userGeoId)
-      print(self.__targetLevelAgentFinition)
-      print(data["targetLevelAgentFinition"])
+      data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if id == self.__userGeoId}
+      print("targetLevelAgentFinition", self.__userGeoId, self.__targetLevelAgentFinition)
 
 
   def _setupFinitions(self, data):
@@ -204,12 +202,13 @@ class DataDashboard:
     cls.__targetLevelDrv, cls.__targetLevelAgentP2CD, cls.__targetLevelAgentFinition = {}, {}, {}
     for tlObject in CiblageLevel.objects.all():
       if tlObject.drv:
-        cls.__targetLevelDrv[tlObject.drv.id] = [tlObject.volP2CD, tlObject.dnP2CD, tlObject.volFinition, tlObject.dnFinition]
+        cls.__targetLevelDrv[tlObject.drv.id] = [tlObject.vol, tlObject.dn]
       else:
-        if tlObject.volP2CD or tlObject.dnP2CD:
-          cls.__targetLevelAgentP2CD[tlObject.agent.id] = [tlObject.volP2CD, tlObject.dnP2CD]
-        if tlObject.volFinition or tlObject.volFinition:
-          cls.__targetLevelAgentFinition[tlObject.agentFinitions.id] = [tlObject.volFinition, tlObject.dnFinition]
+        if tlObject.vol or tlObject.dn:
+          if tlObject.agent:
+            cls.__targetLevelAgentP2CD[tlObject.agent.id] = [tlObject.vol, tlObject.dn]
+          else:
+            cls.__targetLevelAgentFinition[tlObject.agentFinitions.id] = [tlObject.vol, tlObject.dn]
 
   #queries for updates
   def getUpdate(self, nature):

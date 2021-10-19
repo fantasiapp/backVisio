@@ -501,7 +501,7 @@ class ManageFromOldDatabase:
       dictAgent[drv.id] = set([pdv.agent for pdv in Pdv.objects.filter(sale=True, currentYear=True, drv=drv)])
     for drvId, listAgent in dictAgent.items():
       drv = listDrv[drvId]
-      CiblageLevel.objects.create(date=now, drv=drv, volP2CD=volP2CD, dnP2CD=dnP2CD, volFinition=volFinition, dnFinition=dnFinition)
+      CiblageLevel.objects.create(date=now, drv=drv, vol=volP2CD, dn=dnP2CD)
       dvP2CD = volP2CD / len(listAgent)
       ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
       dvFinition = volFinition / len(listAgent)
@@ -510,9 +510,9 @@ class ManageFromOldDatabase:
       for agent in listAgent:
         if flagStart:
           flagStart = False
-          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD + rdP2CD)
+          CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD + rdP2CD)
         else:
-          CiblageLevel.objects.create(date=now, agent=agent, volP2CD=dvP2CD, dnP2CD=ddP2CD)
+          CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD)
       flagStart = True
       listAgentFinitions = AgentFinitions.objects.filter(currentYear=True)
       dvFinition = volFinition / len(listAgentFinitions)
@@ -520,9 +520,9 @@ class ManageFromOldDatabase:
       for agentFinition in listAgentFinitions:
         if flagStart:
           flagStart = False
-          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, volFinition=dvFinition, dnFinition=ddFinition + rdFinition)
+          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition + rdFinition)
         else:
-          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, volFinition=dvFinition, dnFinition=ddFinition)
+          CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition)
 
     return ("CiblageLevel", False)
 
@@ -567,11 +567,13 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
-    for model in listModel:
-      model.objects.all().delete()
+    # listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    # for model in listModel:
+    #   model.objects.all().delete()
     print("start")
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    CiblageLevel.objects.all().delete
+    self.getCiblageLevel()
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
 
