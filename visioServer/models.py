@@ -575,7 +575,7 @@ class Ciblage(CommonModel):
   redistributedFinitions = models.BooleanField("Redistribué Enduit", default=True)
   sale = models.BooleanField("Ne vend pas de plaque", default=True)
   targetP2CD = models.FloatField('Cible P2CD', unique=False, blank=True, default=0.0)
-  targetFinition = models.BooleanField('Cible Finitions', unique=False, blank=False, default=False)
+  targetFinitions = models.BooleanField('Cible Finitions', unique=False, blank=False, default=False)
   GREEN = 'g'
   ORANGE = 'o'
   RED = 'r'
