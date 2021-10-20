@@ -1,4 +1,3 @@
-from sys import flags
 from ..models import *
 import json
 from django.conf import settings
@@ -90,8 +89,10 @@ class DataDashboard:
       "structureLevel":DataDashboard.__structureLevel,
       "levelGeo":self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup),
       "levelTrade": json.loads(json.dumps(DataDashboard.__levelTrade)),
-      "geoTree":self._computeLocalGeoTree(),
+      "geoTree":self._computeLocalGeoTree("currentYear"),
+      "geoTree_ly":self._computeLocalGeoTree("lastYear"),
       "tradeTree":self._buildTree(firstLevel, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["currentYear"]),
+      "tradeTree_ly":self._buildTree(self.__lastYearId, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["lastYear"]),
       "structureTarget":Ciblage.listFields(),
       "structureSales":Ventes.listFields(),
       }
@@ -100,6 +101,17 @@ class DataDashboard:
     self._computeLocalTargetLevel(data)
     self._setupFinitions(data)
     return data
+
+  @property
+  def __lastYearId(self):
+    if self.__userGroup == "root": return 0
+    model = Drv
+    if self.__userGroup == "agent":
+      model = Agent
+    elif self.__userGroup == "agentFinitions":
+      model = AgentFinitions
+    nameRegion = model.objects.get(id=self.__userGeoId)
+    return model.objects.get(name=nameRegion, currentYear=False).id
 
   def __computeListPdv(self):
     result, indexActor = {}, self.__userGeoId
@@ -130,46 +142,43 @@ class DataDashboard:
       return originLevel
     return self.__computeLocalLevels(originLevel[3], selectedLevel)
 
-  def _computeLocalGeoTree(self):
+  def _computeLocalGeoTree(self, currentYear):
     if self.userGroup == "root":
-      return self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, "__pdvs"))
-    if self.userGroup == "drv":
-      return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[1:], self.dictLocalPdv["currentYear"])
-    if self.userGroup in ["agent","agentFinitions" ]:
-      return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[2:], self.dictLocalPdv["currentYear"])
+      attr = "__pdvs" if currentYear == "currentYear" else "__pdvs_ly"
+      return self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, attr))
+    indexAgent = self.__userGeoId if currentYear == "currentYear" else self.__lastYearId
+    indexStart = 1 if self.userGroup == "drv" else 2
+    return self._buildTree(indexAgent, DataDashboard.__geoTreeStructure[indexStart:], self.dictLocalPdv[currentYear])
 
   def _computeLocalTargetLevel(self, data):
-    data["structureTargetLevel"] = self.__structureTargetLevel
+    data["structureTargetlevel"] = self.__structureTargetLevel
     if self.__userGroup == "root":
       data["targetLevelDrv"] = self.__targetLevelDrv
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
-      data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
+      data["targetLevelAgentFinitions"] = self.__targetLevelAgentFinition
       data["targetLevelDrv_ly"] = self.__targetLevelDrv_ly
       data["targetLevelAgentP2CD_ly"] = self.__targetLevelAgentP2CD_ly
-      data["targetLevelAgentFinition_ly"] = self.__targetLevelAgentFinition_ly
+      data["targetLevelAgentFinitions_ly"] = self.__targetLevelAgentFinitions_ly
     elif self.__userGroup == "drv":
       indexDrv, indexAgent = data["structurePdvs"].index("drv"), data["structurePdvs"].index("agent")
-      listAgentId = [line[indexAgent] for line in data["pdvs"].values() if line[indexDrv] == self.__userGeoId]
-      data["targetLevelDrv"] = {id:level for id, level in self.__targetLevelDrv.items() if id == self.__userGeoId}
-      data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
-      data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
+      for ext in ["", "_ly"]:
+        selectedDrv = self.__lastYearId if ext else self.__userGeoId
+        listAgentId = set([line[indexAgent] for line in data["pdvs" + ext].values() if line[indexDrv] == selectedDrv])
+        if ext:
+          field = {"drv":self.__targetLevelDrv_ly, "agent":self.__targetLevelAgentP2CD_ly, "fin":self.__targetLevelAgentFinitions_ly}
+        else:
+          field = {"drv":self.__targetLevelDrv, "agent":self.__targetLevelAgentP2CD, "fin":self.__targetLevelAgentFinitions}
+        data["targetLevelDrv" + ext] = {id:level for id, level in field["drv"].items() if id == selectedDrv}
+        data["targetLevelAgentP2CD"+ext] = {id:level for id, level in field["agent"].items() if id in listAgentId}
+        data["targetLevelAgentFinitions"+ext] = {id:level for id, level in field["fin"].items() if self.__isFinnDrv(id, selectedDrv, ext)}
+    else:
+      targetLevel = "targetLevelAgentP2CD" if self.__userGroup == "agent" else "targetLevelAgentFinitions"
+      data[targetLevel] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
+      data[targetLevel+"_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD_ly.items() if id == self.__lastYearId}
 
-      nameRegion = Drv.objects.get(id=self.__userGeoId)
-      indexActor = Drv.objects.get(name=nameRegion, currentYear=False).id
-      listAgentId = [line[indexAgent] for line in data["pdvs_ly"].values() if line[indexDrv] == indexActor]
-      data["targetLevelDrv_ly"] = {id:level for id, level in self.__targetLevelDrv_ly.items() if id == indexActor}
-      data["targetLevelAgentP2CD_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
-      data["targetLevelAgentFinition_ly"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == indexActor}
-    elif self.__userGroup == "agent":
-      data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
-      nameRegion = Agent.objects.get(id=self.__userGeoId)
-      indexActor = Agent.objects.get(name=nameRegion, currentYear=False).id
-      data["targetLevelAgentP2CD_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == indexActor}
-    elif self.__userGroup == "agentFinitions":
-      data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if id == self.__userGeoId}
-      nameRegion = AgentFinitions.objects.get(id=self.__userGeoId)
-      indexActor = AgentFinitions.objects.get(name=nameRegion, currentYear=False).id
-      data["targetLevelAgentFinition_ly"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if id == indexActor}
+  def __isFinnDrv(self, idFin, idDrv, currentYear):
+    lineFin = getattr(self, f"__agentFinitions{currentYear}")[idFin]
+    return AgentFinitions.getDataFromDict("drv", lineFin) == idDrv
 
   def _setupFinitions(self, data):
     self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
@@ -232,22 +241,22 @@ class DataDashboard:
 
   @classmethod
   def _computeTargetLevel(cls):
-    cls.__targetLevelDrv, cls.__targetLevelAgentP2CD, cls.__targetLevelAgentFinition = {}, {}, {}
-    cls.__targetLevelDrv_ly, cls.__targetLevelAgentP2CD_ly, cls.__targetLevelAgentFinition_ly = {}, {}, {}
+    cls.__targetLevelDrv, cls.__targetLevelAgentP2CD, cls.__targetLevelAgentFinitions = {}, {}, {}
+    cls.__targetLevelDrv_ly, cls.__targetLevelAgentP2CD_ly, cls.__targetLevelAgentFinitions_ly = {}, {}, {}
     dictTarget = {
-      "currentYear":{"drv":cls.__targetLevelDrv, "agent":cls.__targetLevelAgentP2CD, "finition":cls.__targetLevelAgentFinition},
-      "lastYear":{"drv":cls.__targetLevelDrv_ly, "agent":cls.__targetLevelAgentP2CD_ly, "finition":cls.__targetLevelAgentFinition_ly}
+      "currentYear":{"drv":cls.__targetLevelDrv, "agent":cls.__targetLevelAgentP2CD, "finition":cls.__targetLevelAgentFinitions},
+      "lastYear":{"drv":cls.__targetLevelDrv_ly, "agent":cls.__targetLevelAgentP2CD_ly, "finition":cls.__targetLevelAgentFinitions_ly}
       }
-    for year, target in dictTarget.items():
+    for year, targets in dictTarget.items():
       for tlObject in CiblageLevel.objects.filter(currentYear=year=="currentYear"):
         if tlObject.drv:
-          target["drv"][tlObject.drv.id] = [tlObject.vol, tlObject.dn]
+          targets["drv"][tlObject.drv.id] = [tlObject.vol, tlObject.dn]
         else:
           if tlObject.vol or tlObject.dn:
             if tlObject.agent:
-              target["agent"][tlObject.agent.id] = [tlObject.vol, tlObject.dn]
+              targets["agent"][tlObject.agent.id] = [tlObject.vol, tlObject.dn]
             else:
-              target["finition"][tlObject.agentFinitions.id] = [tlObject.vol, tlObject.dn]
+              targets["finition"][tlObject.agentFinitions.id] = [tlObject.vol, tlObject.dn]
 
   #queries for updates
   def getUpdate(self, nature):
