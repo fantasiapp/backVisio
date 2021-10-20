@@ -114,18 +114,13 @@ class DataDashboard:
     return model.objects.get(name=nameRegion, currentYear=False).id
 
   def __computeListPdv(self):
-    result, indexActor = {}, self.__userGeoId
+    result = {}
     for currentYear in ["currentYear", "lastYear"]:
       dictPdvs = "__pdvs" if currentYear=="currentYear" else "__pdvs_ly"
-      if self.__userGroup in ["drv", "agent", "agentFinitions"]:
+      if self.__userGroup != "root":
+        indexActor = self.__userGeoId if currentYear == "currentYear" else self.__lastYearId
         indexPdv = Pdv.listFields().index(self.__userGroup)
         result[currentYear] = {id:values for id, values in getattr(self, dictPdvs).items() if values[indexPdv] == indexActor}
-        dictActors = getattr(self, f"__{self.__userGroup}")
-        if currentYear == "currentYear":
-          name = dictActors[indexActor]
-          dictActors_ly =  getattr(self, f"__{self.__userGroup}_ly")
-          listActors_ly = [(id, value) for id, value in dictActors_ly.items() if value == name]
-          indexActor, _ = listActors_ly[0]
       else:
         result[currentYear] = getattr(self, dictPdvs)
     return result
@@ -202,7 +197,6 @@ class DataDashboard:
     indexSubLevel = data["structureLevel"].index("subLevel")
     listId = [Dashboard.objects.get(name=name, geoOrTrade="trade").id for name in listDb]
     for id in listId:
-      print(id, data["dashboards"][id])
       del data["dashboards"][id]
     while True:
       for id in listId:
