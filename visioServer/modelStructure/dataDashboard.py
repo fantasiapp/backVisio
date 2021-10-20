@@ -192,18 +192,27 @@ class DataDashboard:
       if self.__userGroup in ["agentFinitions", "agent"]:
         del data["drv"]
         del data["drv_ly"]
-        levelTrade = data["levelTrade"]
-        while True:
-          del levelTrade[2][9]
-          del levelTrade[2][8]
-          if len(levelTrade) == 4:
-            levelTrade = levelTrade[3]
-          else:
-            break
-        for name in ["Synthèse P2CD", "Synthèse Enduit"]:
-          del data["dashboards"][Dashboard.objects.get(name=name, geoOrTrade="trade").id]
+        self.__removeDb(data, ["Synthèse P2CD", "Synthèse Enduit"])
         if self.__userGroup == "agentFinitions":
           del data["agent"]
+    
+  def __removeDb(self, data, listDb):
+    levelTrade = data["levelTrade"]
+    indexDb = data["structureLevel"].index("listDashBoards")
+    indexSubLevel = data["structureLevel"].index("subLevel")
+    listId = [Dashboard.objects.get(name=name, geoOrTrade="trade").id for name in listDb]
+    for id in listId:
+      print(id, data["dashboards"][id])
+      del data["dashboards"][id]
+    while True:
+      for id in listId:
+        idToRemove = levelTrade[indexDb].index(id)
+        del levelTrade[indexDb][idToRemove]
+      try:
+        levelTrade = levelTrade[indexSubLevel]
+      except:
+        break
+
   
   @classmethod
   def _computeLevels(cls, classObject, geoOrTrade):
