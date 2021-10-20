@@ -310,7 +310,7 @@ class Pdv(CommonModel):
   available = models.BooleanField(default=True)
   sale = models.BooleanField("Ne vend pas de plaque", default=True)
   redistributed = models.BooleanField("Redistribué", default=True)
-  redistributedEnduit = models.BooleanField("redistribué Enduit", default=True)
+  redistributedFinitions = models.BooleanField("redistribué Enduit", default=True)
   pointFeu = models.BooleanField('Point Feu', default=False)
   onlySiniat = models.BooleanField('100% Siniat', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)

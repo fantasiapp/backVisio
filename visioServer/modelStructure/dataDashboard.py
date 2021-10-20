@@ -200,6 +200,8 @@ class DataDashboard:
             levelTrade = levelTrade[3]
           else:
             break
+        for name in ["Synthèse P2CD", "Synthèse Enduit"]:
+          del data["dashboards"][Dashboard.objects.get(name=name, geoOrTrade="trade").id]
         if self.__userGroup == "agentFinitions":
           del data["agent"]
   
