@@ -155,7 +155,7 @@ class DataDashboard:
     if self.__userGroup == "root":
       data["targetLevelDrv"] = self.__targetLevelDrv
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
-      data["targetLevelAgentFinitions"] = self.__targetLevelAgentFinition
+      data["targetLevelAgentFinitions"] = self.__targetLevelAgentFinitions
       data["targetLevelDrv_ly"] = self.__targetLevelDrv_ly
       data["targetLevelAgentP2CD_ly"] = self.__targetLevelAgentP2CD_ly
       data["targetLevelAgentFinitions_ly"] = self.__targetLevelAgentFinitions_ly
