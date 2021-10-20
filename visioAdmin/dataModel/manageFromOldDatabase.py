@@ -482,11 +482,13 @@ class ManageFromOldDatabase:
           code = dictPdv[idOld][indexCode]
           kwargs['pdv'] = Pdv.objects.filter(code=code, currentYear=True).first()
           kwargs['redistributed'] = line[2] != "does not exist"
+          kwargs['redistributedFinitions'] = False
           kwargs['sale'] = line[3] != "does not exist"
           kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
           kwargs['targetFinition'] = line[5] == "yes"
           kwargs['greenLight'] = line[6][0]
           kwargs['commentTargetP2CD'] = line[7]
+          kwargs['bassin'] = ""
           Ciblage.objects.create(**kwargs)
 
     except db.Error as e:

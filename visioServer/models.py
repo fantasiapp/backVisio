@@ -572,7 +572,7 @@ class Ciblage(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
   redistributed = models.BooleanField("Redistribué", default=True)
-  redistributedFinitions = models.BooleanField("Redistribué", default=True)
+  redistributedFinitions = models.BooleanField("Redistribué Enduit", default=True)
   sale = models.BooleanField("Ne vend pas de plaque", default=True)
   targetP2CD = models.FloatField('Cible P2CD', unique=False, blank=True, default=0.0)
   targetFinition = models.BooleanField('Cible Finitions', unique=False, blank=False, default=False)
@@ -582,7 +582,7 @@ class Ciblage(CommonModel):
   COLORS_GREEN_LIGHT_CHOICES = [(GREEN, 'vert'), (ORANGE,'orange'), (RED, 'rouge')] 
   greenLight = models.CharField("Feu Ciblage P2CD", max_length=1, choices=COLORS_GREEN_LIGHT_CHOICES, blank=True, default=None)
   commentTargetP2CD = models.TextField("Commentaires ciblage P2CD", blank=True, default=None)
-  bassin = models.CharField(max_length=64, unique=False, blank=False, default=None)
+  bassin = models.CharField(max_length=64, unique=False, blank=True, default="")
 
   @classmethod
   def listFields(cls):
