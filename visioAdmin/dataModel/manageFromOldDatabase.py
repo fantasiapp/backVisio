@@ -485,7 +485,7 @@ class ManageFromOldDatabase:
           kwargs['redistributedFinitions'] = False
           kwargs['sale'] = line[3] != "does not exist"
           kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
-          kwargs['targetFinition'] = line[5] == "yes"
+          kwargs['targetFinitions'] = line[5] == "yes"
           kwargs['greenLight'] = line[6][0]
           kwargs['commentTargetP2CD'] = line[7]
           kwargs['bassin'] = ""
