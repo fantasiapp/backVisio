@@ -15,7 +15,7 @@ class DataDashboard:
   __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
   __structureTargetLevel = ["vol", "dn"]
-  __currentYear = True
+  currentYear = "currentYear"
   
   def __init__(self, userProfile, userGeoId, userGroup, isNotOnServer):
     """engendre les données complètes (niveau national) et sauve les données dans des attributs de classe"""
@@ -64,9 +64,18 @@ class DataDashboard:
   def insertModel(self, data, name, model):
     listAttr = [f"__structure{name.capitalize()}", f"__indexes{name.capitalize()}", f"__{name}"]
     for attr in listAttr:
+      DataDashboard.currentYear = "currentYear"
       if hasattr(self, attr):
         listId = model.computeListId(self, data)
         if attr == f"__{name}" and (isinstance(listId, list) or isinstance(listId, set)):
+          data[attr[2:]] = {id:value for id, value in getattr(self, attr).items() if id in listId}
+        else:
+          data[attr[2:]] = getattr(self, attr)
+      attr += "_ly"
+      if hasattr(self, attr):
+        DataDashboard.currentYear = "lastYear"
+        listId = model.computeListId(self, data)
+        if attr == f"__{name}_ly" and (isinstance(listId, list) or isinstance(listId, set)):
           data[attr[2:]] = {id:value for id, value in getattr(self, attr).items() if id in listId}
         else:
           data[attr[2:]] = getattr(self, attr)
@@ -93,13 +102,20 @@ class DataDashboard:
     return data
 
   def __computeListPdv(self):
-    result = {}
+    result, indexActor = {}, self.__userGeoId
     for currentYear in ["currentYear", "lastYear"]:
       dictPdvs = "__pdvs" if currentYear=="currentYear" else "__pdvs_ly"
       if self.__userGroup in ["drv", "agent", "agentFinitions"]:
         indexPdv = Pdv.listFields().index(self.__userGroup)
-        result[currentYear] = {id:values for id, values in getattr(self, dictPdvs).items() if values[indexPdv] == self.__userGeoId}
-      result[currentYear] = getattr(self, dictPdvs)
+        result[currentYear] = {id:values for id, values in getattr(self, dictPdvs).items() if values[indexPdv] == indexActor}
+        dictActors = getattr(self, f"__{self.__userGroup}")
+        if currentYear == "currentYear":
+          name = dictActors[indexActor]
+          dictActors_ly =  getattr(self, f"__{self.__userGroup}_ly")
+          listActors_ly = [(id, value) for id, value in dictActors_ly.items() if value == name]
+          indexActor, _ = listActors_ly[0]
+      else:
+        result[currentYear] = getattr(self, dictPdvs)
     return result
 
   def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
@@ -128,16 +144,32 @@ class DataDashboard:
       data["targetLevelDrv"] = self.__targetLevelDrv
       data["targetLevelAgentP2CD"] = self.__targetLevelAgentP2CD
       data["targetLevelAgentFinition"] = self.__targetLevelAgentFinition
+      data["targetLevelDrv_ly"] = self.__targetLevelDrv_ly
+      data["targetLevelAgentP2CD_ly"] = self.__targetLevelAgentP2CD_ly
+      data["targetLevelAgentFinition_ly"] = self.__targetLevelAgentFinition_ly
     elif self.__userGroup == "drv":
       indexDrv, indexAgent = data["structurePdvs"].index("drv"), data["structurePdvs"].index("agent")
       listAgentId = [line[indexAgent] for line in data["pdvs"].values() if line[indexDrv] == self.__userGeoId]
       data["targetLevelDrv"] = {id:level for id, level in self.__targetLevelDrv.items() if id == self.__userGeoId}
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
       data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == self.__userGeoId}
+
+      nameRegion = Drv.objects.get(id=self.__userGeoId)
+      indexActor = Drv.objects.get(name=nameRegion, currentYear=False).id
+      listAgentId = [line[indexAgent] for line in data["pdvs_ly"].values() if line[indexDrv] == indexActor]
+      data["targetLevelDrv_ly"] = {id:level for id, level in self.__targetLevelDrv_ly.items() if id == indexActor}
+      data["targetLevelAgentP2CD_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id in listAgentId}
+      data["targetLevelAgentFinition_ly"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if level[0] == indexActor}
     elif self.__userGroup == "agent":
       data["targetLevelAgentP2CD"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
+      nameRegion = Agent.objects.get(id=self.__userGeoId)
+      indexActor = Agent.objects.get(name=nameRegion, currentYear=False).id
+      data["targetLevelAgentP2CD_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == indexActor}
     elif self.__userGroup == "agentFinitions":
       data["targetLevelAgentFinition"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if id == self.__userGeoId}
+      nameRegion = AgentFinitions.objects.get(id=self.__userGeoId)
+      indexActor = AgentFinitions.objects.get(name=nameRegion, currentYear=False).id
+      data["targetLevelAgentFinition_ly"] = {id:level for id, level in self.__targetLevelAgentFinition.items() if id == indexActor}
 
   def _setupFinitions(self, data):
     self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
@@ -150,6 +182,7 @@ class DataDashboard:
         data["levelTrade"][index] = data["levelGeo"][index]
       if self.__userGroup in ["agentFinitions", "agent"]:
         del data["drv"]
+        del data["drv_ly"]
         levelTrade = data["levelTrade"]
         while True:
           del levelTrade[2][9]

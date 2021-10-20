@@ -60,13 +60,13 @@ class CommonModel(models.Model):
     return listRow
 
   @classmethod
-  def computeListId(cls, dataDashBoard, data):
+  def computeListId(cls, dataDashboard, data):
     name = cls.readingData["name"] if "name" in cls.readingData else None
-    if dataDashBoard.userGroup == "root":
+    if dataDashboard.userGroup == "root":
       return False
     if "pdvFiltered" in cls.readingData:
       indexField = data["structurePdvs"].index(name)
-      return set([line[indexField] for line in dataDashBoard.dictLocalPdv["currentYear"].values()])
+      return set([line[indexField] for line in dataDashboard.dictLocalPdv[dataDashboard.currentYear].values()])
     return False
 
   @classmethod
@@ -330,7 +330,7 @@ class Pdv(CommonModel):
 
   @classmethod
   def computeListId(cls, dataDashBoard, data):
-    return list(dataDashBoard.dictLocalPdv["currentYear"].keys()) if dataDashBoard.userGroup != "root" else False
+    return list(dataDashBoard.dictLocalPdv[dataDashBoard.currentYear].keys()) if dataDashBoard.userGroup != "root" else False
 
   @property
   def listValues(self):
