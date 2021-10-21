@@ -30,6 +30,7 @@ class DataDashboard:
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
+    print("loading data in RAM")
     if name == "pdvs" and isNotOnServer:
       return cls.__createFromJson()
     if len(model.listFields()) > 1:
@@ -276,12 +277,14 @@ class DataDashboard:
       if key != "pdvs" and key != "logs" and dictTargetLevel:
         if key == "targetLevelDrv":
           for idDrv, listTargetLevel in dictTargetLevel.items():
+            print("targetLevelDrv", idDrv, listTargetLevel)
             drv = Drv.objects.get(id=idDrv)
             targetLevel = TargetLevel.objects.get(drv=drv, currentYear=True)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelDrv[int(idDrv)] = listTargetLevel
         if key == "targetLevelAgentP2CD":
           for idAgent, listTargetLevel in dictTargetLevel.items():
+            print("targetLevelAgentP2CD", idAgent, listTargetLevel)
             agent = Agent.objects.get(id=idAgent)
             targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             targetLevel.update(listTargetLevel, now)
@@ -289,4 +292,5 @@ class DataDashboard:
 
   def __updateLogClient(self, listLogs, now):
     for log in listLogs:
+      print("log", log)
       LogClient.createFromList(log, self.__userProfile, now)
