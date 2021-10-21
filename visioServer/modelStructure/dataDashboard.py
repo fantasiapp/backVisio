@@ -20,7 +20,7 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     self.__userProfile = userProfile
-    if not DataDashboard.__levelGeo:
+    if not hasattr(self, "__pdvs"):
       for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
@@ -93,7 +93,6 @@ class DataDashboard:
       "structureTarget":Target.listFields(),
       "structureSales":Sales.listFields(),
       }
-    print("data", data["levelGeo"])
     for name, model in CommonModel.computeTableClass():
       self.insertModel(data, name, model)
     self._computeLocalTargetLevel(data)
@@ -129,7 +128,6 @@ class DataDashboard:
     localLevel = TreeNavigation.objects.get(levelName=levelName, geoOrTrade=geoOrTrade).listValues
     if self.userGroup in ["agent", "agentFinitions"]:
       TreeNavigation.removeDashboards(localLevel, self.userGroup, geoOrTrade)
-    print("localLevel", localLevel)
     return localLevel
 
   def _computeLocalGeoTree(self, currentYear):
