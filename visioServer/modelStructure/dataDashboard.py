@@ -14,13 +14,15 @@ class DataDashboard:
   __levelGeo = None
   __structureTargetLevel = ["vol", "dn"]
   currentYear = "currentYear"
+  __flagLoad = True
   
   def __init__(self, userProfile, userGeoId, userGroup, isNotOnServer):
     """engendre les données complètes (niveau national) et sauve les données dans des attributs de classe"""
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     self.__userProfile = userProfile
-    if not hasattr(self, "__pdvs"):
+    if DataDashboard.__flagLoad:
+      DataDashboard.__flagLoad = False
       for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
@@ -251,12 +253,17 @@ class DataDashboard:
     user = User.objects.get(username=userName)
     try:
       jsonData = json.loads(jsonString)
+      print(1)
       now = self.__updateDatabasePdv(jsonData)
+      print(2)
       self.__updateDatabaseTargetLevel(jsonData, now)
+      print(3)
       self.__updateLogClient(jsonData["logs"], now)
+      print(4)
       del jsonData["logs"]
       flagSave = False
       for value in jsonData.values():
+        print("value", value)
         if value: flagSave = True
       if flagSave:
         print("saveLogUpdate", json.dumps(jsonData))
