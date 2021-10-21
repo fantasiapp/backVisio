@@ -114,18 +114,13 @@ class DataDashboard:
     return model.objects.get(name=nameRegion, currentYear=False).id
 
   def __computeListPdv(self):
-    result, indexActor = {}, self.__userGeoId
+    result = {}
     for currentYear in ["currentYear", "lastYear"]:
       dictPdvs = "__pdvs" if currentYear=="currentYear" else "__pdvs_ly"
-      if self.__userGroup in ["drv", "agent", "agentFinitions"]:
+      if self.__userGroup != "root":
+        indexActor = self.__userGeoId if currentYear == "currentYear" else self.__lastYearId
         indexPdv = Pdv.listFields().index(self.__userGroup)
         result[currentYear] = {id:values for id, values in getattr(self, dictPdvs).items() if values[indexPdv] == indexActor}
-        dictActors = getattr(self, f"__{self.__userGroup}")
-        if currentYear == "currentYear":
-          name = dictActors[indexActor]
-          dictActors_ly =  getattr(self, f"__{self.__userGroup}_ly")
-          listActors_ly = [(id, value) for id, value in dictActors_ly.items() if value == name]
-          indexActor, _ = listActors_ly[0]
       else:
         result[currentYear] = getattr(self, dictPdvs)
     return result
@@ -192,16 +187,36 @@ class DataDashboard:
       if self.__userGroup in ["agentFinitions", "agent"]:
         del data["drv"]
         del data["drv_ly"]
-        levelTrade = data["levelTrade"]
-        while True:
-          del levelTrade[2][9]
-          del levelTrade[2][8]
-          if len(levelTrade) == 4:
-            levelTrade = levelTrade[3]
-          else:
-            break
+        DictToSuppress = {"trade":["Synthèse P2CD", "Synthèse Enduit"]}
+        if self.__userGroup == "agent":
+          DictToSuppress["geo"] = ["PdM Enduit Simulation", "DN Enduit Simulation"]
+        else:
+          DictToSuppress["geo"] = ["PdM P2CD Simulation", "DN P2CD Simulation"]
+        self.__removeDb(data, DictToSuppress)
         if self.__userGroup == "agentFinitions":
           del data["agent"]
+    
+  def __removeDb(self, data, dictDb):
+    levelTrade = data["levelTrade"]
+    indexDb = data["structureLevel"].index("listDashBoards")
+    indexSubLevel = data["structureLevel"].index("subLevel")
+    for geoOrTrade, listDb in dictDb.items():
+      listId = {Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade).id for name in listDb}
+      level  = data["levelGeo"] if geoOrTrade == "geo" else data["levelTrade"]
+      print(listId, list(data["dashboards"].keys()))
+      for id in listId:
+        del data["dashboards"][id]
+      while True:
+        for id in listId:
+          print("id", id, level[indexDb])
+          if id in level[indexDb]:
+            idToRemove = level[indexDb].index(id)
+            del level[indexDb][idToRemove]
+        try:
+          level = level[indexSubLevel]
+        except:
+          break
+
   
   @classmethod
   def _computeLevels(cls, classObject, geoOrTrade):

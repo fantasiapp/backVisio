@@ -157,7 +157,7 @@ class ManageFromOldDatabase:
         keyValues["available"] = self.__computeBoolean(line, field="does_not_exist", valueIfNotExist="y")
         keyValues["sale"] = self.__computeBoolean(line, field="sale", valueIfNotExist="y")
         keyValues["redistributed"] = self.__computeBoolean(line, field="redistributed", valueIfNotExist="y")
-        keyValues["redistributedEnduit"] = self.__computeBoolean(line, field="redistributedEnduit", valueIfNotExist="y")
+        keyValues["redistributedFinitions"] = self.__computeBoolean(line, field="redistributedEnduit", valueIfNotExist="y")
         keyValues["pointFeu"] = self.__computeBoolean(line, field="pointFeu", valueIfNotExist="O", inverse=True)
         keyValues["closedAt"] = self.__computeClosedAt(line)
         keyValues["currentYear"] = indexYear==1
