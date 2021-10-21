@@ -259,6 +259,7 @@ class DataDashboard:
       for value in jsonData.values():
         if value: flagSave = True
       if flagSave:
+        print("saveLogUpdate", json.dumps(jsonData))
         LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       return {"message":"postUpdate received"}
     except:
@@ -292,5 +293,5 @@ class DataDashboard:
 
   def __updateLogClient(self, listLogs, now):
     for log in listLogs:
-      print("log", log)
+      print("__updateLogClient", log)
       LogClient.createFromList(log, self.__userProfile, now)
