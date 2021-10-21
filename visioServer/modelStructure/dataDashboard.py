@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class DataDashboard:
-  __structureLevel = ['levelName', 'prettyPrint', 'listDashBoards', 'subLevel']
   __levelGeo = None
   __structureTargetLevel = ["vol", "dn"]
   currentYear = "currentYear"
@@ -24,8 +23,6 @@ class DataDashboard:
     if not DataDashboard.__levelGeo:
       for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)
-      DataDashboard.__levelGeo = DataDashboard._computeLevels(TreeNavigation, "geo")
-      DataDashboard.__levelTrade = DataDashboard._computeLevels(TreeNavigation, "trade")
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
@@ -86,16 +83,17 @@ class DataDashboard:
   def dataQuery(self):
     firstLevel = self.__userGeoId if self.__userGroup != "root" else 0
     data = {
-      "structureLevel":DataDashboard.__structureLevel,
-      "levelGeo":self._computeLocalLevels(DataDashboard.__levelGeo, self.__userGroup),
-      "levelTrade": json.loads(json.dumps(DataDashboard.__levelTrade)),
+      "structureLevel":TreeNavigation.listFields(),
+      "levelGeo":self._computeLocalLevel("geo"),
+      "levelTrade":self._computeLocalLevel("trade"),
       "geoTree":self._computeLocalGeoTree("currentYear"),
       "geoTree_ly":self._computeLocalGeoTree("lastYear"),
       "tradeTree":self._buildTree(firstLevel, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["currentYear"]),
       "tradeTree_ly":self._buildTree(self.__lastYearId, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["lastYear"]),
-      "structureTarget":Ciblage.listFields(),
-      "structureSales":Ventes.listFields(),
+      "structureTarget":Target.listFields(),
+      "structureSales":Sales.listFields(),
       }
+    print("data", data["levelGeo"])
     for name, model in CommonModel.computeTableClass():
       self.insertModel(data, name, model)
     self._computeLocalTargetLevel(data)
@@ -125,17 +123,14 @@ class DataDashboard:
         result[currentYear] = getattr(self, dictPdvs)
     return result
 
-  def _computeLocalLevels(self, originLevel:list, selectedLevel:str):
-    sLevel = "agent" if selectedLevel == "agentFinitions" else selectedLevel
-    localLevel = self.__computeLocalLevels(originLevel, sLevel)
-    if selectedLevel == "agentFinitions":
-      localLevel = ["agentFinitions", "Secteur Finitions"] + localLevel[2:]
+  def _computeLocalLevel(self, geoOrTrade):
+    levelName = "agent" if self.userGroup == "agentFinitions" else self.userGroup
+    levelName = "root" if geoOrTrade == "trade" else levelName
+    localLevel = TreeNavigation.objects.get(levelName=levelName, geoOrTrade=geoOrTrade).listValues
+    if self.userGroup in ["agent", "agentFinitions"]:
+      TreeNavigation.removeDashboards(localLevel, self.userGroup, geoOrTrade)
+    print("localLevel", localLevel)
     return localLevel
-
-  def __computeLocalLevels(self, originLevel:list, selectedLevel:str):
-    if originLevel[0] == selectedLevel:
-      return originLevel
-    return self.__computeLocalLevels(originLevel[3], selectedLevel)
 
   def _computeLocalGeoTree(self, currentYear):
     if self.userGroup == "root":
@@ -165,13 +160,13 @@ class DataDashboard:
           field = {"drv":self.__targetLevelDrv, "agent":self.__targetLevelAgentP2CD, "fin":self.__targetLevelAgentFinitions}
         data["targetLevelDrv" + ext] = {id:level for id, level in field["drv"].items() if id == selectedDrv}
         data["targetLevelAgentP2CD"+ext] = {id:level for id, level in field["agent"].items() if id in listAgentId}
-        data["targetLevelAgentFinitions"+ext] = {id:level for id, level in field["fin"].items() if self.__isFinnDrv(id, selectedDrv, ext)}
+        data["targetLevelAgentFinitions"+ext] = {id:level for id, level in field["fin"].items() if self.__isFinDrv(id, selectedDrv, ext)}
     else:
       targetLevel = "targetLevelAgentP2CD" if self.__userGroup == "agent" else "targetLevelAgentFinitions"
       data[targetLevel] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
       data[targetLevel+"_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD_ly.items() if id == self.__lastYearId}
 
-  def __isFinnDrv(self, idFin, idDrv, currentYear):
+  def __isFinDrv(self, idFin, idDrv, currentYear):
     lineFin = getattr(self, f"__agentFinitions{currentYear}")[idFin]
     return AgentFinitions.getDataFromDict("drv", lineFin) == idDrv
 
@@ -184,55 +179,6 @@ class DataDashboard:
     else:
       for index in range(2):
         data["levelTrade"][index] = data["levelGeo"][index]
-      if self.__userGroup in ["agentFinitions", "agent"]:
-        del data["drv"]
-        del data["drv_ly"]
-        DictToSuppress = {"trade":["Synthèse P2CD", "Synthèse Enduit"]}
-        if self.__userGroup == "agent":
-          DictToSuppress["geo"] = ["PdM Enduit Simulation", "DN Enduit Simulation"]
-        else:
-          DictToSuppress["geo"] = ["PdM P2CD Simulation", "DN P2CD Simulation"]
-        self.__removeDb(data, DictToSuppress)
-        if self.__userGroup == "agentFinitions":
-          del data["agent"]
-    
-  def __removeDb(self, data, dictDb):
-    levelTrade = data["levelTrade"]
-    indexDb = data["structureLevel"].index("listDashBoards")
-    indexSubLevel = data["structureLevel"].index("subLevel")
-    for geoOrTrade, listDb in dictDb.items():
-      listId = {Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade).id for name in listDb}
-      level  = data["levelGeo"] if geoOrTrade == "geo" else data["levelTrade"]
-      print(listId, list(data["dashboards"].keys()))
-      for id in listId:
-        del data["dashboards"][id]
-      while True:
-        for id in listId:
-          print("id", id, level[indexDb])
-          if id in level[indexDb]:
-            idToRemove = level[indexDb].index(id)
-            del level[indexDb][idToRemove]
-        try:
-          level = level[indexSubLevel]
-        except:
-          break
-
-  
-  @classmethod
-  def _computeLevels(cls, classObject, geoOrTrade):
-    listLevel = {object.id:object for object in classObject.objects.filter(geoOrTrade=geoOrTrade)}
-    dictLevelWithDashBoard = {}
-    for object in listLevel.values():
-      dictLevelWithDashBoard[object.id] = list(model_to_dict(object).values())
-      del dictLevelWithDashBoard[object.id][0]
-      del dictLevelWithDashBoard[object.id][0]
-      dashBoardTree = DashboardTree.objects.filter(geoOrTrade=geoOrTrade, level=object).first()
-      dictLevelWithDashBoard[object.id].insert(2, [dashboard.id for dashboard in dashBoardTree.dashboards.all()])
-    for level in dictLevelWithDashBoard.values():
-      if level[3]:
-        dictLevelWithDashBoard[level[3]][3] = level
-    level.pop()
-    return list(dictLevelWithDashBoard.values())[0]
 
   @classmethod
   def _buildTree(cls, idLevel, steps:list, pdvs:dict):
@@ -263,7 +209,7 @@ class DataDashboard:
       "lastYear":{"drv":cls.__targetLevelDrv_ly, "agent":cls.__targetLevelAgentP2CD_ly, "finition":cls.__targetLevelAgentFinitions_ly}
       }
     for year, targets in dictTarget.items():
-      for tlObject in CiblageLevel.objects.filter(currentYear=year=="currentYear"):
+      for tlObject in TargetLevel.objects.filter(currentYear=year=="currentYear"):
         if tlObject.drv:
           targets["drv"][tlObject.drv.id] = [tlObject.vol, tlObject.dn]
         else:
@@ -333,13 +279,13 @@ class DataDashboard:
         if key == "targetLevelDrv":
           for idDrv, listTargetLevel in dictTargetLevel.items():
             drv = Drv.objects.get(id=idDrv)
-            targetLevel = CiblageLevel.objects.get(drv=drv, currentYear=True)
+            targetLevel = TargetLevel.objects.get(drv=drv, currentYear=True)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelDrv[int(idDrv)] = listTargetLevel
         if key == "targetLevelAgentP2CD":
           for idAgent, listTargetLevel in dictTargetLevel.items():
             agent = Agent.objects.get(id=idAgent)
-            targetLevel = CiblageLevel.objects.get(agent=agent, currentYear=True)
+            targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = listTargetLevel
 
