@@ -51,7 +51,7 @@ class CommonModel(models.Model):
     for index in self.listIndexes():
       if isinstance(self._meta.get_field(listFields[index]), models.ManyToManyField):
         listRow[index] = [element.id for element in listRow[index].all()]
-      else:
+      elif listRow[index]:
         listRow[index] = listRow[index].id
     if self.jsonFields:
       for jsonField in self.jsonFields:
@@ -339,10 +339,10 @@ class Pdv(CommonModel):
     if isinstance(lv[idDat], datetime.datetime):
       lv[idDat] = lv[idDat].isoformat()
     lv[idNbV] = sum([visit.nbVisitCurrentYear for visit in Visit.objects.filter(pdv=self)])
-    target = Ciblage.objects.filter(pdv = self)
+    target = Target.objects.filter(pdv = self)
     if target:
       lv[idTar] = target[0].listValues
-    lv[idSal] = [vente.listValues for vente in Ventes.objects.filter(pdv=self)]
+    lv[idSal] = [vente.listValues for vente in Sales.objects.filter(pdv=self)]
     return lv
 
   def update(self, valueReceived, now):
@@ -354,22 +354,22 @@ class Pdv(CommonModel):
 
   def __updateTarget(self, valueReceived, now):
     targetReceived = self.getDataFromDict("target", valueReceived)
-    targetObject = Ciblage.objects.filter(pdv=self)
+    targetObject = Target.objects.filter(pdv=self)
     if targetReceived:
       if targetObject:
         targetObject[0].update(targetReceived, now)
       else:
-        Ciblage.createFromList(targetReceived, self, now)
+        Target.createFromList(targetReceived, self, now)
 
   def __updateSale(self, saleReceived, now):
-    industryId = Ventes.getDataFromDict("industry", saleReceived)
-    productId = Ventes.getDataFromDict("product", saleReceived)
-    volume = Ventes.getDataFromDict("volume", saleReceived)
-    sale = Ventes.objects.filter(pdv=self, industry=industryId, product=productId)
+    industryId = Sales.getDataFromDict("industry", saleReceived)
+    productId = Sales.getDataFromDict("product", saleReceived)
+    volume = Sales.getDataFromDict("volume", saleReceived)
+    sale = Sales.objects.filter(pdv=self, industry=industryId, product=productId)
     if sale:
       sale[0].update(saleReceived, now) if volume else sale[0].delete()
     elif volume:
-      Ventes.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Produit.objects.get(id=productId), volume=volume)
+      Sales.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Product.objects.get(id=productId), volume=volume)
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
@@ -400,9 +400,9 @@ class Visit(CommonModel):
 
 # Modèles pour l'AD
 
-class Produit(CommonModel):
+class Product(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
-  readingData = {"nature":"normal", "position":15, "name":"produit"}
+  readingData = {"nature":"normal", "position":15, "name":"product"}
 
   class Meta:
     verbose_name = "Produit"
@@ -410,9 +410,9 @@ class Produit(CommonModel):
   def __str__(self) ->str:
     return self.name
 
-class Industrie(CommonModel):
+class Industry(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
-  readingData = {"nature":"normal", "position":16, "name":"industrie"}
+  readingData = {"nature":"normal", "position":16, "name":"industry"}
 
   class Meta:
     verbose_name = "Industrie"
@@ -420,11 +420,11 @@ class Industrie(CommonModel):
   def __str__(self) ->str:
     return self.name
 
-class Ventes(CommonModel):
+class Sales(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
-  industry = models.ForeignKey("Industrie", on_delete=models.PROTECT, blank=False, default=17)
-  product = models.ForeignKey("Produit", on_delete=models.CASCADE, blank=False, default=6)
+  industry = models.ForeignKey("Industry", on_delete=models.CASCADE, blank=False, default=17)
+  product = models.ForeignKey("Product", on_delete=models.CASCADE, blank=False, default=6)
   volume = models.FloatField('Volume', unique=False, blank=True, default=0.0)
   currentYear = models.BooleanField("Année courante", default=True)
 
@@ -445,12 +445,48 @@ class Ventes(CommonModel):
     del lf[1]
     return lf
 
-# Modèles pour la navigation
 class TreeNavigation(CommonModel):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
-  level = models.CharField(max_length=32, unique=True, blank=False, default=None)
-  name = models.CharField(max_length=32, unique=False, blank=False, default=None)
-  father = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True)
+  levelName = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  prettyPrint = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  listDashboards = models.ManyToManyField('Dashboard', default = None)
+  subLevel = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True, default=None)
+
+  @classmethod
+  def listFields(cls):
+    lf = super().listFields()
+    del lf[0]
+    lf.insert(2, "listDashboards")
+    return lf
+
+  @classmethod
+  def removeDashboards(cls, level, group, geoOrTrade):
+    listFields = cls.listFields()
+    indexDb = listFields.index("listDashboards")
+    indexSubLevel = listFields.index("subLevel")
+    listDbName = ["Synthèse P2CD", "Synthèse Enduit"]
+    if geoOrTrade == "geo":
+      listDbName = ["PdM Enduit Simulation"] if group == "agent" else ["PdM P2CD Simulation", "DN P2CD Simulation"]
+    listDb = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade).id for name in listDbName]
+    listDb.sort(reverse=True)
+    while True:
+      for id in listDb:
+        if level and id in level[indexDb]:
+          idToRemove = level[indexDb].index(id)
+          del level[indexDb][idToRemove]
+      if level:
+        level = level[indexSubLevel]
+      else:
+        return
+
+  @property
+  def listValues(self):
+    lv = super().listValues
+    index = self.getDataFromDict("subLevel", lv)
+    if index:
+      indexSubLevel = self.listFields().index("subLevel")
+      lv[indexSubLevel] = TreeNavigation.objects.get(id=index).listValues
+    return lv
 
 class Layout(CommonModel):
   jsonFields = ["template"]
@@ -515,10 +551,13 @@ class Dashboard(CommonModel):
   @classmethod
   def computeListId(cls, dataDashboard, data):
     listId = []
+    listFields = TreeNavigation.listFields()
+    indexDb = listFields.index("listDashboards")
+    indexSubLevel = listFields.index("subLevel")
     for level in [data["levelGeo"], data["levelTrade"]]:
-      while len(level) == 4:
-        listId += level[2]
-        level = level[3]
+      while level[indexSubLevel]:
+        listId += level[indexDb]
+        level = level[indexSubLevel]
     return set(listId)
 
   @property
@@ -528,12 +567,6 @@ class Dashboard(CommonModel):
       indexWP = self.listFields().index("widgetParams")
       lv[indexWP] = {object.position:object.id for object in listObjWidgetParam}
       return lv
-
-class DashboardTree(models.Model):
-  geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="geo")
-  profile = models.CharField(max_length=32, blank=False, default=None)
-  level = models.ForeignKey("TreeNavigation", on_delete=models.PROTECT, blank=False, default=None)
-  dashboards = models.ManyToManyField("Dashboard")
 
 class LabelForGraph(CommonModel):
   axisType = models.CharField(max_length=32, unique=False, blank=False, default=None)
@@ -566,9 +599,9 @@ class UserProfile(models.Model):
     idGeo = models.IntegerField(blank=True, default=None)
     lastUpdate = models.DateTimeField('Dernière mise à jour', blank=True, null=True, default=None)
 
-# Information ciblage
+# Information target
 
-class Ciblage(CommonModel):
+class Target(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
   redistributed = models.BooleanField("Redistribué", default=True)
@@ -606,7 +639,7 @@ class Ciblage(CommonModel):
       pass
     return flagSave
 
-class CiblageLevel(CommonModel):
+class TargetLevel(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
   agent = models.ForeignKey('Agent', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   agentFinitions = models.ForeignKey('AgentFinitions', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)

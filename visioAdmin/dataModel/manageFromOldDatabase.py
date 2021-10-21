@@ -38,12 +38,12 @@ class ManageFromOldDatabase:
     }
 
   typeObject = {
-     "paramVisio":ParamVisio, "ventes":Ventes, "pdv":Pdv, "ciblageLevel":CiblageLevel, "agent":Agent, "agentFinitions":AgentFinitions,
+     "paramVisio":ParamVisio, "sales":Sales, "pdv":Pdv, "targetLevel":TargetLevel, "agent":Agent, "agentFinitions":AgentFinitions,
      "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
-    "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Produit,
-    "industry":Industrie, "Tableaux Navigation":DashboardTree, "treeNavigation":TreeNavigation, "user":UserProfile,
-    "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams, "widgetCompute":WidgetCompute, "widget":Widget,
-    "ciblage":Ciblage, "visit":Visit, "axisForGraph":AxisForGraph, "labelForGraph":LabelForGraph
+    "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Product,
+    "industry":Industry, "user":UserProfile, "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams,
+    "widgetCompute":WidgetCompute, "widget":Widget, "target":Target, "visit":Visit, "axisForGraph":AxisForGraph,
+    "labelForGraph":LabelForGraph
     }
   connection = None
   cursor = None
@@ -69,8 +69,6 @@ class ManageFromOldDatabase:
       model.objects.all().delete()
       self.cursorNew.execute(f"ALTER TABLE {table} AUTO_INCREMENT=1;")
       # Le cas d'une table Many to Many
-      if model == DashboardTree:
-        self.cursorNew.execute(f"ALTER TABLE `visioServer_dashboardtree_dashboards` AUTO_INCREMENT=1;")
       if model == Dashboard:
         self.cursorNew.execute(f"ALTER TABLE `visioServer_dashboard_widgetParams` AUTO_INCREMENT=1;")
       return {'query':'emptyDatabase', 'message':f"la table {table} a été vidée.", 'end':False, 'errors':[]}
@@ -97,11 +95,12 @@ class ManageFromOldDatabase:
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
-        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
+        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
+        ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
-        ("Object", ["product"]), ("Object", ["industry"]), ("Ventes", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
-        ("Ciblage", []), ("CiblageLevel", []), ("Visit", [])]
+        ("Object", ["product"]), ("Object", ["industry"]), ("Sales", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
+        ("Target", []), ("TargetLevel", []), ("Visit", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
       table, error = getattr(self, "get" + tableName)(*variable)
@@ -327,28 +326,27 @@ class ManageFromOldDatabase:
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
     for geoOrTrade in geoOrTradeList:
-      levelRoot = "root" if geoOrTrade == "geo" else "rootTrade"
-      object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=levelRoot, name="France")
-      for level, name in self.createNavigationLevelName(geoOrTrade):
-        object = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, level=level, name=name, father=object)
-      dashboardsLevel = self.createDashboards(geoOrTrade)
-      for level, listDashBoard in dashboardsLevel.items():
-        levelObject = TreeNavigation.objects.filter(geoOrTrade=geoOrTrade, level=level)
-        if levelObject.exists():
-          dashboards = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashBoard]
-          object = DashboardTree.objects.create(geoOrTrade=geoOrTrade, profile=levelRoot, level=levelObject.first())
-          for dashboard in dashboards:
-            object.dashboards.add(dashboard)
-        else:
-          return (False, f"Error getTreeNavigation {level} does not exist")
+      self.createDashboards(geoOrTrade)
+      listLevel = self.__createNavigationLevelName(geoOrTrade)
+      father = None
+      for levelName, prettyPrint in listLevel:
+        listDashboardName = CreateWidgetParam.dashboardsLevel[geoOrTrade][levelName]
+        listDashboard = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashboardName]
+        subLevel = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, levelName=levelName, prettyPrint=prettyPrint)
+        for dashboard in listDashboard:
+            subLevel.listDashboards.add(dashboard)
+        if father:
+          father.subLevel = subLevel
+          father.save()
+        father = subLevel
     return ("TreeNavigation", False)
 
-  def createNavigationLevelName(self, geoOrTrade:str):
+  def __createNavigationLevelName(self, geoOrTrade:str):
     geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE')) if geoOrTrade == "geo" else json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
     fields, listLevelName = Pdv._meta.fields, []
     for fieldId in geoTreeStructure:
       listLevelName.append((fields[fieldId + 1].name, fields[fieldId + 1].verbose_name))
-    return listLevelName
+    return [("root", "France")] + listLevelName
 
   def createDashboards(self, geoOrTrade):
     if geoOrTrade == "geo":
@@ -363,10 +361,9 @@ class ManageFromOldDatabase:
       listWidgetParam = CreateWidgetParam.create(name, geoOrTrade)
       for widgetParam in listWidgetParam[:len(set(templateFlat))]:
         object.widgetParams.add(widgetParam)
-    return CreateWidgetParam.dashboardsLevel[geoOrTrade]
 
-# Chargement de la table des ventes
-  def getVentes(self):
+# Chargement de la table des Sales
+  def getSales(self):
     listYear = ["lastYear", "currentYear"]
     indexCode = self.fieldsPdv.index("PDV code")
     try:
@@ -381,22 +378,21 @@ class ManageFromOldDatabase:
               code = dictPdv[idOld][indexCode]
               pdv = Pdv.objects.filter(code=code, currentYear=indexYear==1).first()
               industry = self.dictIndustry[line[2]]
-              industry = Industrie.objects.filter(name=industry).first()
+              industry = Industry.objects.filter(name=industry).first()
               product = self.dictProduct[line[3]]
-              product = Produit.objects.filter(name=product).first()
+              product = Product.objects.filter(name=product).first()
               dateEvent = None
               cy = indexYear == 1
               if line[0]:
                 dateEvent = datetime.datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris"))
-              Ventes.objects.create(date=dateEvent, pdv=pdv, industry=industry, product=product, volume=float(line[4]), currentYear=cy)
+              Sales.objects.create(date=dateEvent, pdv=pdv, industry=industry, product=product, volume=float(line[4]), currentYear=cy)
 
     except db.Error as e:
-      return (False, f"Error getVentes {type} {repr(e)}")
-    return ("Ventes", False)
+      return (False, f"Error getSales {type} {repr(e)}")
+    return ("Sales", False)
 
 
 # Chargement de la table des utilisateurs
-
   def getUsers(self):
     dictUser = self.__computeListUser()
     Group.objects.create(name="root")
@@ -467,8 +463,8 @@ class ManageFromOldDatabase:
         password = dictUserPassword[user[2]] if user[2] in dictUserPassword else "natvisio"
       user[2] = password
 
-# Chargement de la table des ventes
-  def getCiblage(self):
+# Chargement de la table des Sales
+  def getTarget(self):
     dictPdv = {line[0]:line for line in self.listPdv["currentYear"]}
     indexCode = self.fieldsPdv.index("PDV code")
     try:
@@ -489,13 +485,13 @@ class ManageFromOldDatabase:
           kwargs['greenLight'] = line[6][0]
           kwargs['commentTargetP2CD'] = line[7]
           kwargs['bassin'] = ""
-          Ciblage.objects.create(**kwargs)
+          Target.objects.create(**kwargs)
 
     except db.Error as e:
-      return (False, f"Error getCiblage {repr(e)}")
-    return ("Ciblage", False)
+      return (False, f"Error getTarget {repr(e)}")
+    return ("Target", False)
 
-  def getCiblageLevel(self):
+  def getTargetLevel(self):
     volP2CD, dnP2CD, volFinition, dnFinition = 1000.0, 50, 150, 30
     now = timezone.now()
     for currentYear in [True, False]:
@@ -505,7 +501,7 @@ class ManageFromOldDatabase:
         dictAgent[id] = set([pdv.agent for pdv in Pdv.objects.filter(sale=True, currentYear=currentYear, drv=drv)])
       for drvId, listAgent in dictAgent.items():
         drv = listDrv[drvId]
-        CiblageLevel.objects.create(date=now, drv=drv, vol=volP2CD, dn=dnP2CD, currentYear=currentYear)
+        TargetLevel.objects.create(date=now, drv=drv, vol=volP2CD, dn=dnP2CD, currentYear=currentYear)
         dvP2CD = volP2CD / len(listAgent)
         ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
         dvFinition = volFinition / len(listAgent)
@@ -514,9 +510,9 @@ class ManageFromOldDatabase:
         for agent in listAgent:
           if flagStart:
             flagStart = False
-            CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD + rdP2CD, currentYear=currentYear)
+            TargetLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD + rdP2CD, currentYear=currentYear)
           else:
-            CiblageLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD, currentYear=currentYear)
+            TargetLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD, currentYear=currentYear)
         flagStart = True
         listAgentFinitions = AgentFinitions.objects.filter(currentYear=currentYear)
         dvFinition = volFinition / len(listAgentFinitions)
@@ -524,10 +520,10 @@ class ManageFromOldDatabase:
         for agentFinition in listAgentFinitions:
           if flagStart:
             flagStart = False
-            CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition + rdFinition, currentYear=currentYear)
+            TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition + rdFinition, currentYear=currentYear)
           else:
-            CiblageLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition, currentYear=currentYear)
-    return ("CiblageLevel", False)
+            TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition, currentYear=currentYear)
+    return ("TargetLevel", False)
 
   def getVisit(self):
     query = "SELECT pdvCode, NbVisit FROM data_visit_1;"
@@ -570,13 +566,13 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [DashboardTree, TreeNavigation, WidgetParams, WidgetCompute, Widget, Dashboard, Layout, AxisForGraph, LabelForGraph]
+    listModel = [TreeNavigation, Dashboard, WidgetParams, WidgetCompute, Widget, Layout, AxisForGraph, LabelForGraph]
     for model in listModel:
       model.objects.all().delete()
     print("start")
-    CiblageLevel.objects.all().delete
-    self.getCiblageLevel()
-    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # TargetLevel.objects.all().delete
+    # self.getTargetLevel()
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
 
