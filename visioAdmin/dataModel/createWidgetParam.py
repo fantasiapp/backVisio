@@ -248,7 +248,7 @@ class CreateWidgetParam:
         ["segmentDnEnduitTarget", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Suivi AD":[
         ["avancementAD", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
-        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, ["@other"], "no", "Evolution de l'AD", "Nb de PdV par sem. et cumul en %", "b", "", "histoCurve"],
+        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Evolution de l'AD", "Nb de PdV par sem. et cumul en %", "b", "", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
         ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
