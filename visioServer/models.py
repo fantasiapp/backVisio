@@ -660,17 +660,12 @@ class TargetLevel(CommonModel):
     return result if len(result) > 1 else {}
 
   def update(self, listTargetLevel, now):
-    print("udpate targetLevel", listTargetLevel)
     result = super().update(listTargetLevel, now)
     if result:
-      print(result)
       listFields = self.listFields()
-      print(listFields)
       for field in ["drv", "agentFinitions", "agent"]:
         index = listFields.index(field)
-        print(index)
         del result[index]
-      print(result, self.listFields())
     return result
     
 
