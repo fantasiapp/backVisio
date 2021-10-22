@@ -28,6 +28,7 @@ class Data(DefaultView):
             if action == "dashboard":
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
+                print(f"get {currentUser} {action}", request.GET["nature"])
                 answer = dataDashBoard.getUpdate(request.GET["nature"])
                 return Response(answer)
             return Response({"error":f"action {action} unknown"}, headers={'Content-Type':'application/json', 'Content-Encoding': 'gzip'})
