@@ -30,7 +30,6 @@ class DataDashboard:
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
     if getattr(self, "__pdvs", False) and getattr(self, "__pdvs_ly", False):
-      print("start fast initialisation")
       self.dictLocalPdv = self.__computeListPdv()
     else:
       # happen when initialisation is not finished and someone send a query
@@ -89,8 +88,6 @@ class DataDashboard:
   
   @property
   def dataQuery(self):
-    if getattr(self, "__pdvs", False):
-      return {"error", "wrong initialisation"}
     firstLevel = self.__userGeoId if self.__userGroup != "root" else 0
     data = {
       "structureLevel":TreeNavigation.listFields(),

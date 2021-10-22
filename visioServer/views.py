@@ -22,6 +22,8 @@ class Data(DefaultView):
         if 'action' in request.GET:
             #request.META['SERVER_PORT'] == '8000' check if server is local
             dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+            if getattr(dataDashBoard, "__pdvs", False) or  getattr(dataDashBoard, "__pdvs_ly", False):
+                return Response({"warning", "inititialisation in progress"})
             action = request.GET["action"]
             if action == "dashboard":
                 return Response(dataDashBoard.dataQuery)
@@ -43,5 +45,7 @@ class Data(DefaultView):
             return Response({"error":f"no profile defined for {currentUser.username} defined"})
         if jsonString:
             dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+            if getattr(dataDashBoard, "__pdvs", False) or  getattr(dataDashBoard, "__pdvs_ly", False):
+                return Response({"warning", "inititialisation in progress"})
             return Response(dataDashBoard.postUpdate(currentUser, jsonString))
         return Response({"error":"empty body"})
