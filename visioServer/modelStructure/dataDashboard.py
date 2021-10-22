@@ -169,10 +169,14 @@ class DataDashboard:
         data["targetLevelDrv" + ext] = {id:level for id, level in field["drv"].items() if id == selectedDrv}
         data["targetLevelAgentP2CD"+ext] = {id:level for id, level in field["agent"].items() if id in listAgentId}
         data["targetLevelAgentFinitions"+ext] = {id:level for id, level in field["fin"].items() if self.__isFinDrv(id, selectedDrv, ext)}
-    else:
+    elif self.__userGroup == "agent":
       targetLevel = "targetLevelAgentP2CD" if self.__userGroup == "agent" else "targetLevelAgentFinitions"
       data[targetLevel] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
       data[targetLevel+"_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD_ly.items() if id == self.__lastYearId}
+    elif self.__userGroup == "agentFinitions":
+      targetLevel = "targetLevelAgentFinitions"
+      data[targetLevel] = {id:value for id, value in self.__targetLevelAgentFinitions.items() if id == self.__userGeoId}
+      data[targetLevel+"_ly"] = {id:value for id, value in self.__targetLevelAgentFinitions_ly.items() if id == self.__lastYearId}
 
   def __isFinDrv(self, idFin, idDrv, currentYear):
     lineFin = getattr(self, f"__agentFinitions{currentYear}")[idFin]
