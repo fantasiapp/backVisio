@@ -111,7 +111,6 @@ class CommonModel(models.Model):
     if kwargs:
       for fieldName, value in kwargs.items():
         if value != None and value != getattr(self, fieldName):
-          print("update generic", fieldName, "old", getattr(self, fieldName), "new", value)
           setattr(self, fieldName, value)
       self.save()
       return True
@@ -654,7 +653,6 @@ class TargetLevel(CommonModel):
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     listFields = self.listFields()
     valueReceived = [date, self.agent, self.agentFinitions, self.drv] + valueReceived
-    print("createKwargsToSave", listFields, valueReceived)
     complete, result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
     for field, value in complete.items():
       if value != getattr(self, field):
