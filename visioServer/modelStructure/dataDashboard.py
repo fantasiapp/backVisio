@@ -303,7 +303,6 @@ class DataDashboard:
             print("targetLevelAgentFinitions", idAF, listTargetLevel)
             af = AgentFinitions.objects.get(id=idAF)
             targetLevel = TargetLevel.objects.get(agentFinitions=af, currentYear=True)
-            print("targetLevel", targetLevel)
             targetLevel.update(listTargetLevel, now)
             print("targetLevel OK")
             DataDashboard.__targetLevelAgentFinitions[int(idAF)] = listTargetLevel
