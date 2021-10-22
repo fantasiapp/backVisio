@@ -113,7 +113,7 @@ class CommonModel(models.Model):
         if value != None and value != getattr(self, fieldName):
           setattr(self, fieldName, value)
       self.save()
-      return True
+      return self.listValues
     return False
       
 # Information Params
@@ -658,6 +658,21 @@ class TargetLevel(CommonModel):
       if value != getattr(self, field):
         result[field] = value
     return result if len(result) > 1 else {}
+
+  def update(self, listTargetLevel, now):
+    print("udpate targetLevel", listTargetLevel)
+    result = super().update(listTargetLevel, now)
+    if result:
+      print(result)
+      listFields = self.listFields()
+      print(listFields)
+      for field in ["drv", "agentFinitions", "agent"]:
+        index = listFields.index(field)
+        print(index)
+        del result[index]
+      print(result, self.listFields())
+    return result
+    
 
 class LogUpdate(models.Model):
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)

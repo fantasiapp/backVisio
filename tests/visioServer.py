@@ -70,7 +70,7 @@ elif get == "post":
     post = {
         "targetLevelAgentP2CD": {81:[200, 10]},
         "targetLevelAgentFinitions": {14:[30, 0]},
-        "targetLevelDrv": {9:[6000, 50]},
+        "targetLevelDrv": {9:[7003, 50]},
         "pdvs": {
                 "3777":
                 ["685658", "POINT P - DOCKS DE L'OISE COMPIEGNE", 9, 71, 10, 149, 468, 83, 49.3922, 2.79104, 25, 8, 24, 71, 468, 1090,
