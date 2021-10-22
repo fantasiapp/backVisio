@@ -110,7 +110,9 @@ class CommonModel(models.Model):
     kwargs = self.createKwargsToSave(valueReceived, now)
     if kwargs:
       for fieldName, value in kwargs.items():
-        setattr(self, fieldName, value)
+        if value != None and value != getattr(self, fieldName):
+          print("update generic", fieldName, "old", getattr(self, fieldName), "new", value)
+          setattr(self, fieldName, value)
       self.save()
       return True
     return False
@@ -367,9 +369,10 @@ class Pdv(CommonModel):
     volume = Sales.getDataFromDict("volume", saleReceived)
     sale = Sales.objects.filter(pdv=self, industry=industryId, product=productId)
     if sale:
-      sale[0].update(saleReceived, now) if volume else sale[0].delete()
+      if abs(volume - sale[0].volume) > 1:
+        sale[0].update(saleReceived, now) if volume else sale[0].delete()
     elif volume:
-      Sales.objects.create(date=now, pdv=self, industry=Industrie.objects.get(id=industryId), product=Product.objects.get(id=productId), volume=volume)
+      Sales.objects.create(date=now, pdv=self, industry=Industry.objects.get(id=industryId), product=Product.objects.get(id=productId), volume=volume)
 
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
@@ -398,7 +401,7 @@ class Visit(CommonModel):
       del listFields["pdv"]
       return listFields
 
-# Modèles pour l'AD
+ #Modèles pour l'AD
 
 class Product(CommonModel):
   name = models.CharField('name', max_length=32, unique=True, blank=False, default="Inconnu")
@@ -650,8 +653,8 @@ class TargetLevel(CommonModel):
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
     listFields = self.listFields()
-    valueReceived = [date, self.agent, self.drv] + valueReceived
-    if self.agent: valueReceived = valueReceived + [0.0, 0.0]
+    valueReceived = [date, self.agent, self.agentFinitions, self.drv] + valueReceived
+    print("createKwargsToSave", listFields, valueReceived)
     complete, result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
     for field, value in complete.items():
       if value != getattr(self, field):

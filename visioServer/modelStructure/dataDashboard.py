@@ -23,6 +23,7 @@ class DataDashboard:
     self.__userProfile = userProfile
     if DataDashboard.__flagLoad:
       DataDashboard.__flagLoad = False
+      print("loading data in RAM")
       for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
@@ -32,7 +33,6 @@ class DataDashboard:
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
-    print("loading data in RAM")
     if name == "pdvs" and isNotOnServer:
       return cls.__createFromJson()
     if len(model.listFields()) > 1:
@@ -253,17 +253,15 @@ class DataDashboard:
     user = User.objects.get(username=userName)
     try:
       jsonData = json.loads(jsonString)
-      print(1)
       now = self.__updateDatabasePdv(jsonData)
-      print(2)
+      print("pdv updated")
       self.__updateDatabaseTargetLevel(jsonData, now)
-      print(3)
+      print("targetLevel updated")
       self.__updateLogClient(jsonData["logs"], now)
-      print(4)
+      print("log updated")
       del jsonData["logs"]
       flagSave = False
       for value in jsonData.values():
-        print("value", value)
         if value: flagSave = True
       if flagSave:
         print("saveLogUpdate", json.dumps(jsonData))
@@ -276,7 +274,7 @@ class DataDashboard:
     now = timezone.now()
     if "pdvs" in data:
       for id, value in data["pdvs"].items():
-        pdv = Pdv.objects.get(id=int(id)) 
+        pdv = Pdv.objects.get(id=int(id))
         getattr(self, "__pdvs")[int(id)] = pdv.update(value, now)
     return now
 
@@ -297,6 +295,15 @@ class DataDashboard:
             targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = listTargetLevel
+        if key == "targetLevelAgentFinitions":
+          for idAF, listTargetLevel in dictTargetLevel.items():
+            print("targetLevelAgentFinitions", idAF, listTargetLevel)
+            af = AgentFinitions.objects.get(id=idAF)
+            print(af)
+            targetLevel = TargetLevel.objects.get(agentFinitions=af, currentYear=True)
+            print(targetLevel)
+            targetLevel.update(listTargetLevel, now)
+            DataDashboard.__targetLevelAgentFinitions[int(idAF)] = listTargetLevel
 
   def __updateLogClient(self, listLogs, now):
     for log in listLogs:
