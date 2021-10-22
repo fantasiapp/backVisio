@@ -160,8 +160,8 @@ class CreateWidgetParam:
         ["clientProspectTarget","Prospect", "#888888"],
         ["clientProspectTarget","Non documenté", "#DEDEDE"],
 
-        ["suiviAD","Non renseignées", "#FFE200"],
-        ["suiviAD","Non mises à jour", "#D00000"],
+        ["suiviAD","Non renseignées", "#D00000"],
+        ["suiviAD","Non mises à jour", "#FFE200"],
         ["suiviAD","Terminées", "#4AA763"],
 
         ["histo&curve","Nombre de PdV complétés", "#363565"],
@@ -243,7 +243,7 @@ class CreateWidgetParam:
         ["segmentDnEnduitTarget", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Suivi AD":[
         ["avancementAD", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
-        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Evolution de l'AD", "", "b", "%|PdV", "histoCurve"],
+        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Évolution de l'AD au cours des dernières semaines", "", "b", "%|PdV", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
         ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
