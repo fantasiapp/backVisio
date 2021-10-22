@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class DataDashboard:
-  __levelGeo = None
   __structureTargetLevel = ["vol", "dn"]
   currentYear = "currentYear"
   __flagLoad = True
@@ -170,7 +169,7 @@ class DataDashboard:
         data["targetLevelAgentP2CD"+ext] = {id:level for id, level in field["agent"].items() if id in listAgentId}
         data["targetLevelAgentFinitions"+ext] = {id:level for id, level in field["fin"].items() if self.__isFinDrv(id, selectedDrv, ext)}
     elif self.__userGroup == "agent":
-      targetLevel = "targetLevelAgentP2CD" if self.__userGroup == "agent" else "targetLevelAgentFinitions"
+      targetLevel = "targetLevelAgentP2CD"
       data[targetLevel] = {id:value for id, value in self.__targetLevelAgentP2CD.items() if id == self.__userGeoId}
       data[targetLevel+"_ly"] = {id:value for id, value in self.__targetLevelAgentP2CD_ly.items() if id == self.__lastYearId}
     elif self.__userGroup == "agentFinitions":
@@ -296,6 +295,7 @@ class DataDashboard:
             targetLevel = TargetLevel.objects.get(drv=drv, currentYear=True)
             newValues = targetLevel.update(listTargetLevel, now)
             if newValues:
+              print("targetLevelDrv", newValues, idDrv, DataDashboard.__targetLevelDrv[int(idDrv)])
               DataDashboard.__targetLevelDrv[int(idDrv)] = newValues
         if key == "targetLevelAgentP2CD":
           for idAgent, listTargetLevel in dictTargetLevel.items():
@@ -303,13 +303,15 @@ class DataDashboard:
             targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             newValues =  targetLevel.update(listTargetLevel, now)
             if newValues:
+              print("targetLevelDrv", newValues, idAgent, DataDashboard.__targetLevelAgentP2CD[int(idAgent)])
               DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = newValues
-        if key == "targetLevelAgentFinitions":
+        if key == "targetLevelAgentP2CD":
           for idAF, listTargetLevel in dictTargetLevel.items():
             af = AgentFinitions.objects.get(id=idAF)
             targetLevel = TargetLevel.objects.get(agentFinitions=af, currentYear=True)
             newValues = targetLevel.update(listTargetLevel, now)
             if newValues:
+              print("targetLevelAgentFinitions", newValues, idAF, DataDashboard.__targetLevelAgentFinitions[int(idAF)])
               DataDashboard.__targetLevelAgentFinitions[int(idAF)] = newValues
 
   def __updateLogClient(self, listLogs, now):
