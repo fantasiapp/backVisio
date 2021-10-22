@@ -128,7 +128,6 @@ class DataDashboard:
   def _computeLocalLevel(self, geoOrTrade):
     levelName = "agent" if self.userGroup == "agentFinitions" else self.userGroup
     levelName = "root" if geoOrTrade == "trade" else levelName
-    print(levelName, geoOrTrade)
     localLevel = TreeNavigation.objects.get(levelName=levelName, geoOrTrade=geoOrTrade).listValues
     if self.userGroup == "agentFinitions":
       localLevel[0] = "agentFinitions"
@@ -251,6 +250,7 @@ class DataDashboard:
               jsonToSend["pdvs"][id] = listObject
           else:
             jsonToSend[nature][id] = listObject
+    print("update request", jsonToSend)
     return jsonToSend
 
   def postUpdate(self, userName, jsonString):
@@ -258,17 +258,13 @@ class DataDashboard:
     try:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
-      print("pdv updated")
       self.__updateDatabaseTargetLevel(jsonData, now)
-      print("targetLevel updated")
       self.__updateLogClient(jsonData["logs"], now)
-      print("log updated")
       del jsonData["logs"]
       flagSave = False
       for value in jsonData.values():
         if value: flagSave = True
       if flagSave:
-        print("saveLogUpdate", json.dumps(jsonData))
         LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       return {"message":"postUpdate received"}
     except:
@@ -287,14 +283,12 @@ class DataDashboard:
       if key != "pdvs" and key != "logs" and dictTargetLevel:
         if key == "targetLevelDrv":
           for idDrv, listTargetLevel in dictTargetLevel.items():
-            print("targetLevelDrv", idDrv, listTargetLevel)
             drv = Drv.objects.get(id=idDrv)
             targetLevel = TargetLevel.objects.get(drv=drv, currentYear=True)
             targetLevel.update(listTargetLevel, now)
             DataDashboard.__targetLevelDrv[int(idDrv)] = listTargetLevel
         if key == "targetLevelAgentP2CD":
           for idAgent, listTargetLevel in dictTargetLevel.items():
-            print("targetLevelAgentP2CD", idAgent, listTargetLevel)
             agent = Agent.objects.get(id=idAgent)
             targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             targetLevel.update(listTargetLevel, now)
@@ -303,13 +297,12 @@ class DataDashboard:
           for idAF, listTargetLevel in dictTargetLevel.items():
             print("targetLevelAgentFinitions", idAF, listTargetLevel)
             af = AgentFinitions.objects.get(id=idAF)
-            print(af)
             targetLevel = TargetLevel.objects.get(agentFinitions=af, currentYear=True)
-            print(targetLevel)
+            print("targetLevel", targetLevel)
             targetLevel.update(listTargetLevel, now)
+            print("targetLevel OK")
             DataDashboard.__targetLevelAgentFinitions[int(idAF)] = listTargetLevel
 
   def __updateLogClient(self, listLogs, now):
     for log in listLogs:
-      print("__updateLogClient", log)
       LogClient.createFromList(log, self.__userProfile, now)

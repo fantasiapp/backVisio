@@ -3,7 +3,7 @@ import json
 import time
 import sys
 
-username, password = "ribiere", "ovisio"
+username, password = "all", "avisio"
 address = 'http://localhost:8000'
 # address = 'https://visio.fantasiapp.tech:3441'
 get = "dashboard"
@@ -65,6 +65,7 @@ elif get == "request" or get == "acknowledge":
         data = json.loads(response.text)
     except:
         print("pb")
+    print("post", data)
 elif get == "post":
     post = {
         "targetLevelAgentP2CD": {81:[200, 10]},
