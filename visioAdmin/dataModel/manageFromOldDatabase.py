@@ -518,12 +518,11 @@ class ManageFromOldDatabase:
         dvFinition = volFinition / len(listAgentFinitions)
         ddFinition, rdFinition = dnFinition // len(listAgentFinitions), dnFinition % len(listAgentFinitions)
       for agentFinition in listAgentFinitions:
-        print(agentFinition)
         if flagStart:
           flagStart = False
-          TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition + rdFinition, currentYear=currentYear)
+          TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=0)
         else:
-          TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=ddFinition, currentYear=currentYear)
+          TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=0, currentYear=currentYear)
     return ("TargetLevel", False)
 
   def getVisit(self):
@@ -567,13 +566,13 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    # listModel = [TreeNavigation, Dashboard, WidgetParams, WidgetCompute, Widget, Layout, AxisForGraph, LabelForGraph]
-    # for model in listModel:
-    #   model.objects.all().delete()
+    listModel = [TreeNavigation, Dashboard, WidgetParams, WidgetCompute, Widget, Layout, AxisForGraph, LabelForGraph]
+    for model in listModel:
+      model.objects.all().delete()
     print("start")
-    TargetLevel.objects.all().delete()
-    self.getTargetLevel()
-    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # TargetLevel.objects.all().delete()
+    # self.getTargetLevel()
+    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
     print("end")
     return {"test":False}
 

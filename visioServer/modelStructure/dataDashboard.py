@@ -128,7 +128,11 @@ class DataDashboard:
   def _computeLocalLevel(self, geoOrTrade):
     levelName = "agent" if self.userGroup == "agentFinitions" else self.userGroup
     levelName = "root" if geoOrTrade == "trade" else levelName
+    print(levelName, geoOrTrade)
     localLevel = TreeNavigation.objects.get(levelName=levelName, geoOrTrade=geoOrTrade).listValues
+    if self.userGroup == "agentFinitions":
+      localLevel[0] = "agentFinitions"
+      localLevel[1] = "Agent Finitions"
     if self.userGroup in ["agent", "agentFinitions"]:
       TreeNavigation.removeDashboards(localLevel, self.userGroup, geoOrTrade)
     return localLevel
