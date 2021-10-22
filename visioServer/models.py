@@ -116,7 +116,6 @@ class CommonModel(models.Model):
           flagSave = True
       if flagSave:
         self.save()
-      print("update generic", kwargs, self.listValues, flagSave)
       return self.listValues
     return False
       
@@ -668,11 +667,9 @@ class TargetLevel(CommonModel):
   def listValues(self):
     result = super().listValues
     listFields = self.listFields()
-    print("start listValues", result)
     for field in ["drv", "agentFinitions", "agent"]:
       index = listFields.index(field)
       del result[index]
-    print("end listValues", result)
     return result
     
     
