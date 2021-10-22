@@ -658,15 +658,19 @@ class TargetLevel(CommonModel):
       if value != getattr(self, field):
         result[field] = value
     return result if len(result) > 1 else {}
+      
 
-  def update(self, listTargetLevel, now):
-    result = super().update(listTargetLevel, now)
-    if result:
-      listFields = self.listFields()
-      for field in ["drv", "agentFinitions", "agent"]:
-        index = listFields.index(field)
-        del result[index]
+  @property
+  def listValues(self):
+    result = super().listValues
+    listFields = self.listFields()
+    print("start listValues", result)
+    for field in ["drv", "agentFinitions", "agent"]:
+      index = listFields.index(field)
+      del result[index]
+    print("end listValues", result)
     return result
+    
     
 
 class LogUpdate(models.Model):
