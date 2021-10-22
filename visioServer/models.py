@@ -109,10 +109,14 @@ class CommonModel(models.Model):
   def update(self, valueReceived, now):
     kwargs = self.createKwargsToSave(valueReceived, now)
     if kwargs:
+      flagSave = False
       for fieldName, value in kwargs.items():
         if value != None and value != getattr(self, fieldName):
           setattr(self, fieldName, value)
-      self.save()
+          flagSave = True
+      if flagSave:
+        self.save()
+      print("update generic", kwargs, self.listValues, flagSave)
       return self.listValues
     return False
       
