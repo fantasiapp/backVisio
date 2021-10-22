@@ -303,9 +303,9 @@ class DataDashboard:
             targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             newValues =  targetLevel.update(listTargetLevel, now)
             if newValues:
-              print("targetLevelDrv", newValues, idAgent, DataDashboard.__targetLevelAgentP2CD[int(idAgent)])
+              print("targetLevelAgentP2CD", newValues, idAgent, DataDashboard.__targetLevelAgentP2CD[int(idAgent)])
               DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = newValues
-        if key == "targetLevelAgentP2CD":
+        if key == "targetLevelAgentFinitions":
           for idAF, listTargetLevel in dictTargetLevel.items():
             af = AgentFinitions.objects.get(id=idAF)
             targetLevel = TargetLevel.objects.get(agentFinitions=af, currentYear=True)
