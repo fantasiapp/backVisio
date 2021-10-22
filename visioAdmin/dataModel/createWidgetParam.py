@@ -160,12 +160,12 @@ class CreateWidgetParam:
         ["clientProspectTarget","Prospect", "#888888"],
         ["clientProspectTarget","Non documenté", "#DEDEDE"],
 
-        ["suiviAD","Terminées", "#4AA763"],
         ["suiviAD","Non renseignées", "#FFE200"],
         ["suiviAD","Non mises à jour", "#D00000"],
+        ["suiviAD","Terminées", "#4AA763"],
 
-        ["histo&curve","histo", "#363565"],
-        ["histo&curve","curve", "#F06D0C"]
+        ["histo&curve","Nombre de PdV complétés", "#363565"],
+        ["histo&curve","Cumul en pourcentage", "#F06D0C"]
       ]
       for list in data:
         label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
@@ -243,7 +243,7 @@ class CreateWidgetParam:
         ["segmentDnEnduitTarget", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Suivi AD":[
         ["avancementAD", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
-        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Evolution de l'AD", "Nb de PdV par sem. et cumul en %", "b", "", "histoCurve"],
+        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Evolution de l'AD", "", "b", "%|PdV", "histoCurve"],
         ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
         ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
