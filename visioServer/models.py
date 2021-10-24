@@ -1,9 +1,11 @@
+from sys import dont_write_bytecode
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from datetime import date
 import json
 # from django.db.models.fields import Field
 import datetime
+from django.db.models.deletion import DO_NOTHING
 from django.db.models.lookups import IntegerFieldFloatRounding
 from django.utils import timezone
 import inspect
@@ -452,37 +454,21 @@ class Sales(CommonModel):
 
 class TreeNavigation(CommonModel):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
+  profile = models.ForeignKey(Group, on_delete=DO_NOTHING, null=True, default=None)
   levelName = models.CharField(max_length=32, unique=False, blank=False, default=None)
   prettyPrint = models.CharField(max_length=32, unique=False, blank=False, default=None)
   listDashboards = models.ManyToManyField('Dashboard', default = None)
   subLevel = models.ForeignKey('self', on_delete=models.DO_NOTHING, null=True, default=None)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   @classmethod
   def listFields(cls):
     lf = super().listFields()
-    del lf[0]
+    for field in ["profile", "geoOrTrade"]:
+      indexField = lf.index(field)
+      del lf[indexField]
     lf.insert(2, "listDashboards")
     return lf
-
-  @classmethod
-  def removeDashboards(cls, level, group, geoOrTrade):
-    listFields = cls.listFields()
-    indexDb = listFields.index("listDashboards")
-    indexSubLevel = listFields.index("subLevel")
-    listDbName = ["Synthèse P2CD", "Synthèse Enduit"]
-    if geoOrTrade == "geo":
-      listDbName = ["PdM Enduit Simulation"] if group == "agent" else ["PdM P2CD Simulation", "DN P2CD Simulation"]
-    listDb = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade).id for name in listDbName]
-    listDb.sort(reverse=True)
-    while True:
-      for id in listDb:
-        if level and id in level[indexDb]:
-          idToRemove = level[indexDb].index(id)
-          del level[indexDb][idToRemove]
-      if level:
-        level = level[indexSubLevel]
-      else:
-        return
 
   @property
   def listValues(self):
@@ -661,18 +647,57 @@ class TargetLevel(CommonModel):
       if value != getattr(self, field):
         result[field] = value
     return result if len(result) > 1 else {}
-      
 
-  @property
-  def listValues(self):
-    result = super().listValues
-    listFields = self.listFields()
-    for field in ["drv", "agentFinitions", "agent"]:
+
+  @classmethod
+  def listFields(cls):
+    listFields = super().listFields()
+    for field in ["drv", "agentFinitions", "agent", "date"]:
       index = listFields.index(field)
-      del result[index]
+      del listFields[index]
+    return listFields
+
+  @classmethod
+  def dictValues(cls, currentYear):
+    raw = TargetLevel.objects.filter(currentYear = currentYear)
+    result = {"drv":{}, "agent":{}, "agentFinitions":{}}
+    for targetLevel in raw:
+      for key in result.keys():
+        field = getattr(targetLevel, key, False)
+        if field:
+          result[key][getattr(targetLevel, key).id] = targetLevel.listValues
     return result
-    
-    
+
+  @classmethod
+  def computeListId(cls, dataDashboard, data):
+    if dataDashboard.userGroup == "root":
+      return False
+    result = {"currentYear":{}, "lastYear":{}}
+    for year, ext in {"currentYear":"", "lastYear":"_ly"}.items():
+      if dataDashboard.userGroup == "drv":
+        selectedDrv = dataDashboard.lastYearId if year == "lastYear" else dataDashboard.userGeoId
+        result[year] = {"drv":[selectedDrv], "agent":list(data[f"agent{ext}"].keys()), "agentFinitions":list(data[f"agentFinitions{ext}"].keys())}
+      else:
+        result[year] = {dataDashboard.userGroup:{dataDashboard.lastYearId if year == "lastYear" else dataDashboard.userGeoId}}
+    return result
+
+  @classmethod
+  def dictValuesFiltered(cls, dataDashboard, data):
+    data["structureTargetlevel"] = cls.listFields()
+    dictFilter, dictExt = cls.computeListId(dataDashboard, data), {"currentYear":"", "lastYear":"_ly"}
+    if dictFilter:
+      for year, filters in dictFilter.items():
+          ext = dictExt[year]
+          for key, filter in filters.items():
+            field = f"targetLevelAgentP2CD{ext}" if key == "agent" else f"targetLevel{key.capitalize()}{ext}"
+            field = f"targetLevelAgentFinitions{ext}" if field == f"targetLevelAgentfinitions{ext}" else field
+            data[field] = {id:value for id, value in getattr(dataDashboard, f"__targetLevel{key.capitalize()}{ext}").items() if id in filter}
+    else:
+      for year, ext in {"currentYear":"", "lastYear":"_ly"}.items():
+        for key in ["drv", "agent", "agentFinitions"]:
+          field = f"targetLevelAgentP2CD{ext}" if key == "agent" else f"targetLevel{key.capitalize()}{ext}"
+          field = f"targetLevelAgentFinitions{ext}" if field == f"targetLevelAgentfinitions{ext}" else field
+          data[field] = getattr(dataDashboard, f"__targetLevel{key.capitalize()}{ext}")    
 
 class LogUpdate(models.Model):
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)

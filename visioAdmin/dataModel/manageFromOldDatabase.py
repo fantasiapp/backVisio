@@ -41,7 +41,7 @@ class ManageFromOldDatabase:
      "paramVisio":ParamVisio, "sales":Sales, "pdv":Pdv, "targetLevel":TargetLevel, "agent":Agent, "agentFinitions":AgentFinitions,
      "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Product,
-    "industry":Industry, "user":UserProfile, "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams,
+    "industry":Industry, "user":UserProfile, "treeNavigation":TreeNavigation, "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams,
     "widgetCompute":WidgetCompute, "widget":Widget, "target":Target, "visit":Visit, "axisForGraph":AxisForGraph,
     "labelForGraph":LabelForGraph
     }
@@ -99,7 +99,7 @@ class ManageFromOldDatabase:
         ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
-        ("Object", ["product"]), ("Object", ["industry"]), ("Sales", []), ("TreeNavigation", [["geo", "trade"]]), ("Users", []),
+        ("Object", ["product"]), ("Object", ["industry"]), ("Sales", []), ("Users", []), ("TreeNavigation", [["geo", "trade"]]),
         ("Target", []), ("TargetLevel", []), ("Visit", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
@@ -140,6 +140,9 @@ class ManageFromOldDatabase:
         keyValues["drv"] = self.__findObject("id_drv", self.dictDrv, year, line, Drv)
         keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, year, line, Agent)
         keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
+        print(line)
+        print(keyValues["dep"].id)
+        print(dictDepIdFinition[keyValues["dep"].id])
         keyValues["agentFinitions"] = AgentFinitions.objects.get(id=dictDepIdFinition[keyValues["dep"].id])
         keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
         keyValues["ville"] = self.__findObject("id_ville", self.dictVille, year, line, Ville)
@@ -325,21 +328,47 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
-    for geoOrTrade in geoOrTradeList:
-      self.createDashboards(geoOrTrade)
-      listLevel = self.__createNavigationLevelName(geoOrTrade)
-      father = None
-      for levelName, prettyPrint in listLevel:
-        listDashboardName = CreateWidgetParam.dashboardsLevel[geoOrTrade][levelName]
-        listDashboard = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashboardName]
-        subLevel = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, levelName=levelName, prettyPrint=prettyPrint)
-        for dashboard in listDashboard:
-            subLevel.listDashboards.add(dashboard)
-        if father:
-          father.subLevel = subLevel
-          father.save()
-        father = subLevel
+    dictGroup = {"root":"France", "drv":"DRV", "agent":"Secteur", "agentFinitions":"Agent Finitions"}
+    listGroup = [Group.objects.get(name=name) for name in dictGroup.keys()]
+    for currentYear in [True, False]:
+      for geoOrTrade in geoOrTradeList:
+        if currentYear == True:
+          self.createDashboards(geoOrTrade)
+        listLevel = self.__createNavigationLevelName(geoOrTrade)
+        for group in listGroup:        
+          father = None
+          for levelName, prettyPrint in listLevel:
+            listDashboardName = CreateWidgetParam.dashboardsLevel[geoOrTrade][levelName]
+            listDashboard = [Dashboard.objects.get(name=name, geoOrTrade=geoOrTrade) for name in listDashboardName if self.filterTreeNav(name, geoOrTrade, currentYear, group.name)]
+            if geoOrTrade == "trade" and levelName == "root":
+              levelName, prettyPrint =group.name, dictGroup[group.name]
+            subLevel = TreeNavigation.objects.create(geoOrTrade=geoOrTrade, levelName=levelName, prettyPrint=prettyPrint, currentYear=currentYear, profile=group)
+            for dashboard in listDashboard:
+                subLevel.listDashboards.add(dashboard)
+            if father:
+              father.subLevel = subLevel
+              father.save()
+            father = subLevel
+          if geoOrTrade == "geo":
+            if group.name == "agent":
+              listLevel[0] = ("agentFinitions", "Agent Finitions")
+            else:
+              listLevel.pop(0)
     return ("TreeNavigation", False)
+
+  def filterTreeNav(self, name, geoOrTrade, currentYear, profile):
+    if profile == "agent" and name == 'PdM Enduit Simulation':
+      return False
+    if profile == "agentFinitions" and name in ['PdM P2CD Simulation', 'DN P2CD Simulation']:
+      return False
+    if geoOrTrade == "trade" and name in ["Synthèse P2CD", "Synthèse Enduit"]:
+      return False
+    if not currentYear:
+      if "Simulation" in name:
+        return False
+      if name in ["Suivi AD", "Suivi des Visites"]:
+        return False
+    return True
 
   def __createNavigationLevelName(self, geoOrTrade:str):
     geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE')) if geoOrTrade == "geo" else json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
