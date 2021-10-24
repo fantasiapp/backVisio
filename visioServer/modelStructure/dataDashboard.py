@@ -250,21 +250,21 @@ class DataDashboard:
             targetLevel = TargetLevel.objects.get(drv=drv, currentYear=True)
             newValues = targetLevel.update(listTargetLevel, now)
             if newValues:
-              DataDashboard.__targetLevelDrv[int(idDrv)] = newValues
+              getattr(self, "__targetLevelDrv")[int(idDrv)] = newValues
         if key == "targetLevelAgentP2CD":
           for idAgent, listTargetLevel in dictTargetLevel.items():
             agent = Agent.objects.get(id=idAgent)
             targetLevel = TargetLevel.objects.get(agent=agent, currentYear=True)
             newValues =  targetLevel.update(listTargetLevel, now)
             if newValues:
-              DataDashboard.__targetLevelAgentP2CD[int(idAgent)] = newValues
+              getattr(self, "__targetLevelAgent")[int(idAgent)] = newValues
         if key == "targetLevelAgentFinitions":
           for idAF, listTargetLevel in dictTargetLevel.items():
             af = AgentFinitions.objects.get(id=idAF)
             targetLevel = TargetLevel.objects.get(agentFinitions=af, currentYear=True)
             newValues = targetLevel.update(listTargetLevel, now)
             if newValues:
-              DataDashboard.__targetLevelAgentFinitions[int(idAF)] = newValues
+              getattr(self, "__targetLevelAgentfinitions")[int(idAF)] = newValues
 
   def __updateLogClient(self, listLogs, now):
     for log in listLogs:

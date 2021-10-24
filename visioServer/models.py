@@ -640,13 +640,13 @@ class TargetLevel(CommonModel):
   currentYear = models.BooleanField("Année courante", default=True)
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
-    listFields = self.listFields()
+    listFields = ["date", "agent", "agentFinitions", "drv"] + self.listFields()
     valueReceived = [date, self.agent, self.agentFinitions, self.drv] + valueReceived
-    complete, result = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
+    complete, kwargs = {listFields[index]:valueReceived[index] for index in range(len(listFields))}, {}
     for field, value in complete.items():
       if value != getattr(self, field):
-        result[field] = value
-    return result if len(result) > 1 else {}
+        kwargs[field] = value
+    return kwargs if len(kwargs) > 1 else {}
 
 
   @classmethod
