@@ -102,7 +102,8 @@ class CommonModel(models.Model):
         if update:
           if getattr(self, fieldName, None) != None:
             if isinstance(self._meta.get_field(fieldName), models.ForeignKey):
-              test = int(newValue) != getattr(self, fieldName).idFront
+              newValue = int(newValue)
+              test = newValue != getattr(self, fieldName).idFront
             else:
               test = newValue != getattr(self, fieldName)
           else:
