@@ -18,7 +18,7 @@ class CreateWidgetParam:
       ["DN Enduit","column:2:1", ""],
       ["DN P2CD Simulation","column:2:1", ["@objectifSiegeDn", "@DRVdn", "@objectifP2CDdn", "@ciblageP2CDdn"]],
       ["Points de Vente P2CD","mono", ""],
-      ["Points de Vente Enduit","mono", ["@objectifEnduit","@ciblageEnduitComplet"]],
+      ["Points de Vente Enduit","mono", ""],
       ["Synthèse P2CD","row:1:1:1", ""],
       ["Synthèse Enduit","row:1:1:1", ""],
       ["Synthèse P2CD Simulation","row:1:1:1", []],
@@ -45,10 +45,10 @@ class CreateWidgetParam:
 
     "drv":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
     "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD",
-    "Synthèse P2CD Simulation", "Suivi des Visites"],
+    "Synthèse P2CD Simulation", "Suivi AD", "Suivi des Visites"],
 
-    "agent":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN P2CD Simulation", "DN Enduit",
-    "Points de Vente P2CD", "Points de Vente Enduit"],
+    "agent":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN P2CD Simulation",
+    "DN Enduit", "Points de Vente P2CD", "Points de Vente Enduit"],
 
     "agentFinitions":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM Enduit Simulation", "DN P2CD", "DN Enduit", "Points de Vente P2CD",
     "Points de Vente Enduit"],

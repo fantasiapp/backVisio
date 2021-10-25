@@ -48,6 +48,7 @@ class DataDashboard:
 
   @classmethod
   def __createFromJson(cls):
+    """Fonction ayant pour but d'aller chercher les pdv dans des json pour la mise au point: le chargement est alors instantané"""
     setattr(cls, "__indexesPdvs", Pdv.listIndexes())
     setattr(cls, "__structurePdvs", Pdv.listFields())
     if not os.path.isfile("./visioServer/modelStructure/pdvDict.json"):
@@ -86,17 +87,6 @@ class DataDashboard:
 
   @property
   def userGeoId(self): return self.__userGeoId
-
-  # @property
-  # def lastYearId(self):
-  #   if self.__userGroup == "root": return 0
-  #   model = Drv
-  #   if self.__userGroup == "agent":
-  #     model = Agent
-  #   elif self.__userGroup == "agentFinitions":
-  #     model = AgentFinitions
-  #   nameRegion = model.objects.get(id=self.__userGeoId)
-  #   return model.objects.get(name=nameRegion, currentYear=False).id
   
   @property
   def dataQuery(self):

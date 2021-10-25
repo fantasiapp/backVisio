@@ -3,7 +3,7 @@ import json
 import time
 import sys
 
-username, password = "y", "avisio"
+username, password = "t", "avisio"
 address = 'http://localhost:8000'
 # address = 'https://visio.fantasiapp.tech:3441'
 get = "dashboard"
@@ -68,19 +68,14 @@ elif get == "request" or get == "acknowledge":
     print("post", data)
 elif get == "post":
     post = {
-        "targetLevelAgentP2CD": {81:[201, 10]},
-        "targetLevelAgentFinitions": {14:[41, 0]},
-        "targetLevelDrv": {9:[7001, 51]},
+        "targetLevelAgentP2CD": {},
+        "targetLevelAgentFinitions": {},
+        "targetLevelDrv": {},
         "pdvs": {
-                "3777":
-                ["685658", "POINT P - DOCKS DE L'OISE COMPIEGNE", 9, 71, 10, 149, 468, 83, 49.3922, 2.79104, 25, 8, 24, 71, 468, 1090,
-                True, True, True, True, False, False, None, 12,
-                [1634385823, True, False, 11112, False, "g", "Ceci est un commentaire de test"],
-                [[None, 1, 1, 12408], [None, 1, 2, 8697.6],
-                [None, 1, 3, 3262.08], [1611672332, 3, 1, 222224],
-                [1611672332, 4, 2, 17425], [1611672332, 11, 3, 37801], [1611672332, 3, 4, 29900],[1611672332, 3, 5, 26350], [1634375855.552321, 6, 1, 100000],
-                [1634375855.552321, 6, 2, 100000], [1634375855.552321, 10, 3, 100000], [None, 7, 3, 4000], [None, 10, 4, 2025], [None, 10, 5, 2500],
-                [None, 15, 4, 22500], [None, 15, 5, 23500], [None, 18, 3, 4000], [None, 21, 4, 1250]]]
+                "448":[
+                    "689109","POINT P - CLIC AULNAY",3,31,3,56,72,372,48.9478,2.47359,7,3,2,22,140,286,True,True,True,True,False,False,None,0,
+                    [1632385563,True,True,True,800002,False,"g","",""],
+                    [[None,1,1,50929.2],[None,1,3,124.8],[1611689089,3,1,701250],[1611689089,3,2,108000],[1611689089,3,3,155000],[1611689089,3,4,280000],[1611689089,3,5,595000]]]
                 },
         "logs":[]
         }
