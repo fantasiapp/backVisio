@@ -45,7 +45,7 @@ class CreateWidgetParam:
 
     "drv":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
     "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD",
-    "Synthèse P2CD Simulation", "Suivi des Visites"],
+    "Synthèse P2CD Simulation", "Suivi AD", "Suivi des Visites"],
 
     "agent":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "DN P2CD", "DN P2CD Simulation", "DN Enduit",
     "Points de Vente P2CD", "Points de Vente Enduit"],
