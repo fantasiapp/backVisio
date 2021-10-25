@@ -22,7 +22,7 @@ class CommonModel(models.Model):
 
   @classmethod
   def listFields(cls):
-    return [field.name for field in cls._meta.fields if field.name != "currentYear"][1:]
+    return [field.name for field in cls._meta.fields if field.name != "currentYear" and field.name != "idF"][1:]
 
   @classmethod
   def listIndexes(cls):
@@ -33,9 +33,8 @@ class CommonModel(models.Model):
   @classmethod
   def dictValues(cls, currentYear=True):
     length = len(cls.listFields()) == 1
-    if getattr(cls, "currentYear", False):
-      result = {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.filter(currentYear=currentYear)}
-      return result
+    if hasattr(cls, "currentYear"):
+      return {instance.idFront:instance.listValues[0] if length else instance.listValues for instance in cls.objects.filter(currentYear=currentYear)}
     if currentYear == True:
       return {instance.id:instance.listValues[0] if length else instance.listValues for instance in cls.objects.all()}
     return False
@@ -52,14 +51,18 @@ class CommonModel(models.Model):
       listRow[indexDate] = listRow[indexDate].timestamp() if listRow[indexDate] else None
     for index in self.listIndexes():
       if isinstance(self._meta.get_field(listFields[index]), models.ManyToManyField):
-        listRow[index] = [element.id for element in listRow[index].all()]
+        listRow[index] = [element.idFront for element in listRow[index].all()]
       elif listRow[index]:
-        listRow[index] = listRow[index].id
+        listRow[index] = listRow[index].idFront
     if self.jsonFields:
       for jsonField in self.jsonFields:
         index = self.listFields().index(jsonField)
         listRow[index] = json.loads(listRow[index])
     return listRow
+
+  @property
+  def idFront(self):
+    return self.idF if hasattr(self, "idF") else self.id
 
   @classmethod
   def computeListId(cls, dataDashboard, data):
@@ -160,6 +163,7 @@ class ParamVisio(CommonModel):
 
 class Drv(CommonModel):
   name = models.CharField('drv', max_length=16, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":17, "name":"drv", "pdvFiltered":True}
 
@@ -171,6 +175,7 @@ class Drv(CommonModel):
 
 class Agent(CommonModel):
   name = models.CharField('agent', max_length=64, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":18, "name":"agent", "pdvFiltered":True}
 
@@ -185,6 +190,7 @@ class AgentFinitions(CommonModel):
   drv = models.ForeignKey('drv', on_delete=models.DO_NOTHING, blank=False, default=None)
   ratioTargetedVisit = models.FloatField('Ratio des visites ciblées', unique=False, blank=False, default=0.3)
   TargetedNbVisit = models.IntegerField('Ratio des visites ciblées', unique=False, blank=False, default=800)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":19, "name":"agentFinitions", "pdvFiltered":True}
 
@@ -196,6 +202,7 @@ class AgentFinitions(CommonModel):
 
 class Dep(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":20, "name":"dep", "pdvFiltered":True}
 
@@ -207,6 +214,7 @@ class Dep(CommonModel):
 
 class Bassin(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":21, "name":"bassin", "pdvFiltered":True}
 
@@ -232,6 +240,7 @@ class Ville(CommonModel):
 
 class SegmentMarketing(CommonModel):
   name = models.CharField('segment_marketing', max_length=32, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":9, "name":"segmentMarketing"}
 
@@ -243,6 +252,7 @@ class SegmentMarketing(CommonModel):
 
 class SegmentCommercial(CommonModel):
   name = models.CharField('segment_commercial', max_length=16, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":10, "name":"segmentCommercial"}
 
@@ -254,6 +264,7 @@ class SegmentCommercial(CommonModel):
 
 class Enseigne(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":11, "name":"enseigne", "pdvFiltered":True}
 
@@ -265,6 +276,7 @@ class Enseigne(CommonModel):
 
 class Ensemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":12, "name":"ensemble", "pdvFiltered":True}
 
@@ -276,6 +288,7 @@ class Ensemble(CommonModel):
 
 class SousEnsemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":13, "name":"sousEnsemble", "pdvFiltered":True}
 
@@ -287,6 +300,7 @@ class SousEnsemble(CommonModel):
 
 class Site(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":14, "name":"site", "pdvFiltered":True}
 
@@ -320,6 +334,7 @@ class Pdv(CommonModel):
   pointFeu = models.BooleanField('Point Feu', default=False)
   onlySiniat = models.BooleanField('100% Siniat', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":0, "name":"pdvs"}
 
@@ -637,6 +652,7 @@ class TargetLevel(CommonModel):
   drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=True, null=True, default=None)
   vol = models.FloatField('Cible visée en Volume P2CD', unique=False, blank=False, default=0.0)
   dn = models.IntegerField('Cible visée en dn P2CD', unique=False, blank=False, default=0)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
 
   def createKwargsToSave(self, valueReceived, date=timezone.now(), update=True):
@@ -675,10 +691,9 @@ class TargetLevel(CommonModel):
     result = {"currentYear":{}, "lastYear":{}}
     for year, ext in {"currentYear":"", "lastYear":"_ly"}.items():
       if dataDashboard.userGroup == "drv":
-        selectedDrv = dataDashboard.lastYearId if year == "lastYear" else dataDashboard.userGeoId
-        result[year] = {"drv":[selectedDrv], "agent":list(data[f"agent{ext}"].keys()), "agentFinitions":list(data[f"agentFinitions{ext}"].keys())}
+        result[year] = {"drv":[dataDashboard.userGeoId], "agent":list(data[f"agent{ext}"].keys()), "agentFinitions":list(data[f"agentFinitions{ext}"].keys())}
       else:
-        result[year] = {dataDashboard.userGroup:{dataDashboard.lastYearId if year == "lastYear" else dataDashboard.userGeoId}}
+        result[year] = {dataDashboard.userGroup:{dataDashboard.userGeoId}}
     return result
 
   @classmethod

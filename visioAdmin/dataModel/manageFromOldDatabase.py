@@ -1,3 +1,4 @@
+from sys import hash_info
 from visioAdmin.dataModel.createWidgetParam import CreateWidgetParam
 from dateutil import tz
 from django.utils import timezone
@@ -132,8 +133,8 @@ class ManageFromOldDatabase:
 
   def getPdvNew(self):
     dictDepIdFinition = self.__computeDepIdFinition()
-    listYear = ["lastYear", "currentYear"]
-    for indexYear in range(2):
+    listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
+    for indexYear in [1,0]:
       year = listYear[indexYear]
       for line in self.listPdv[year]:
         keyValues = {}
@@ -166,7 +167,8 @@ class ManageFromOldDatabase:
             return [False, "field {}, Pdv {}, code {} does not exist".format(field, keyValues["name"], keyValues["code"])]
         existsPdv = Pdv.objects.filter(code=keyValues["code"], currentYear=indexYear==1)
         if not existsPdv.exists():
-          Pdv.objects.create(**keyValues)
+          pdv = Pdv.objects.create(**keyValues)
+          self.setIdF(pdv, True, pdv.code, None, indexYear)
         else:
           return (False, "Pdv {}, code {} allready exists".format(keyValues["name"], keyValues["code"]))
     return ("Pdv", False)
@@ -209,15 +211,16 @@ class ManageFromOldDatabase:
     return objectFound.first() if objectFound.exists() else None
 
   def getAgent(self):
-    listYear = ["lastYear", "currentYear"]
+    listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
     try:
-      for indexYear in range(2):
+      for indexYear in [1,0]:
         query = f"SELECT id, name FROM ref_actor_{indexYear}"
         ManageFromOldDatabase.cursor.execute(query)
         for (id, name) in ManageFromOldDatabase.cursor:
           existAgent = Agent.objects.filter(name__iexact=name, currentYear=indexYear == 1)
           if not existAgent.exists():
-            Agent.objects.create(name=name, currentYear=indexYear == 1)
+            agent = Agent.objects.create(name=name, currentYear=indexYear == 1)
+            self.setIdF(agent, True, name, id, indexYear)
           if not listYear[indexYear] in self.dictAgent:
             self.dictAgent[listYear[indexYear]] = {}
           self.dictAgent[listYear[indexYear]][id] = name
@@ -226,32 +229,21 @@ class ManageFromOldDatabase:
     return ("Agent", False)
 
   def getAgentFinitions(self):
-    listYear = ["lastYear", "currentYear"]
+    listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
     try:
-      for indexYear in range(2):
+      for indexYear in [1,0]:
         query = "SELECT id, name, id_drv FROM ref_finition_1"
         ManageFromOldDatabase.cursor.execute(query)
         for (id, name, idDrv) in ManageFromOldDatabase.cursor:
           drv = Drv.objects.get(name=self.dictDrv[listYear[indexYear]][idDrv], currentYear=indexYear==1)
           existsAgent = AgentFinitions.objects.filter(name__iexact=name, currentYear=indexYear==1)
           if not existsAgent.exists():
-            AgentFinitions.objects.create(name=name, drv=drv, currentYear=indexYear==1)
+            agent = AgentFinitions.objects.create(name=name, drv=drv, currentYear=indexYear==1)
+            self.setIdF(agent, True, name, id, indexYear)
           self.dictAgentFinitions[id] = name
     except db.Error as e:
       return "Error getAgentFinitions" + repr(e)
     return ("AgentFinitions", False)
-
-  def getEnsemble(self):
-    listYear = ["lastYear", "currentYear"]
-    IndexEnsemble = self.fieldsPdv.index("ensemble")
-    for indexYear in range(2):
-      dicoEnsemble = {}
-      for line in self.listPdv[listYear[indexYear]]:
-        nameEnsemble = line[IndexEnsemble]
-        if not nameEnsemble in dicoEnsemble:
-          dicoEnsemble.append(nameEnsemble)
-          Ensemble.objects.create(name=nameEnsemble, currentYear=indexYear==1)
-    return ("Ensemble", False)
 
   def __cleanEnseigne(self, idEnseigne:int, nameEnsemble:str) ->str:
     if nameEnsemble == "BIGMAT FRANCE": return 1 #CMEM
@@ -273,9 +265,9 @@ class ManageFromOldDatabase:
     return idEnseigne
 
   def getObjectFromPdv(self, field, classObject):
-    listYear = ["lastYear", "currentYear"]
+    listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
     dico = [[], []]
-    for indexYear in range(2):
+    for indexYear in [1,0]:
       IndexField = self.fieldsPdv.index(field)
       dico[indexYear] = ['Not assigned']
       classObject.objects.create(name='Not assigned', currentYear=indexYear==1)
@@ -283,32 +275,54 @@ class ManageFromOldDatabase:
         nameField = line[IndexField]
         if not nameField in dico[indexYear]:
           dico[indexYear].append(nameField)
-          classObject.objects.create(name=nameField, currentYear=indexYear==1)
+          newObject = classObject.objects.create(name=nameField, currentYear=indexYear==1)
+          self.setIdF(newObject, True, nameField, None, indexYear)
     return (classObject.__name__, False)
 
   def getObject(self, nature:str):
-    listYear = ["lastYear", "currentYear"]
+    listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
+    hasLastYear = hasattr(self.typeObject[nature], "currentYear") != False
     try:
-      for indexYear in range(2):
-        query = f"SELECT id, name FROM ref_{nature}_{indexYear}"
-        ManageFromOldDatabase.cursor.execute(query)
-        for (id, name) in self.computeHoldingOrder(ManageFromOldDatabase.cursor, nature):
-          name, currentYear = self.unProtect(name), listYear[indexYear] == "currentYear"
-          kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name__iexact":name}
-          existobject = self.typeObject[nature].objects.filter(**kwargs)
-          if not existobject.exists():
-            kwargs = {"name":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name":name}
-            self.typeObject[nature].objects.create(**kwargs)
-          dict = getattr(self, "dict" + nature.capitalize())
-          if nature in ["ville", "product", "industry"] and not id in dict:
-            dict[id] = name
-          else:
-            if not listYear[indexYear] in dict:
-              dict[listYear[indexYear]] = {}
-            dict[listYear[indexYear]][id] = name
+      for indexYear in [1,0]:
+        if indexYear == 1 or hasLastYear:
+          query = f"SELECT id, name FROM ref_{nature}_{indexYear}"
+          ManageFromOldDatabase.cursor.execute(query)
+          for id, name in self.computeHoldingOrder(ManageFromOldDatabase.cursor, nature):
+            name, currentYear = self.unProtect(name), listYear[indexYear] == "currentYear"
+            kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name__iexact":name}
+            existobject = self.typeObject[nature].objects.filter(**kwargs)
+            if not existobject.exists():
+              kwargs = {"name":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name":name}
+              newObject = self.typeObject[nature].objects.create(**kwargs)
+              self.setIdF(newObject, hasLastYear, name, id, indexYear)
+            dict = getattr(self, "dict" + nature.capitalize())
+            if nature in ["ville", "product", "industry"] and not id in dict:
+              dict[id] = name
+            else:
+              if not listYear[indexYear] in dict:
+                dict[listYear[indexYear]] = {}
+              dict[listYear[indexYear]][id] = name
     except db.Error as e:
       return (False, f"Error getObject {nature} {repr(e)}")
     return (nature, False)
+
+  def setIdF(self, newObject, hasLastYear, name, id, indexYear):
+    if hasLastYear:
+      if indexYear:
+        self.__dictIdNewId[id] = newObject.id
+        self.__dictNameNewId[name] = newObject.id
+        newObject.idF = newObject.id
+        newObject.save()
+      else:
+        newId = self.__dictNameNewId[name] if name in self.__dictNameNewId else False
+        if not newId:
+          newId = self.__dictIdNewId[id] if id in self.__dictIdNewId else False
+        if newId:
+          newObject.idF = newId
+        else:
+          newObject.idF = newObject.id
+        newObject.save()
+    
 
   def computeHoldingOrder(self, cursor, nature):
     if nature != "holding":
@@ -325,7 +339,7 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
-    dictGroup = {"root":"France", "drv":"DRV", "agent":"Secteur", "agentFinitions":"Agent Finitions"}
+    dictGroup = {"root":"France", "drv":"Région", "agent":"Secteur", "agentFinitions":"Agent Finitions"}
     listGroup = [Group.objects.get(name=name) for name in dictGroup.keys()]
     for currentYear in [True, False]:
       for geoOrTrade in geoOrTradeList:

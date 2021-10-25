@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class DataDashboard:
-  __structureTargetLevel = ["vol", "dn"]
   currentYear = "currentYear"
   __flagLoad = True
   
@@ -88,16 +87,16 @@ class DataDashboard:
   @property
   def userGeoId(self): return self.__userGeoId
 
-  @property
-  def lastYearId(self):
-    if self.__userGroup == "root": return 0
-    model = Drv
-    if self.__userGroup == "agent":
-      model = Agent
-    elif self.__userGroup == "agentFinitions":
-      model = AgentFinitions
-    nameRegion = model.objects.get(id=self.__userGeoId)
-    return model.objects.get(name=nameRegion, currentYear=False).id
+  # @property
+  # def lastYearId(self):
+  #   if self.__userGroup == "root": return 0
+  #   model = Drv
+  #   if self.__userGroup == "agent":
+  #     model = Agent
+  #   elif self.__userGroup == "agentFinitions":
+  #     model = AgentFinitions
+  #   nameRegion = model.objects.get(id=self.__userGeoId)
+  #   return model.objects.get(name=nameRegion, currentYear=False).id
   
   @property
   def dataQuery(self):
@@ -111,7 +110,7 @@ class DataDashboard:
       "geoTree":self._computeLocalGeoTree("currentYear"),
       "tradeTree":self._buildTree(firstLevel, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["currentYear"]),
       "geoTree_ly":self._computeLocalGeoTree("lastYear"),
-      "tradeTree_ly":self._buildTree(self.lastYearId, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["lastYear"]),
+      "tradeTree_ly":self._buildTree(firstLevel, DataDashboard.__tradeTreeStructure, self.dictLocalPdv["lastYear"]),
       "structureTarget":Target.listFields(),
       "structureSales":Sales.listFields(),
       }
@@ -126,9 +125,8 @@ class DataDashboard:
     for currentYear in ["currentYear", "lastYear"]:
       dictPdvs = "__pdvs" if currentYear=="currentYear" else "__pdvs_ly"
       if self.__userGroup != "root":
-        indexActor = self.__userGeoId if currentYear == "currentYear" else self.lastYearId
         indexPdv = Pdv.listFields().index(self.__userGroup)
-        result[currentYear] = {id:values for id, values in getattr(self, dictPdvs).items() if values[indexPdv] == indexActor}
+        result[currentYear] = {id:values for id, values in getattr(self, dictPdvs).items() if values[indexPdv] == self.__userGeoId}
       else:
         result[currentYear] = getattr(self, dictPdvs)
     return result
@@ -142,9 +140,8 @@ class DataDashboard:
     if self.userGroup == "root":
       attr = "__pdvs" if currentYear == "currentYear" else "__pdvs_ly"
       return self._buildTree(0, DataDashboard.__geoTreeStructure, getattr(DataDashboard, attr))
-    indexAgent = self.__userGeoId if currentYear == "currentYear" else self.lastYearId
     indexStart = 1 if self.userGroup == "drv" else 2
-    return self._buildTree(indexAgent, DataDashboard.__geoTreeStructure[indexStart:], self.dictLocalPdv[currentYear])
+    return self._buildTree(self.__userGeoId, DataDashboard.__geoTreeStructure[indexStart:], self.dictLocalPdv[currentYear])
 
   def _setupFinitions(self, data):
     self.__userProfile.lastUpdate = timezone.now() - timezone.timedelta(seconds=5)
@@ -152,9 +149,6 @@ class DataDashboard:
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     if self.__userGroup == "root":
       data["root"] = {0:""}
-    else:
-      for index in range(2):
-        data["levelTrade"][index] = data["levelGeo"][index]
 
   @classmethod
   def _buildTree(cls, idLevel, steps:list, pdvs:dict):
@@ -183,7 +177,6 @@ class DataDashboard:
       dictTargets = TargetLevel.dictValues(currentYear)
       for key, values in dictTargets.items():
         setattr(cls, f"__targetLevel{key.capitalize()}{ext}", values)
-
 
   #queries for updates
   def getUpdate(self, nature):
