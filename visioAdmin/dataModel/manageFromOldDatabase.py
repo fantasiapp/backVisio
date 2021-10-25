@@ -140,9 +140,6 @@ class ManageFromOldDatabase:
         keyValues["drv"] = self.__findObject("id_drv", self.dictDrv, year, line, Drv)
         keyValues["agent"] = self.__findObject("id_actor", self.dictAgent, year, line, Agent)
         keyValues["dep"] = self.__findObject("id_dep", self.dictDep, year, line, Dep)
-        print(line)
-        print(keyValues["dep"].id)
-        print(dictDepIdFinition[keyValues["dep"].id])
         keyValues["agentFinitions"] = AgentFinitions.objects.get(id=dictDepIdFinition[keyValues["dep"].id])
         keyValues["bassin"] = self.__findObject("id_bassin", self.dictBassin, year, line, Bassin)
         keyValues["ville"] = self.__findObject("id_ville", self.dictVille, year, line, Ville)
@@ -510,7 +507,7 @@ class ManageFromOldDatabase:
           kwargs['redistributedFinitions'] = False
           kwargs['sale'] = line[3] != "does not exist"
           kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
-          kwargs['targetFinitions'] = line[5] == "yes"
+          kwargs['targetFinitions'] = line[5] != "yes"
           kwargs['greenLight'] = line[6][0]
           kwargs['commentTargetP2CD'] = line[7]
           kwargs['bassin'] = ""
