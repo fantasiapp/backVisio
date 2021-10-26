@@ -44,9 +44,9 @@ def performancesAction(action, get):
       return manageFromOldDatabase.emptyDatabase(get['start'] == 'true')
     else:
       return manageFromOldDatabase.populateDatabase(get['start'] == 'true', method=get['method'])
-  elif action == "openAd":
-    adminParam = AdminParam()
-    return adminParam.openAd()
+  # elif action == "openAd":
+  #   adminParam = AdminParam()
+  #   return adminParam.openAd()
   elif action == "test":
     return manageFromOldDatabase.test()
   else:
