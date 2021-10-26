@@ -10,11 +10,12 @@ class AdminParam:
 
   def openAd(self):
     isAdOpen = self.params["isAdOpen"]
-    before = "Ouvert" if isAdOpen else "Fermé"
+    before = "Ouverte" if isAdOpen else "Fermée"
     ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
     if not self.params["isAdOpen"]:
+      print("clean date")
       for sale in Sales.objects.all():
         sale.date = None
         sale.save()
-    after = "Fermé" if isAdOpen else "Ouvert"
+    after = "Fermée" if isAdOpen else "Ouverte"
     return {"message":f"L'AD était {before}, elle est maintenant {after}"}
