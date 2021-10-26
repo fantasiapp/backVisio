@@ -3,10 +3,7 @@ from django.shortcuts import redirect
 from django.contrib import auth
 from django.http import JsonResponse
 from .dataModel.manageFromOldDatabase import manageFromOldDatabase
-from .admin.adminParam import adminParam
-import sys
-sys.path.append('/Users/jean-lucwalter/Save Google/Dev/Python/git/backVisio/visioServer/')
-
+from .admin.adminParam import AdminParam
 
 
 def home(request):
@@ -48,6 +45,7 @@ def performancesAction(action, get):
     else:
       return manageFromOldDatabase.populateDatabase(get['start'] == 'true', method=get['method'])
   elif action == "openAd":
+    adminParam = AdminParam()
     return adminParam.openAd()
   elif action == "test":
     return manageFromOldDatabase.test()

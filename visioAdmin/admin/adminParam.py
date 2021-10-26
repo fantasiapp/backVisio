@@ -18,5 +18,3 @@ class AdminParam:
         sale.save()
     after = "Fermé" if isAdOpen else "Ouvert"
     return {"message":f"L'AD était {before}, elle est maintenant {after}"}
-
-adminParam = AdminParam()
