@@ -140,12 +140,14 @@ class CreateWidgetParam:
         ["dnFinition","P2CD + Enduit", "#B3007E"],
         ["dnFinition","Enduit hors P2CD", "#AC0000"],
         ["dnFinition","Pur prospect", "#8B8B8B"],
+        ["dnFinition","Non documenté", "#DEDEDE"],
 
         ["dnFinitionTarget","P2CD + Enduit", "#B3007E"],
         ["dnFinitionTarget","Enduit hors P2CD", "#AC0000"],
         ["dnFinitionTarget","Cible P2CD", "#D00000"],
         ["dnFinitionTarget","Cible Pur Prospect", "#DEDEDE"],
         ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
+        ["dnFinitionTarget","Non documenté", "#DEDEDE"],
 
         ["dnFinitionTargetVisits","P2CD + Enduit", "#B3007E"],
         ["dnFinitionTargetVisits","Cible P2CD + Enduit", "#CD77E2"],
