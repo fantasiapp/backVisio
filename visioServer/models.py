@@ -100,9 +100,9 @@ class CommonModel(models.Model):
         newValue = self.getDataFromDict(fieldName, valueReceived)
         test = True
         if update:
-          if getattr(self, fieldName, None) != None:
+          if getattr(self, fieldName, None) != None and newValue != None:
             if isinstance(self._meta.get_field(fieldName), models.ForeignKey):
-              newValue = int(newValue)
+              newValue = int(newValue) if newValue else None
               test = newValue != getattr(self, fieldName).idFront
             else:
               test = newValue != getattr(self, fieldName)
@@ -748,11 +748,13 @@ class LogClient(CommonModel):
       elif field in cls.jsonFields:
         kwargs[field] = json.dumps(data[index])
       elif isinstance(cls._meta.get_field(field), models.ForeignKey):
-        objectField = Dashboard.objects.get(id=data[index]) if data[index] else None
-        kwargs[field] = objectField
+        if data[index]:
+          model = cls._meta.get_field(field).remote_field.model
+          objectField = model.objects.get(id=data[index])
+          kwargs[field] = objectField
       elif isinstance(cls._meta.get_field(field), models.BooleanField):
         kwargs[field] = True if data[index] else False
-      else:
+      elif data[index] != None:
         kwargs[field] = data[index]
     cls.objects.create(**kwargs)
 
