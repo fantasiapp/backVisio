@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.contrib import auth
 from django.http import JsonResponse
 from .dataModel.manageFromOldDatabase import manageFromOldDatabase
-# from .admin.adminParam import AdminParam
+from .admin.adminParam import AdminParam
 
 
 def home(request):
@@ -23,7 +23,6 @@ def performances(request):
     if HtlmPage: return HtlmPage
   if request.user.is_authenticated:  
     return render(request, 'visioAdmin/performances.html', {})
-    # return redirect('/visioAdmin/performances/')
 
 def performancesLogin(request):
   userName = request.POST.get('userName')
@@ -44,9 +43,9 @@ def performancesAction(action, get):
       return manageFromOldDatabase.emptyDatabase(get['start'] == 'true')
     else:
       return manageFromOldDatabase.populateDatabase(get['start'] == 'true', method=get['method'])
-  # elif action == "openAd":
-  #   adminParam = AdminParam()
-  #   return adminParam.openAd()
+  elif action == "openAd":
+    adminParam = AdminParam()
+    return adminParam.openAd()
   elif action == "test":
     return manageFromOldDatabase.test()
   else:
