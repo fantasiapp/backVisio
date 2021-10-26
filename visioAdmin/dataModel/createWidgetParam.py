@@ -249,7 +249,7 @@ class CreateWidgetParam:
       ], "Suivi AD":[
         ["avancementAD", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
         ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Évolution de l'AD au cours des dernières semaines", "", "b", "%|PdV", "histoCurve"],
-        ["suiviAD", "lg-1", "p2cd", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
+        ["suiviAD", "lg-1", "dn", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
         ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
         ["targetedVisits", "segmentCommercial", "dn", [], ["@other"], "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
