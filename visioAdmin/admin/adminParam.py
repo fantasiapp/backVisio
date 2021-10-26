@@ -12,7 +12,7 @@ class AdminParam:
     isAdOpen = self.params["isAdOpen"]
     before = "Ouvert" if isAdOpen else "Fermé"
     ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
-    if self.params["isAdOpen"]:
+    if not self.params["isAdOpen"]:
       for sale in Sales.objects.all():
         sale.date = None
         sale.save()
