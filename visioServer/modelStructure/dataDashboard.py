@@ -205,8 +205,9 @@ class DataDashboard:
       jsonData = json.loads(jsonString)
       now = self.__updateDatabasePdv(jsonData)
       self.__updateDatabaseTargetLevel(jsonData, now)
-      self.__updateLogClient(jsonData["logs"], now)
-      del jsonData["logs"]
+      if "logs" in jsonData:
+        self.__updateLogClient(jsonData["logs"], now)
+        del jsonData["logs"]
       flagSave = False
       for value in jsonData.values():
         if value: flagSave = True
