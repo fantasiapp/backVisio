@@ -144,6 +144,7 @@ function buildTable (columnsTitle, values, tableId, scroll) {
 
 function openAd () {
   $('section').empty()
+  $("div.loader").css({display:'block'})
   $.ajax({
     url : "/visioAdmin/performances/",
     type : 'get',
@@ -151,6 +152,7 @@ function openAd () {
     success : function(response) {
       console.log(response)
       $('section').prepend('<p>'+ response["message"] + '</p>')
+      $("div.loader").css({display:'none'})
     }
   })
 }
