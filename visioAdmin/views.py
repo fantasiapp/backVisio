@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.contrib import auth
 from django.http import JsonResponse
 from .dataModel.manageFromOldDatabase import manageFromOldDatabase
-from .admin.adminParam import AdminParam
+# from .admin.adminParam import AdminParam
 
 
 def home(request):
