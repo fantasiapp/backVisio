@@ -7,6 +7,7 @@ $("#VisualizePdv").on('click', function(event) {visualizePdv()})
 $("#VisualizeVentes").on('click', function(event) {visualizeVentes()})
 $("#VisualizePdvXlsx").on('click', function(event) {VisualizePdvXlsx()})
 $("#VisualizeVentesXlsx").on('click', function(event) {visualizeVentesXlsx()})
+$("#OpenAd").on('click', function(event) {openAd()})
 $("#Test").on('click', function(event) {test()})
 
 function perfEmptyBase (start) {
@@ -139,6 +140,19 @@ function buildTable (columnsTitle, values, tableId, scroll) {
     $('section').append('<table id="'+tableId+'" class="display">')
     $('#'+tableId).DataTable({data: values, columns: columnsTitle})
   }
+}
+
+function openAd () {
+  $('section').empty()
+  $.ajax({
+    url : "/visioAdmin/performances/",
+    type : 'get',
+    data : {"action":"openAd", "csrfmiddlewaretoken":csrfmiddlewaretoken},
+    success : function(response) {
+      console.log(response)
+      $('section').prepend('<p>'+ response["message"] + '</p>')
+    }
+  })
 }
 
 function test () {

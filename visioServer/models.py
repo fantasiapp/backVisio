@@ -151,6 +151,24 @@ class ParamVisio(CommonModel):
     if param: return param[0].value
     return False
 
+  @classmethod
+  def getFieldType(cls, field):
+    field = cls.objects.filter(field=field)
+    typeValue = field[0].typeValue if field else False
+    if typeValue == "str": return str
+    elif typeValue == "float": return float
+    elif typeValue == "int": return int
+    elif typeValue == "bool": return bool
+    return False
+
+  @classmethod
+  def setValue(cls, field, newValue):
+    typeValue = cls.getFieldType(field)
+    if isinstance(newValue, typeValue):
+      param = cls.objects.get(field=field)
+      param.fvalue = str(newValue)
+      param.save()
+
   @property
   def value(self):
     if self.typeValue == "int":
@@ -158,7 +176,7 @@ class ParamVisio(CommonModel):
     elif self.typeValue == "float":
       return float(self.fvalue)
     elif self.typeValue == "bool":
-      return True
+      return self.fvalue == "True"
     return self.fvalue
     
 
