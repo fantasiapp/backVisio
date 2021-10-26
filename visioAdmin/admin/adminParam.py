@@ -3,16 +3,15 @@ sys.path.append('..')
 from visioServer.models import ParamVisio, Sales
 
 class AdminParam:
-  params = ParamVisio.dictValues()
 
   def __init__(self):
     pass
 
   def openAd(self):
-    isAdOpen = self.params["isAdOpen"]
+    isAdOpen = ParamVisio.dictValues()["isAdOpen"]
     before = "Ouverte" if isAdOpen else "Fermée"
     ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
-    if not self.params["isAdOpen"]:
+    if ParamVisio.getValue("isAdOpen"):
       print("clean date")
       for sale in Sales.objects.all():
         sale.date = None
