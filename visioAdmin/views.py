@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import auth
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 from .dataModel.manageFromOldDatabase import manageFromOldDatabase
 from .admin.adminParam import AdminParam
 import sys
@@ -68,7 +69,7 @@ def login(request):
 
 def createDataDashBoard(request):
   currentUser = request.user
-  userGroup = request.user.groups.values_list('name', flat=True)
+  userGroup = currentUser.groups.values_list('name', flat=True)
   currentProfile = UserProfile.objects.filter(user=currentUser)
   if userGroup:
       userIdGeo = currentProfile[0].idGeo if currentProfile else None
