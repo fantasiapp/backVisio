@@ -113,16 +113,18 @@ function visualizeGeneric(table, scroll=true) {
     type : 'get',
     data : data,
     success : function(response) {
-      columnsTitle = []
-      $.each(response['titles'], function( _, value ) {
-        columnsTitle.push({title: value})
-      })
-      buildTable (columnsTitle, response['values'], 'table' + table, scroll)
-      if ("follow" in response) {
-        visualizeGeneric(response['follow'])
-      } else {
-        $("div.loader").css({display:'none'})
-      }
+      console.log("vizualize generic", response)
+      // columnsTitle = []
+      // $.each(response['titles'], function( _, value ) {
+      //   columnsTitle.push({title: value})
+      // })
+      // buildTable (columnsTitle, response['values'], 'table' + table, scroll)
+      // if ("follow" in response) {
+      //   visualizeGeneric(response['follow'])
+      // } else {
+      //   $("div.loader").css({display:'none'})
+      // }
+      $("div.loader").css({display:'none'})
     },
     error : function(response) {
       console.log("error", response)
