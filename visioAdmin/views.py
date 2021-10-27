@@ -71,8 +71,8 @@ def createDataDashBoard(request):
   currentUser = request.user
   userGroup = currentUser.groups.values_list('name', flat=True)
   currentProfile = UserProfile.objects.filter(user=currentUser)
-  # if userGroup:
-  #     userIdGeo = currentProfile[0].idGeo if currentProfile else None
-  # else:
-  #     return {"error":f"no profile defined for {currentUser.username}"}
-  return DataDashboard(1, 0, 1, request.META['SERVER_PORT'] == '8000')
+  if userGroup:
+      userIdGeo = currentProfile[0].idGeo if currentProfile else None
+  else:
+      return {"error":f"no profile defined for {currentUser.username}"}
+  return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
