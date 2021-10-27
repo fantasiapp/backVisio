@@ -13,7 +13,7 @@ class AdminParam:
     ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
     if ParamVisio.getValue("isAdOpen"):
       print("clean date")
-      for sale in Sales.objects.filter(dater__isnull=False):
+      for sale in Sales.objects.filter(date__isnull=False):
         sale.date = None
         sale.save()
     after = "Fermée" if isAdOpen else "Ouverte"
