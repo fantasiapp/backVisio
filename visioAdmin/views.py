@@ -74,4 +74,5 @@ def createDataDashBoard(request):
       userIdGeo = currentProfile[0].idGeo if currentProfile else None
   else:
       return {"error":f"no profile defined for {currentUser.username}"}
+  print(currentProfile, userGroup)
   return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
