@@ -29,10 +29,6 @@ def queryForToken(userName, password):
     dictResponse = json.loads(response.text)
     return dictResponse['token']
 
-token = queryForToken(username, password)
-print("adresse", address, f"Token : {token}")
-headers = {'Authorization': f'Token {token}'}
-
 fileName = 'test.json'
 url = f'{address}/visioServer/data/'
 
