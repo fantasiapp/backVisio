@@ -25,7 +25,9 @@ def performances(request):
     dataDashboard = createDataDashBoard(request)
     if isinstance(dataDashboard, dict):
       return JsonResponse(dataDashboard)
-    adminParam = AdminParam(dataDashboard) 
+    adminParam =False
+    if request.GET['action'] not in ["perfEmptyBase", "perfPopulateBase"]:
+      adminParam = AdminParam(dataDashboard) 
     return JsonResponse(performancesAction(request.GET['action'], request.GET, adminParam))
   elif request.method == 'POST' and request.POST.get('login') == "Se connecter":
     HtlmPage = performancesLogin(request)
@@ -75,4 +77,5 @@ def createDataDashBoard(request):
       userIdGeo = currentProfile[0].idGeo if currentProfile else None
   else:
       return {"error":f"no profile defined for {currentUser.username}"}
-  return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+  # return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+  return DataDashboard(1, 0, 1, request.META['SERVER_PORT'] == '8000')
