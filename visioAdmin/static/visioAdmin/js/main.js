@@ -4,7 +4,7 @@ var numberOfLinesInMessage = 30
 $("#PerfEmtpyBase").on('click', function(event) {perfEmptyBase(true)})
 $("#PerfPopulateBase").on('click', function(event) {perfPopulateBase(true, "empty")})
 $("#VisualizePdv").on('click', function(event) {visualizePdv()})
-$("#VisualizeVentes").on('click', function(event) {visualizeVentes()})
+$("#VisualizeVentes").on('click', function(event) {visualizeSales()})
 $("#VisualizePdvXlsx").on('click', function(event) {VisualizePdvXlsx()})
 $("#VisualizeVentesXlsx").on('click', function(event) {visualizeVentesXlsx()})
 $("#OpenAd").on('click', function(event) {openAd()})
@@ -92,8 +92,8 @@ function visualizePdv () {
   visualizeGeneric('Pdv', scroll=true)
 }
 
-function visualizeVentes () {
-  visualizeGeneric('Ventes', scroll=false)
+function visualizeSales () {
+  visualizeGeneric('Sales', scroll=false)
 }
 
 function VisualizePdvXlsx () {
@@ -114,17 +114,16 @@ function visualizeGeneric(table, scroll=true) {
     data : data,
     success : function(response) {
       console.log("vizualize generic", response)
-      // columnsTitle = []
-      // $.each(response['titles'], function( _, value ) {
-      //   columnsTitle.push({title: value})
-      // })
-      // buildTable (columnsTitle, response['values'], 'table' + table, scroll)
-      // if ("follow" in response) {
-      //   visualizeGeneric(response['follow'])
-      // } else {
-      //   $("div.loader").css({display:'none'})
-      // }
-      $("div.loader").css({display:'none'})
+      columnsTitle = []
+      $.each(response['titles'], function( _, value ) {
+        columnsTitle.push({title: value})
+      })
+      buildTable (columnsTitle, response['values'], 'table' + table, scroll)
+      if ("follow" in response) {
+        visualizeGeneric(response['follow'])
+      } else {
+        $("div.loader").css({display:'none'})
+      }
     },
     error : function(response) {
       console.log("error", response)

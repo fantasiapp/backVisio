@@ -55,8 +55,9 @@ def performancesAction(action, get, adminParam):
     else:
       return manageFromOldDatabase.populateDatabase(get['start'] == 'true', method=get['method'])
   elif action == "perfImportPdv":
-    print("visualize pdv")
-    return adminParam.vizualizePdv()
+    return adminParam.visualizePdv()
+  elif action == "perfImportSales":
+    return adminParam.visualizeSales()
   elif action == "openAd":
     return adminParam.openAd()
   elif action == "test":
@@ -77,5 +78,5 @@ def createDataDashBoard(request):
       userIdGeo = currentProfile[0].idGeo if currentProfile else None
   else:
       return {"error":f"no profile defined for {currentUser.username}"}
-  # return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
-  return DataDashboard(1, 0, 1, request.META['SERVER_PORT'] == '8000')
+  return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
+  # return DataDashboard(1, 0, 1, request.META['SERVER_PORT'] == '8000')

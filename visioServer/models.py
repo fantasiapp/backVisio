@@ -1,4 +1,3 @@
-from sys import dont_write_bytecode
 from django.db import models
 from django.contrib.auth.models import Group, User
 from datetime import date
