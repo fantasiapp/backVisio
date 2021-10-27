@@ -22,11 +22,11 @@ def performances(request):
     if request.GET['action'] == 'disconnect':
       auth.logout(request)
       return redirect('/visioAdmin/login/') 
-    dataDashboard = createDataDashBoard(request)
-    if isinstance(dataDashboard, dict):
-      return JsonResponse(dataDashboard)
     adminParam =False
     if request.GET['action'] not in ["perfEmptyBase", "perfPopulateBase"]:
+      dataDashboard = createDataDashBoard(request)
+      if isinstance(dataDashboard, dict):
+        return JsonResponse(dataDashboard)
       adminParam = AdminParam(dataDashboard) 
     return JsonResponse(performancesAction(request.GET['action'], request.GET, adminParam))
   elif request.method == 'POST' and request.POST.get('login') == "Se connecter":
