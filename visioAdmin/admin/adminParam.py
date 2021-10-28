@@ -94,7 +94,7 @@ class AdminParam:
     targets = [target for target in targets if target]
     print(targets[0])
     print(Target.listFields())
-    return {'titles':["PDV code", "Pdv", "Date d'envoi", "Redistribué", "Redistribué enduit", "Ne vend pas de plaque", "Ciblé enduit", "Ciblage P2CD", "Feu ciblage", "Bassin", "Commentaires"], 'values':targets}
+    return {'titles':["Test", "PDV code", "Pdv", "Date d'envoi", "Redistribué", "Redistribué enduit", "Ne vend pas de plaque", "Ciblé enduit", "Ciblage P2CD", "Feu ciblage", "Bassin", "Commentaires"], 'values':targets}
 
   def __editTarget(self, line, target, fieldsPdv, fieldsTarget):
     if target:
@@ -109,5 +109,5 @@ class AdminParam:
       targetFormated += [target[fieldsTarget.index(field)] for field in ["bassin", "commentTargetP2CD"]]
       if pdv[0] == '684695':
         print(target)
-      return pdv + targetFormated
+      return ['<button id="Test" class="buttonNav">test</button>'] + pdv + targetFormated
     return False

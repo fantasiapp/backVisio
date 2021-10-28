@@ -6,39 +6,6 @@ class CreateWidgetParam:
   __colors = None
   __axis = None
   dictLayout = None
-  rf = str(int(ParamVisio.getValue("ratioPlaqueFinition") * 1000))
-  dashBoardsList = {
-    "geo":[
-      ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²."],
-      ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],
-      ["PdM P2CD","column:2:1", ""],
-      ["PdM Enduit","column:2:1", ""],
-      ["PdM P2CD Simulation","column:2:1", ["@objectifSiege", "@DRV", "@objectifP2CD", "@ciblageP2CD"]],
-      ["PdM Enduit Simulation","column:2:1", ["@objectifEnduit","@ciblageEnduit"]],
-      ["DN P2CD","column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],
-      ["DN Enduit","column:2:1", ""],
-      ["DN P2CD Simulation","column:2:1", ["@objectifSiegeDn", "@DRVdn", "@objectifP2CDdn", "@ciblageP2CDdn"]],
-      ["Points de Vente P2CD","mono", ""],
-      ["Points de Vente Enduit","mono", ""],
-      ["Synthèse P2CD","row:1:1:1", ""],
-      ["Synthèse Enduit","row:1:1:1", ""],
-      ["Synthèse P2CD Simulation","row:1:1:1", []],
-      ["Synthèse Enduit Simulation","row:1:1:1", ""],
-      ["Suivi AD","row:2:1", ""],
-      ["Suivi des Visites","row:2:2", ""],
-    ], "trade":[
-      ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
-      ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],#19
-      ["PdM P2CD","column:2:1", ""],#20
-      ["PdM Enduit","column:2:1", ""],
-      ["DN P2CD","column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],#21
-      ["DN Enduit","column:2:1", ""],#22
-      ["Points de Vente P2CD","mono", ""],#23
-      ["Points de Vente Enduit","mono", ""],#24
-      ["Synthèse P2CD","row:1:1:1", ""],#25
-      ["Synthèse Enduit","row:1:1:1", ""],#26
-    ]
-  }
   dashboardsLevel = {
     "geo":{"root":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM P2CD Simulation", "PdM Enduit Simulation", "DN P2CD", "DN Enduit",
     "DN P2CD Simulation", "Points de Vente P2CD", "Points de Vente Enduit", "Synthèse P2CD", "Synthèse Enduit",
@@ -75,6 +42,39 @@ class CreateWidgetParam:
 
   @classmethod
   def initialize(cls):
+    rf = str(int(ParamVisio.getValue("ratioPlaqueFinition") * 1000))
+    CreateWidgetParam.dashBoardsList = {
+      "geo":[
+        ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²."],
+        ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],
+        ["PdM P2CD","column:2:1", ""],
+        ["PdM Enduit","column:2:1", ""],
+        ["PdM P2CD Simulation","column:2:1", ["@objectifSiege", "@DRV", "@objectifP2CD", "@ciblageP2CD"]],
+        ["PdM Enduit Simulation","column:2:1", ["@objectifEnduit","@ciblageEnduit"]],
+        ["DN P2CD","column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],
+        ["DN Enduit","column:2:1", ""],
+        ["DN P2CD Simulation","column:2:1", ["@objectifSiegeDn", "@DRVdn", "@objectifP2CDdn", "@ciblageP2CDdn"]],
+        ["Points de Vente P2CD","mono", ""],
+        ["Points de Vente Enduit","mono", ""],
+        ["Synthèse P2CD","row:1:1:1", ""],
+        ["Synthèse Enduit","row:1:1:1", ""],
+        ["Synthèse P2CD Simulation","row:1:1:1", []],
+        ["Synthèse Enduit Simulation","row:1:1:1", ""],
+        ["Suivi AD","row:2:1", ""],
+        ["Suivi des Visites","row:2:2", ""],
+      ], "trade":[
+        ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
+        ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],#19
+        ["PdM P2CD","column:2:1", ""],#20
+        ["PdM Enduit","column:2:1", ""],
+        ["DN P2CD","column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],#21
+        ["DN Enduit","column:2:1", ""],#22
+        ["Points de Vente P2CD","mono", ""],#23
+        ["Points de Vente Enduit","mono", ""],#24
+        ["Synthèse P2CD","row:1:1:1", ""],#25
+        ["Synthèse Enduit","row:1:1:1", ""],#26
+      ]
+    }
     if not cls.__dictWidget:
       for name in ["pie", "donut", "image", "histoRow", "histoColumn", "histoColumnTarget", "table", "pieTarget", "gauge", "histoCurve"]:
         cls.__dictWidget[name] = Widget.objects.create(name=name)
