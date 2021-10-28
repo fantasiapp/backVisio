@@ -17,11 +17,11 @@ def home(request):
     return redirect('/visioAdmin/performances/')
   return redirect('/visioAdmin/login/')
 
-# def performances(request):
-#   if request.method == 'GET' and 'action' in request.GET:
-#     if request.GET['action'] == 'disconnect':
-#       auth.logout(request)
-#       return redirect('/visioAdmin/login/') 
+def performances(request):
+  if request.method == 'GET' and 'action' in request.GET:
+    if request.GET['action'] == 'disconnect':
+      auth.logout(request)
+      return redirect('/visioAdmin/login/') 
 #     adminParam =False
 #     if request.GET['action'] not in ["perfEmptyBase", "perfPopulateBase"]:
 #       dataDashboard = createDataDashBoard(request)
