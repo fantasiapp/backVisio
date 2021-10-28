@@ -86,8 +86,3 @@ class AdminParam:
       if sale[fieldSales.index("industry")] == dictId["Salsi"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
         saleLine[4] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
     return pdvLine + saleLine
-
-  def visualizeTarget(self):
-    indexTarget = Pdv.listFields().index("target")
-    target = {id:value[indexTarget] for id, value in getattr(self.dataDashboard, "__pdvs").items()}
-    print(target)
