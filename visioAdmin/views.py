@@ -1,8 +1,8 @@
-# from django.shortcuts import render
-# from django.shortcuts import redirect
-# from django.contrib import auth
-# from django.http import JsonResponse
-# from django.contrib.auth.models import User
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.contrib import auth
+from django.http import JsonResponse
+from django.contrib.auth.models import User
 # from .dataModel.manageFromOldDatabase import manageFromOldDatabase
 # from .administration.adminParam import AdminParam
 # import sys
@@ -11,11 +11,11 @@
 # from visioServer.modelStructure.dataDashboard import DataDashboard
 
 
-# def home(request):
-#   print('home:', request.user.is_authenticated)
-#   if request.user.is_authenticated:
-#     return redirect('/visioAdmin/performances/')
-#   return redirect('/visioAdmin/login/')
+def home(request):
+  print('home:', request.user.is_authenticated)
+  if request.user.is_authenticated:
+    return redirect('/visioAdmin/performances/')
+  return redirect('/visioAdmin/login/')
 
 # def performances(request):
 #   if request.method == 'GET' and 'action' in request.GET:
