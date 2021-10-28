@@ -12,7 +12,6 @@ from visioServer.modelStructure.dataDashboard import DataDashboard
 
 
 def home(request):
-  print('home:', request.user.is_authenticated)
   if request.user.is_authenticated:
     return redirect('/visioAdmin/performances/')
   return redirect('/visioAdmin/login/')
@@ -58,6 +57,8 @@ def performancesAction(action, get, adminParam):
     return adminParam.visualizePdv()
   elif action == "perfImportSales":
     return adminParam.visualizeSales()
+  elif action == "perfImportTarget":
+    return adminParam.visualizeTarget()
   elif action == "openAd":
     return adminParam.openAd()
   elif action == "test":

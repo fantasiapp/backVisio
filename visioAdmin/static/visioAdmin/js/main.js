@@ -7,6 +7,7 @@ $("#VisualizePdv").on('click', function(event) {visualizePdv()})
 $("#VisualizeVentes").on('click', function(event) {visualizeSales()})
 $("#VisualizePdvXlsx").on('click', function(event) {VisualizePdvXlsx()})
 $("#VisualizeVentesXlsx").on('click', function(event) {visualizeVentesXlsx()})
+$("#Target").on('click', function(event) {visualizeTarget()})
 $("#OpenAd").on('click', function(event) {openAd()})
 $("#Test").on('click', function(event) {test()})
 
@@ -103,6 +104,11 @@ function VisualizePdvXlsx () {
 function visualizeVentesXlsx () {
   console.log("visualizeVentesXlsx")
   visualizeGeneric('VentesSave', scroll=false)
+}
+
+function visualizeTarget () {
+  console.log("visualizeVentesXlsx")
+  visualizeGeneric('Target', scroll=false)
 }
 
 function visualizeGeneric(table, scroll=true) {
