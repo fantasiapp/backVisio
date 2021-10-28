@@ -48,11 +48,8 @@ if get == "dashboard":
         keys = list(data.keys())
         print("Résultats", keys)
         fields = [
-            'structureLevel', 'levelGeo', 'levelTrade', 'structureDashboard', 'indexesDashboard', 'dashboards', 'structureWidgetParam', 'widgetParams',
-            'geoTree', 'tradeTree', 'structurePdv', 'structureTarget', 'indexesPdv', 'pdvs', 'agent', 'dep', 'bassin', 'ville', 'segmentMarketing', 'segmentCommercial',
-            'enseigne', 'ensemble', 'sousEnsemble', 'site', 'produit', 'industrie', 'structureTargetAgentP2CD',
-            'targetLevelAgentP2CD', 'structureLayout', 'layout', 'widget', 'structureWidgetcompute', 'widgetCompute', 'structureLabelforgraph',
-            'labelForGraph', 'structureAxisforgraph', 'indexesAxisforgraph', 'axisForGraph', 'params']
+            'structureLevel', 'levelGeo', 'levelTrade', 'levelGeo_ly', 'levelTrade_ly', 'geoTree', 'tradeTree', 'geoTree_ly', 'tradeTree_ly', 'structureTarget', 'structureSales', 'structurePdvs', 'indexesPdvs', 'pdvs', 'pdvs_ly', 'structureDashboards', 'indexesDashboards', 'dashboards', 'structureLayout', 'layout', 'widget', 'structureWidgetparams', 'indexesWidgetparams', 'widgetParams', 'structureWidgetcompute', 'widgetCompute', 'params', 'structureLabelforgraph', 'labelForGraph', 'structureAxisforgraph', 'indexesAxisforgraph', 'axisForGraph', 'segmentMarketing', 'segmentMarketing_ly', 'segmentCommercial', 'segmentCommercial_ly', 'enseigne', 'enseigne_ly', 'ensemble', 'ensemble_ly', 'sousEnsemble', 'sousEnsemble_ly', 'site', 'site_ly', 'product', 'industry', 'drv', 'drv_ly', 'agent', 'agent_ly', 'structureAgentfinitions', 'indexesAgentfinitions', 'agentFinitions', 'agentFinitions_ly', 'dep', 'dep_ly', 'bassin', 'bassin_ly', 'ville', 'structureTargetlevel', 'targetLevelAgentFinitions', 'targetLevelAgentFinitions_ly', 'timestamp'
+            ]
         if len(fields) == len(data):
             for index in range(len(fields)):
                 if fields[index] != keys[index]:
@@ -63,6 +60,8 @@ if get == "dashboard":
     else:
         print("pb in data:", data)
 elif get == "request" or get == "acknowledge":
+    token = queryForToken(username, password)
+    headers = {'Content-Type': 'application/json'}
     response = requests.get(url, headers=headers, params={"action":"update", "nature":get})
 
     try:

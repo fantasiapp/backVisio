@@ -1,4 +1,4 @@
-from visioServer.models import AxisForGraph, WidgetCompute, WidgetParams, Widget, Layout, LabelForGraph
+from visioServer.models import AxisForGraph, WidgetCompute, WidgetParams, Widget, Layout, LabelForGraph, ParamVisio
 import json
 
 class CreateWidgetParam:
@@ -6,10 +6,11 @@ class CreateWidgetParam:
   __colors = None
   __axis = None
   dictLayout = None
+  rf = str(int(ParamVisio.getValue("ratioPlaqueFinition") * 1000))
   dashBoardsList = {
     "geo":[
       ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²."],
-      ["Marché Enduit","column:2:1", "Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."],
+      ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],
       ["PdM P2CD","column:2:1", ""],
       ["PdM Enduit","column:2:1", ""],
       ["PdM P2CD Simulation","column:2:1", ["@objectifSiege", "@DRV", "@objectifP2CD", "@ciblageP2CD"]],
@@ -27,7 +28,7 @@ class CreateWidgetParam:
       ["Suivi des Visites","row:2:2", ""],
     ], "trade":[
       ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
-      ["Marché Enduit","column:2:1", "Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de 360 g/m²."],#19
+      ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],#19
       ["PdM P2CD","column:2:1", ""],#20
       ["PdM Enduit","column:2:1", ""],
       ["DN P2CD","column:2:1", "Un client est un PdV où la part de marché Siniat est > 10%,\r\nLes zones grises correspondent aux PdV non documentés"],#21
@@ -51,7 +52,7 @@ class CreateWidgetParam:
     "DN Enduit", "Points de Vente P2CD", "Points de Vente Enduit"],
 
     "agentFinitions":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "PdM Enduit Simulation", "DN P2CD", "DN Enduit", "Points de Vente P2CD",
-    "Points de Vente Enduit"],
+    "Points de Vente Enduit", "Suivi des Visites"],
 
     "dep":["Marché P2CD", "Marché Enduit", "PdM P2CD", "PdM Enduit", "DN P2CD", "DN Enduit", "Points de Vente P2CD", "Points de Vente Enduit"],
 
@@ -125,12 +126,12 @@ class CreateWidgetParam:
         ["industryTarget","Knauf", "#67D0FF"],
         ["industryTarget","Challengers", "#888888"],
 
-        ["indFinition","Pregy", "#B3007E"],
+        ["indFinition","Prégy", "#B3007E"],
         ["indFinition","Salsi", "#D00000"],
         ["indFinition","Croissance", "#DEDEDE"],
         ["indFinition","Conquête", "#466A50"],
 
-        ["indFinitionTarget","Pregy", "#B3007E"],
+        ["indFinitionTarget","Prégy", "#B3007E"],
         ["indFinitionTarget","Salsi", "#D00000"],
         ["indFinitionTarget","Cible Croissance", "#CD77E2"],
         ["indFinitionTarget","Cible Conquête", "#5BB273"],

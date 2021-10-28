@@ -63,11 +63,11 @@ class AdminParam:
     pdvs = getattr(self.dataDashboard, "__pdvs")
     indexes = Pdv.listIndexes()
     listFields = Pdv.listFields()
-    dictId = {"Siniat":Industry.objects.get(name="Siniat").id, "Pregy":Industry.objects.get(name="Pregy").id, "Salsi":Industry.objects.get(name="Salsi").id,
+    dictId = {"Siniat":Industry.objects.get(name="Siniat").id, "Prégy":Industry.objects.get(name="Prégy").id, "Salsi":Industry.objects.get(name="Salsi").id,
     "Plaque":Product.objects.get(name="plaque").id,  "Cloison":Product.objects.get(name="cloison").id, "Doublage":Product.objects.get(name="doublage").id, "Enduit":Product.objects.get(name="enduit").id}
     print(dictId, Sales.listFields())
     salesToExport = [self.__editSales(line, listFields, indexes, self.fieldNameSales, dictId, Sales.listFields()) for line in pdvs.values()]
-    return {'titles':list(self.fieldNameSales.values()) + ["Plaque", "Cloison", "Doublage", "Pregy", "Salsi"], 'values':salesToExport}
+    return {'titles':list(self.fieldNameSales.values()) + ["Plaque", "Cloison", "Doublage", "Prégy", "Salsi"], 'values':salesToExport}
 
   def __editSales(self, line, listFields, indexes, fieldNameSales, dictId, fieldSales):
     pdvLine = self.__editPdv(line, listFields, indexes, fieldNameSales)
@@ -81,7 +81,7 @@ class AdminParam:
           saleLine[1] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
         if sale[fieldSales.index("product")] == dictId["Doublage"]:
           saleLine[2] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
-      if sale[fieldSales.index("industry")] == dictId["Pregy"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
+      if sale[fieldSales.index("industry")] == dictId["Prégy"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
         saleLine[3] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
       if sale[fieldSales.index("industry")] == dictId["Salsi"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
         saleLine[4] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')

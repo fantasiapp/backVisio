@@ -97,11 +97,11 @@ class ManageFromOldDatabase:
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
         ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
-        ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
+        ("Object", ["industry"]), ("Object", ["product"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
-        ("Object", ["product"]), ("Object", ["industry"]), ("Sales", []), ("Users", []), ("TreeNavigation", [["geo", "trade"]]),
-        ("Target", []), ("TargetLevel", []), ("Visit", [])]
+        ("TreeNavigation", [["geo", "trade"]]),
+        ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", []), ("Users", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
       table, error = getattr(self, "get" + tableName)(*variable)
@@ -280,6 +280,7 @@ class ManageFromOldDatabase:
     return (classObject.__name__, False)
 
   def getObject(self, nature:str):
+    print(nature)
     listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
     hasLastYear = hasattr(self.typeObject[nature], "currentYear") != False
     try:
@@ -288,6 +289,7 @@ class ManageFromOldDatabase:
           query = f"SELECT id, name FROM ref_{nature}_{indexYear}"
           ManageFromOldDatabase.cursor.execute(query)
           for id, name in self.computeHoldingOrder(ManageFromOldDatabase.cursor, nature):
+            if nature == "industry" and name == "Pregy": name = "Prégy" 
             name, currentYear = self.unProtect(name), listYear[indexYear] == "currentYear"
             kwargs = {"name__iexact":name, "currentYear":currentYear} if getattr(self.typeObject[nature], "currentYear", False) else {"name__iexact":name}
             existobject = self.typeObject[nature].objects.filter(**kwargs)
@@ -339,7 +341,7 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
-    dictGroup = {"root":"France", "drv":"Région", "agent":"Secteur", "agentFinitions":"Agent Finitions"}
+    dictGroup = {"root":"France", "drv":"Région", "agent":"Secteur", "agentFinitions":"Agent Finition"}
     listGroup = [Group.objects.get(name=name) for name in dictGroup.keys()]
     for currentYear in [True, False]:
       for geoOrTrade in geoOrTradeList:
@@ -362,7 +364,7 @@ class ManageFromOldDatabase:
             father = subLevel
           if geoOrTrade == "geo":
             if group.name == "agent":
-              listLevel[0] = ("agentFinitions", "Agent Finitions")
+              listLevel[0] = ("agentFinitions", "Agent Finition")
             else:
               listLevel.pop(0)
     return ("TreeNavigation", False)
@@ -586,7 +588,7 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", fvalue="1.0.0", typeValue="str")
     ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", fvalue="4.0.0", typeValue="str")
     ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", fvalue="2", typeValue="float")
-    ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", fvalue="0.360", typeValue="float")
+    ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", fvalue="0.370", typeValue="float")
     ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.1", typeValue="float")
     ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
     ParamVisio.objects.create(field="isAdOpen", prettyPrint="Ouverture de l'AD", fvalue="True", typeValue="bool")
