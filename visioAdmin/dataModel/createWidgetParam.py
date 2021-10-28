@@ -62,7 +62,8 @@ class CreateWidgetParam:
         ["Synthèse Enduit Simulation","row:1:1:1", ""],
         ["Suivi AD","row:2:1", ""],
         ["Suivi des Visites","row:2:2", ""],
-      ], "trade":[
+      ],
+      "trade":[
         ["Marché P2CD","column:2:1", "Marché P2CD négoce, exprimé en milliers de km²"],
         ["Marché Enduit","column:2:1", f"Le marché Enduit est reconstitué à partir des estimations P2CD FdV x un ratio théorique de {rf} g/m²."],#19
         ["PdM P2CD","column:2:1", ""],#20

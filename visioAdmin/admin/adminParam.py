@@ -90,13 +90,13 @@ class AdminParam:
 
   def visualizeTarget(self):
     indexTarget = Pdv.listFields().index("target")
-    targets = [self.__editTarget(line, line[indexTarget], Pdv.listFields(), Target.listFields()) for line in getattr(self.dataDashboard, "__pdvs").values()]
+    targets = [self.__editTarget(id, line, line[indexTarget], Pdv.listFields(), Target.listFields()) for id, line in getattr(self.dataDashboard, "__pdvs").items()]
     targets = [target for target in targets if target]
     print(targets[0])
     print(Target.listFields())
     return {'titles':["Test", "PDV code", "Pdv", "Date d'envoi", "Redistribué", "Redistribué enduit", "Ne vend pas de plaque", "Ciblé enduit", "Ciblage P2CD", "Feu ciblage", "Bassin", "Commentaires"], 'values':targets}
 
-  def __editTarget(self, line, target, fieldsPdv, fieldsTarget):
+  def __editTarget(self, idPdv, line, target, fieldsPdv, fieldsTarget):
     if target:
       pdv = [line[fieldsPdv.index(field)] for  field in ["code", "name"]]
       targetFormated = [datetime.fromtimestamp(target[fieldsTarget.index("date")]).strftime('%Y-%m-%d')]
@@ -109,5 +109,5 @@ class AdminParam:
       targetFormated += [target[fieldsTarget.index(field)] for field in ["bassin", "commentTargetP2CD"]]
       if pdv[0] == '684695':
         print(target)
-      return ['<button id="Test" class="buttonNav">test</button>'] + pdv + targetFormated
+      return [f'<button id="Pdv:{idPdv}" class="buttonTarget">OK</button>'] + pdv + targetFormated
     return False

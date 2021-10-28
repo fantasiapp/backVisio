@@ -47,6 +47,12 @@ nav.performancesNav {
   margin: 10px;
 }
 
+.buttonTarget {
+  width: 40px;
+  height: 40px;
+  margin: 3px;
+}
+
 section {
   width:0;
   flex-grow: 1;

@@ -29,7 +29,6 @@ class DataDashboard:
       self._computeTargetLevel()
       params = getattr(self, "__params")
       params["pseudo"] = userProfile.user.username
-      print(params, type(params), type(userProfile.user.username))
     if getattr(self, "__pdvs", False) and getattr(self, "__pdvs_ly", False):
       self.dictLocalPdv = self.__computeListPdv()
     else:
@@ -51,7 +50,6 @@ class DataDashboard:
 
   @classmethod
   def __createFromJson(cls):
-
     """Fonction ayant pour but d'aller chercher les pdv dans des json pour la mise au point: le chargement est alors instantané"""
     setattr(cls, "__indexesPdvs", Pdv.listIndexes())
     setattr(cls, "__structurePdvs", Pdv.listFields())
@@ -143,6 +141,9 @@ class DataDashboard:
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     if self.__userGroup == "root":
       data["root"] = {0:""}
+    if self.__userGroup in ["agent", "agentFinitions"]:
+      del data["drv"]
+      del data["drv_ly"]
 
   @classmethod
   def _buildTree(cls, idLevel, steps:list, pdvs:dict):

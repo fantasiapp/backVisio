@@ -104,7 +104,7 @@ class ManageFromOldDatabase:
         ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
-      print(tableName, variable)
+      print(tableName, variable[0] if  len(variable) > 0 else '')
       table, error = getattr(self, "get" + tableName)(*variable)
       error = [error] if error else []
       message = "L'ancienne base de données est lue" if tableName == "PdvOld" else f"La table {str(table)} est remplie "
