@@ -99,11 +99,12 @@ class ManageFromOldDatabase:
         ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
         ("Object", ["industry"]), ("Object", ["product"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
-        ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []),
+        ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []), ("Users", []),
         ("TreeNavigation", [["geo", "trade"]]),
-        ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", []), ("Users", [])]
+        ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", [])]
     if self.dictPopulate:
       tableName, variable = self.dictPopulate.pop(0)
+      print(tableName, variable)
       table, error = getattr(self, "get" + tableName)(*variable)
       error = [error] if error else []
       message = "L'ancienne base de données est lue" if tableName == "PdvOld" else f"La table {str(table)} est remplie "
@@ -174,13 +175,14 @@ class ManageFromOldDatabase:
     return ("Pdv", False)
 
   def __computeDepIdFinition(self):
+    depFinition = self.__depFinition
     listDepIdFinition = {}
     for currentYear in [True, False]:
       if not currentYear:
-        decal = len(self.__depFinition)
-        self.__depFinition = {id - decal:value for id, value in self.__depFinition.items()}
+        decal = len(depFinition)
+        depFinition = {id - decal:value for id, value in depFinition.items()}
       dictDep = {dep.name:dep.id for dep in Dep.objects.filter(currentYear=currentYear)}
-      for idFinition, listDep in self.__depFinition.items():
+      for idFinition, listDep in depFinition.items():
         listDepStr = {str(dep) if dep > 9 else f"0{str(dep)}" for dep in listDep}
         listDepId = [dictDep[depName] for depName in listDepStr]
         for idDep in listDepId:
@@ -280,7 +282,6 @@ class ManageFromOldDatabase:
     return (classObject.__name__, False)
 
   def getObject(self, nature:str):
-    print(nature)
     listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
     hasLastYear = hasattr(self.typeObject[nature], "currentYear") != False
     try:
