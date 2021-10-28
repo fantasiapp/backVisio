@@ -27,6 +27,9 @@ class DataDashboard:
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
+      params = getattr(self, "__params")
+      params["pseudo"] = userProfile.user.username
+      print(params, type(params), type(userProfile.user.username))
     if getattr(self, "__pdvs", False) and getattr(self, "__pdvs_ly", False):
       self.dictLocalPdv = self.__computeListPdv()
     else:
@@ -48,6 +51,7 @@ class DataDashboard:
 
   @classmethod
   def __createFromJson(cls):
+
     """Fonction ayant pour but d'aller chercher les pdv dans des json pour la mise au point: le chargement est alors instantané"""
     setattr(cls, "__indexesPdvs", Pdv.listIndexes())
     setattr(cls, "__structurePdvs", Pdv.listFields())

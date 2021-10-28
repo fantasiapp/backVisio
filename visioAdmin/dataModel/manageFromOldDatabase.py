@@ -526,7 +526,7 @@ class ManageFromOldDatabase:
           kwargs['targetP2CD'] = float(line[4]) if float(line[4]) else 0.0
           kwargs['targetFinitions'] = line[5] == "yes"
           kwargs['greenLight'] = line[6][0]
-          kwargs['commentTargetP2CD'] = line[7]
+          kwargs['commentTargetP2CD'] = self.unProtect(line[7])
           kwargs['bassin'] = ""
           Target.objects.create(**kwargs)
 

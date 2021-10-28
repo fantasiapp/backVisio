@@ -1,7 +1,8 @@
 from visioServer.models import ParamVisio, Sales, Pdv
-from visioServer.modelStructure.dataDashboard import DataDashboard, Sales, Industry, Product
+from visioServer.modelStructure.dataDashboard import DataDashboard, Sales, Industry, Product, Target
 from django.db import models
-import re
+from datetime import datetime
+
 
 class AdminParam:
   fieldNamePdv = {
@@ -86,3 +87,27 @@ class AdminParam:
       if sale[fieldSales.index("industry")] == dictId["Salsi"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
         saleLine[4] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
     return pdvLine + saleLine
+
+  def visualizeTarget(self):
+    indexTarget = Pdv.listFields().index("target")
+    targets = [self.__editTarget(line, line[indexTarget], Pdv.listFields(), Target.listFields()) for line in getattr(self.dataDashboard, "__pdvs").values()]
+    targets = [target for target in targets if target]
+    print(targets[0])
+    print(Target.listFields())
+    return {'titles':["PDV code", "Pdv", "Date d'envoi", "Redistribué", "Redistribué enduit", "Ne vend pas de plaque", "Ciblé enduit", "Ciblage P2CD", "Feu ciblage", "Bassin", "Commentaires"], 'values':targets}
+
+  def __editTarget(self, line, target, fieldsPdv, fieldsTarget):
+    if target:
+      pdv = [line[fieldsPdv.index(field)] for  field in ["code", "name"]]
+      targetFormated = [datetime.fromtimestamp(target[fieldsTarget.index("date")]).strftime('%Y-%m-%d')]
+      fieldsBool = ['redistributed', 'redistributedFinitions', 'sale']
+      targetFormated += ["Non" if target[fieldsTarget.index(field)] else "Oui" for field in fieldsBool]
+      targetFormated += ["Oui" if target[fieldsTarget.index("targetFinitions")] else "Non"]
+      targetFormated.append('{:,}'.format(target[fieldsTarget.index("targetP2CD")]).replace(',', ' '))
+      greenLight = {"g":"Vert", "o":"Orange", "r":"Rouge"}
+      targetFormated.append(greenLight[target[fieldsTarget.index("greenLight")]] if target[fieldsTarget.index("greenLight")] else "Aucun")
+      targetFormated += [target[fieldsTarget.index(field)] for field in ["bassin", "commentTargetP2CD"]]
+      if pdv[0] == '684695':
+        print(target)
+      return pdv + targetFormated
+    return False

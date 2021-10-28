@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from .dataModel.manageFromOldDatabase import manageFromOldDatabase
-from .administration.adminParam import AdminParam
+from .admin.adminParam import AdminParam
 import sys
 sys.path.append('..')
 from visioServer.models import UserProfile
