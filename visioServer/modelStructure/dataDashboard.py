@@ -141,9 +141,9 @@ class DataDashboard:
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     if self.__userGroup == "root":
       data["root"] = {0:""}
-    if self.__userGroup in ["agent", "agentFinitions"]:
-      del data["drv"]
-      del data["drv_ly"]
+    # if self.__userGroup in ["agent", "agentFinitions"]:
+    #   del data["drv"]
+    #   del data["drv_ly"]
 
   @classmethod
   def _buildTree(cls, idLevel, steps:list, pdvs:dict):
