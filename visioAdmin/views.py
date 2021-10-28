@@ -65,13 +65,13 @@ def performances(request):
 #   else:
 #     return {'titles':[], 'values':[], 'tableIndex':[]}
 
-# def login(request):
-#   if request.method == 'GET':
-#     print('loginGet', request.GET)
-#   return render(request, 'visioAdmin/login.html')
+def login(request):
+  if request.method == 'GET':
+    print('loginGet', request.GET)
+  return render(request, 'visioAdmin/login.html')
 
-# def createDataDashBoard(request):
-#   currentUser = request.user
+def createDataDashBoard(request):
+  currentUser = request.user
 #   userGroup = currentUser.groups.values_list('name', flat=True)
 #   currentProfile = UserProfile.objects.filter(user=currentUser)
 #   if userGroup:
