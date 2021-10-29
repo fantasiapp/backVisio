@@ -55,7 +55,7 @@ class CreateWidgetParam:
         ["DN Enduit","column:2:1", ""],
         ["DN P2CD Simulation","column:2:1", ["@objectifSiegeDn", "@DRVdn", "@objectifP2CDdn", "@ciblageP2CDdn"]],
         ["Points de Vente P2CD","mono", ""],
-        ["Points de Vente Enduit","mono", '@ciblageEnduitComplet'],
+        ["Points de Vente Enduit","mono", ["@objectifEnduit", '@ciblageEnduitComplet']],
         ["Synthèse P2CD","row:1:1:1", ""],
         ["Synthèse Enduit","row:1:1:1", ""],
         ["Synthèse P2CD Simulation","row:1:1:1", []],
