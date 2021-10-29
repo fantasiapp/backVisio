@@ -101,8 +101,10 @@ class CommonModel(models.Model):
         if update:
           if getattr(self, fieldName, None) != None and newValue != None:
             if isinstance(self._meta.get_field(fieldName), models.ForeignKey):
-              newValue = int(newValue) if newValue else None
               test = newValue != getattr(self, fieldName).idFront
+              if test:
+                model = self._meta.get_field(fieldName).remote_field.model
+                newValue = model.objects.get(id=newValue)
             else:
               test = newValue != getattr(self, fieldName)
           else:
@@ -116,7 +118,7 @@ class CommonModel(models.Model):
     if kwargs:
       flagSave = False
       for fieldName, value in kwargs.items():
-        if value != None and value != getattr(self, fieldName):
+        if value != None and value != None and value != getattr(self, fieldName, None):
           setattr(self, fieldName, value)
           flagSave = True
       if flagSave:
@@ -734,6 +736,7 @@ class TargetLevel(CommonModel):
 
 class LogUpdate(models.Model):
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
+  error = models.BooleanField('Enregistré dans la base de données', default=False)
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
   data = models.TextField("Json des updates reçus", blank=True, default="")
 

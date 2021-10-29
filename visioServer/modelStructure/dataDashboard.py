@@ -33,7 +33,7 @@ class DataDashboard:
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
-    if name == "pdvs" and False: #isNotOnServer:
+    if name == "pdvs" and isNotOnServer:
       return cls.__createFromJson()
     if len(model.listFields()) > 1:
       setattr(cls, f"__structure{name.capitalize()}", model.listFields())
@@ -202,29 +202,30 @@ class DataDashboard:
   def postUpdate(self, userName, jsonString):
     print("post update", userName, jsonString)
     user = User.objects.get(username=userName)
-    try:
-      jsonData = json.loads(jsonString)
-      now = self.__updateDatabasePdv(jsonData)
-      self.__updateDatabaseTargetLevel(jsonData, now)
-      if "logs" in jsonData:
-        self.__updateLogClient(jsonData["logs"], now)
-        del jsonData["logs"]
-      flagSave = False
-      for value in jsonData.values():
-        if value: flagSave = True
-      if flagSave:
-        LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
-      return {"message":"postUpdate received"}
-    except:
-      return {"error":"postUpdate body is not json"}
-
-  def __updateDatabasePdv(self, data):
+    jsonData = json.loads(jsonString)
+    if "logs" in jsonData:
+      logs = jsonData["logs"]
+      del jsonData["logs"]
     now = timezone.now()
+    logUpdate = LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
+    flag = self.__updateDatabasePdv(jsonData, now)
+    logUpdate.error = flag
+    logUpdate.save()
+    self.__updateDatabaseTargetLevel(jsonData, now)
+    if 'logs' in locals():
+      self.__updateLogClient(logs, now)
+    return {"message":"postUpdate received"}
+
+  def __updateDatabasePdv(self, data, now):
     if "pdvs" in data:
       for id, value in data["pdvs"].items():
         pdv = Pdv.objects.get(id=int(id))
-        getattr(self, "__pdvs")[int(id)] = pdv.update(value, now)
-    return now
+        newValues =  pdv.update(value, now)
+        if newValues:
+          getattr(self, "__pdvs")[int(id)] = pdv.update(value, now)
+        else:
+          return False
+    return True
 
   def __updateDatabaseTargetLevel(self, data, now):
     for key, dictTargetLevel in data.items():

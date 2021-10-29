@@ -30,23 +30,19 @@
           <h1 class="title">Connexion</h1>
           <form method=post action="{% url 'visioAdmin:performances' %}" accept-charset="utf-8">
             {% csrf_token %}
-            <div id="pseudoLogin">
-              <label id="loginLagel">PSEUDO</label>
+            <div class="pseudoLogin">
+              <label class="loginLabel">PSEUDO</label>
+              <br>
+              <input class="loginInput" type="text" placeholder="Saisir votre identifiant" name="userName" value="{{ userName }}"></input>
             </div>
-            
-        <!--  <h1 class="colorSiniat">Visio Admin</h1>
-          <form class="loginBox" method=post action="{% url 'visioAdmin:performances' %}" accept-charset="utf-8">
-            {% csrf_token %}
-            <div class="loginInput">
-              <img class="iconStandard" src= "{% static 'visioAdmin/images/user.png' %}" alt="speudo" title="Entrer votre pseudo"/>
-              <input class="loginInput" name="userName" type=text placeholder="Saisir votre pseudo" value="{{ userName }}"></input>
+            <div class="loginError" style="top:210px">Le Pseudo est vide, veuillez rentrer votre identifiant</div>
+            <div class="pseudoLogin" style="top:220px">
+              <label class="loginLabel">Mot de passe</label>
+              <br>
+              <input class="loginInput" type="password" placeholder="Saisir votre mot de passe" name="password"></input>
             </div>
-            <div class="loginInput">
-              <img class="iconStandard" src= "{% static 'visioAdmin/images/password.png' %}" alt="speudo" title="Entrer votre pseudo"/>
-              <input class="loginInput" name="password" type=password placeholder="Saisir votre mot de passe"></input>
-            </div>
-            <input class="loginButton" type="submit" name="login" value="Se connecter"></input>
-            <p class="loginMessage">{{ message }}</p> -->
+            <div class="loginError" style="top:350px">{{ message }}</div>
+            <input id="loginButton" type="submit" name="login" value="Se connecter"></input>
             </form>
         </article>
       </section>

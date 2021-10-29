@@ -3,7 +3,7 @@ import json
 import time
 import sys
 
-username, password = "t", "avisio"
+username, password = "ribiere", "ovisio"
 address = 'http://localhost:8000'
 # address = 'https://visio.fantasiapp.tech:3441'
 get = "dashboard"
@@ -119,7 +119,8 @@ elif get == "post":
         'pdvs': {'183': [
             '686416', 'BRETAGNE MATERIAUX ST GREGOIRE', '5', '30', '2', '46', '106', '149', 48.1358, -1.68935, '16', '3', '2', '34', '55', '150', True, True, True, True, True, False, None, 6,
             [1635237787, True, True, True, 0, 168830, '', '', ''],
-            [[1606235629, 3, 1, 360000], [None, 3, 2, 80000], [None, 3, 3, 88000], [None, 3, 4, 100000], [None, 3, 5, 60000], [None, 21, 4, 21250]]]}}
+            [[1606235629, 3, 1, 360000], [None, 3, 2, 80000], [None, 3, 3, 88000], [None, 3, 4, 100000], [None, 3, 5, 60000], [None, 21, 4, 21250]]]}
+            }
 
     listPost = [
         {"post":postNat, "user":"all", "pwd":"avisio"},
