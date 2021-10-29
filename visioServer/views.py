@@ -40,6 +40,7 @@ class Data(DefaultView):
         currentUser = request.user
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
+        print(currentProfile[0].user)
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         else:

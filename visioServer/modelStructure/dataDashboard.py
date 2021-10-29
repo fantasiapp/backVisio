@@ -1,8 +1,5 @@
 from ..models import *
 import json
-# from django.conf import settings
-# from django.forms.models import model_to_dict
-# from django.db.models.fields.related import ForeignKey
 import os
 from django.utils import timezone
 from dotenv import load_dotenv
@@ -27,7 +24,7 @@ class DataDashboard:
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
       params = getattr(self, "__params")
-      params["pseudo"] = userProfile.user.username
+    params["pseudo"] = userProfile.user.username
     if getattr(self, "__pdvs", False) and getattr(self, "__pdvs_ly", False):
       self.dictLocalPdv = self.__computeListPdv()
     else:
