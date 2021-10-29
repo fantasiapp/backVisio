@@ -193,9 +193,9 @@ class CreateWidgetParam:
     dictParam = {
       "geo":{
       "Marché P2CD":[
-        ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Volume de vente par segment", "@sum"],
+        ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Volumétrie par segment", "@sum"],
         ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de points de vente par segment", "@sum", "b", "PdV", "donut"],
-        ["enseigne", "industry", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume de vente par enseigne", "Tous segments", "c", "km²", "histoRow"]
+        ["enseigne", "industry", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
         ["enduitIndustry", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volumétrie", "@sum", "a", "T"],
         ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de points de vente", "@sum", "b", "PdV", "donut"],
@@ -233,7 +233,7 @@ class CreateWidgetParam:
       ], "Points de Vente Enduit":[
         ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD":[
-        ["industry", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volume de vente par division géographique", "", "a", "km²", "histoColumn"],
+        ["industry", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumn"],
         ["industry", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["clientProspect", "lg-1", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse Enduit":[
@@ -241,7 +241,7 @@ class CreateWidgetParam:
         ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["segmentDnEnduit", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
-        ["industryTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "no", "Volume de vente par division géographique", "", "a", "km²", "histoColumnTarget"],
+        ["industryTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumnTarget"],
         ["industryTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["clientProspectTarget", "lg-1", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumnTarget"]
       ], "Synthèse Enduit Simulation":[
@@ -260,9 +260,9 @@ class CreateWidgetParam:
       ]
       }, "trade":{
       "Marché P2CD":[
-        ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Volume de vente par segment", "@sum"],
+        ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Volumétrie par segment", "@sum"],
         ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de points de vente par segment", "@sum", "b", "PdV", "donut"],
-        ["lt-1", "industry", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volume de vente par enseigne", "Tous segments", "c", "km²", "histoRow"]
+        ["lt-1", "industry", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
         ["enduitIndustry", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volumétrie", "@sum", "a", "T"],
         ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de points de vente", "@sum", "b", "PdV", "donut"],
@@ -288,7 +288,7 @@ class CreateWidgetParam:
       ], "Points de Vente Enduit":[
         ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD":[
-        ["industry", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volume de vente par division géographique", "", "a", "km²", "histoColumn"],
+        ["industry", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumn"],
         ["industry", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["clientProspect", "lgp-1", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse Enduit":[
