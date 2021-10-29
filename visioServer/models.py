@@ -382,6 +382,8 @@ class Pdv(CommonModel):
     if target:
       lv[idTar] = target[0].listValues
     lv[idSal] = [vente.listValues for vente in Sales.objects.filter(pdv=self)]
+    if lv[idSal] and self.id == 1:
+      print("sales", len(lv[idSal]))
     return lv
 
   def update(self, valueReceived, now):

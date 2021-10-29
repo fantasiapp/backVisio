@@ -33,7 +33,7 @@ class DataDashboard:
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):
-    if name == "pdvs" and isNotOnServer:
+    if name == "pdvs" and False: #isNotOnServer:
       return cls.__createFromJson()
     if len(model.listFields()) > 1:
       setattr(cls, f"__structure{name.capitalize()}", model.listFields())
