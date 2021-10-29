@@ -54,9 +54,9 @@ if get == "dashboard":
             for index in range(len(fields)):
                 if fields[index] != keys[index]:
                     print("pb in fields", fields[index])
-            with open(fileName, 'w') as outputFile:
-                json.dump(data, outputFile, indent=4)
         else : print("pb in fields, waited : ", len(fields), "got :", len(data))
+        with open(fileName, 'w') as outputFile:
+            json.dump(data, outputFile, indent=4)
     else:
         print("pb in data:", data)
 elif get == "request" or get == "acknowledge":

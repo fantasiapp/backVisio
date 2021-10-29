@@ -1,20 +1,23 @@
-from visioServer.models import ParamVisio, Sales, Pdv
-from visioServer.modelStructure.dataDashboard import DataDashboard, Sales, Industry, Product, Target
-from django.db import models
+from visioServer.models import ParamVisio, Sales, Pdv, Industry, Product, Target
+from visioServer.modelStructure.dataDashboard import DataDashboard
+# from django.db import models
 from datetime import datetime
+from dotenv import load_dotenv
+import json
+import os
 
 
 class AdminParam:
-  fieldNamePdv = {
-      "code":"PDV code", "name":"PDV", "drv":"Drv", "agent":"Agent", "agentFinitions":"Agent Finition", "dep":"Département", "bassin":"Bassin", "ville":"Ville", "latitude":"Latitude",
-      "longitude":"Longitude", "segmentCommercial":"Segment Commercial", "segmentMarketing":"Segment Marketing", "enseigne":"Enseigne",
-      "ensemble":"Ensemble", "sousEnsemble":"Sous-Ensemble", "site":"Site", "pointFeu":"Point Feu", "closedAt":"Fermé le"}
-  fieldNameSales = {
-    "code":"PDV code", "name":"PDV", "drv":"Drv", "agent":"Agent", "dep":"Département", "sale":"vend des plaques", "redistributed":"Non Redistribué",
-    "redistributedFinitions":"Non Redistribué enduit", "onlySiniat":"Seulement Siniat", "closedAt":"Fermé le"}
+  fieldNamePdv = False
+  fieldNameSales = False
 
   def __init__(self, dataDashboard):
     self.dataDashboard = dataDashboard
+    if not AdminParam.fieldNamePdv:
+      AdminParam.fieldNamePdv  = json.loads(os.getenv('FIELD_PDV_BASE_PRETTY'))
+      AdminParam.fieldNameSales  = json.loads(os.getenv('FIELD_PDV_SALE_BASE_PRETTY'))
+      AdminParam.titleTarget = json.loads(os.getenv('TITLE_TARGET'))
+      AdminParam.dataSales = json.loads(os.getenv('DATA_SALES'))
 
   def openAd(self):
     isAdOpen = ParamVisio.dictValues()["isAdOpen"]
@@ -64,9 +67,7 @@ class AdminParam:
     pdvs = getattr(self.dataDashboard, "__pdvs")
     indexes = Pdv.listIndexes()
     listFields = Pdv.listFields()
-    dictId = {"Siniat":Industry.objects.get(name="Siniat").id, "Prégy":Industry.objects.get(name="Prégy").id, "Salsi":Industry.objects.get(name="Salsi").id,
-    "Plaque":Product.objects.get(name="plaque").id,  "Cloison":Product.objects.get(name="cloison").id, "Doublage":Product.objects.get(name="doublage").id, "Enduit":Product.objects.get(name="enduit").id}
-    print(dictId, Sales.listFields())
+    dictId = {field:(Industry if val == "ind" else Product).objects.get(name=field).id for field, val in self.dataSales.items()}
     salesToExport = [self.__editSales(line, listFields, indexes, self.fieldNameSales, dictId, Sales.listFields()) for line in pdvs.values()]
     return {'titles':list(self.fieldNameSales.values()) + ["Plaque", "Cloison", "Doublage", "Prégy", "Salsi"], 'values':salesToExport}
 
@@ -92,9 +93,7 @@ class AdminParam:
     indexTarget = Pdv.listFields().index("target")
     targets = [self.__editTarget(id, line, line[indexTarget], Pdv.listFields(), Target.listFields()) for id, line in getattr(self.dataDashboard, "__pdvs").items()]
     targets = [target for target in targets if target]
-    print(targets[0])
-    print(Target.listFields())
-    return {'titles':["Test", "PDV code", "Pdv", "Date d'envoi", "Redistribué", "Redistribué enduit", "Ne vend pas de plaque", "Ciblé enduit", "Ciblage P2CD", "Feu ciblage", "Bassin", "Commentaires"], 'values':targets}
+    return {'titles':AdminParam.titleTarget, 'values':targets}
 
   def __editTarget(self, idPdv, line, target, fieldsPdv, fieldsTarget):
     if target:
@@ -107,7 +106,5 @@ class AdminParam:
       greenLight = {"g":"Vert", "o":"Orange", "r":"Rouge"}
       targetFormated.append(greenLight[target[fieldsTarget.index("greenLight")]] if target[fieldsTarget.index("greenLight")] else "Aucun")
       targetFormated += [target[fieldsTarget.index(field)] for field in ["bassin", "commentTargetP2CD"]]
-      if pdv[0] == '684695':
-        print(target)
       return [f'<button id="Pdv:{idPdv}" class="buttonTarget">OK</button>'] + pdv + targetFormated
     return False
