@@ -157,6 +157,7 @@ class CreateWidgetParam:
         ["dnFinitionTargetVisits","Cible Enduit hors P2CD", "#D00000"],
         ["dnFinitionTargetVisits","Pur prospect", "#8B8B8B"],
         ["dnFinitionTargetVisits","Cible Pur Prospect", "#6F6F6F"],
+        ["dnFinitionTargetVisits","Non documenté", "#DEDEDE"],
 
         ["clientProspect","Client", "#B3007E"],
         ["clientProspect","Prospect", "#888888"],
