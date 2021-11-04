@@ -207,11 +207,17 @@ class DataDashboard:
       logs = jsonData["logs"]
       del jsonData["logs"]
     now = timezone.now()
-    logUpdate = LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
-    flag = self.__updateDatabasePdv(jsonData, now)
-    logUpdate.error = flag
-    logUpdate.save()
-    self.__updateDatabaseTargetLevel(jsonData, now)
+    flagSave = False
+    for key, value in jsonData.items():
+      if value:
+        flagSave = True
+        print("postUpdate", key, value)
+    if flagSave:
+      logUpdate = LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
+      flag = self.__updateDatabasePdv(jsonData, now)
+      logUpdate.error = flag
+      logUpdate.save()
+      self.__updateDatabaseTargetLevel(jsonData, now)
     if 'logs' in locals():
       self.__updateLogClient(logs, now)
     return {"message":"postUpdate received"}

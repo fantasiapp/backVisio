@@ -342,7 +342,7 @@ class ManageFromOldDatabase:
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):
-    dictGroup = {"root":"France", "drv":"Région", "agent":"Secteur", "agentFinitions":"Agent Finition"}
+    dictGroup = {"root":"National", "drv":"Région", "agent":"Secteur", "agentFinitions":"Agent Finition"}
     listGroup = [Group.objects.get(name=name) for name in dictGroup.keys()]
     for currentYear in [True, False]:
       for geoOrTrade in geoOrTradeList:

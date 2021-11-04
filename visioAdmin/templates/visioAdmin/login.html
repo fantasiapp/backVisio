@@ -28,14 +28,14 @@
       <section id="whitePart">
         <article id="loginArticle">
           <h1 class="title">Connexion</h1>
-          <form method=post action="{% url 'visioAdmin:performances' %}" accept-charset="utf-8">
+          <form method=post action="{% url 'visioAdmin:login' %}" accept-charset="utf-8">
             {% csrf_token %}
             <div class="pseudoLogin">
               <label class="loginLabel">PSEUDO</label>
               <br>
               <input class="loginInput" type="text" placeholder="Saisir votre identifiant" name="userName" value="{{ userName }}"></input>
             </div>
-            <div class="loginError" style="top:210px">Le Pseudo est vide, veuillez rentrer votre identifiant</div>
+            <!-- <div class="loginError" style="top:210px">Le Pseudo est vide, veuillez rentrer votre identifiant</div> -->
             <div class="pseudoLogin" style="top:220px">
               <label class="loginLabel">Mot de passe</label>
               <br>

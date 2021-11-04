@@ -41,11 +41,6 @@ nav.performancesNav {
   height:100%;
   flex-direction: column;
 }
-.buttonNav {
-  width: 250px;
-  height: 40px;
-  margin: 10px;
-}
 
 .buttonTarget {
   width: 40px;

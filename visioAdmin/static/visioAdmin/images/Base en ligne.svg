@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="156" height="156" viewBox="0 0 156 156">
+  <defs>
+    <filter id="Ellipse_1555" x="81" y="71" width="58" height="57" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-opacity="0.161"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_17980" data-name="Group 17980" transform="translate(-3083 207)">
+    <g id="Rectangle_149802" data-name="Rectangle 149802" opacity="0">
+      <rect id="Rectangle_149802-2" data-name="Rectangle 149802" width="156" height="156" transform="translate(3083 -207)" fill="#fff"/>
+      <path id="Rectangle_149802_-_Outline" data-name="Rectangle 149802 - Outline" d="M1,1V155H155V1H1M0,0H156V156H0Z" transform="translate(3083 -207)" fill="#707070"/>
+    </g>
+    <g id="Group_17979" data-name="Group 17979" transform="translate(3085.258 -223)">
+      <g id="Group_17847" data-name="Group 17847" transform="translate(48.309 40)">
+        <rect id="Rectangle_149653" data-name="Rectangle 149653" width="88" height="72" rx="10" transform="translate(0.433 0)" fill="#d6d6d6"/>
+        <path id="Rectangle_149654" data-name="Rectangle 149654" d="M8,0H80a8,8,0,0,1,8,8V8a0,0,0,0,1,0,0H0A0,0,0,0,1,0,8V8A8,8,0,0,1,8,0Z" transform="translate(0.433 0)" fill="#555a6e"/>
+        <circle id="Ellipse_1552" data-name="Ellipse 1552" cx="2" cy="2" r="2" transform="translate(5.433 2)" fill="#888"/>
+        <circle id="Ellipse_1553" data-name="Ellipse 1553" cx="2" cy="2" r="2" transform="translate(13.433 2)" fill="#f06d0c"/>
+        <circle id="Ellipse_1554" data-name="Ellipse 1554" cx="2" cy="2" r="2" transform="translate(22.433 2)" fill="#fff"/>
+        <rect id="Rectangle_149655" data-name="Rectangle 149655" width="72.749" height="24.027" rx="8" transform="translate(6.998 16.018)" fill="#fff"/>
+        <rect id="Rectangle_149656" data-name="Rectangle 149656" width="28.699" height="20.023" rx="8" transform="translate(6.998 44.05)" fill="#fff"/>
+        <rect id="Rectangle_149657" data-name="Rectangle 149657" width="40.713" height="4.005" rx="2.002" transform="translate(39.034 44.05)" fill="#fff"/>
+        <rect id="Rectangle_149658" data-name="Rectangle 149658" width="40.713" height="4.005" rx="2.002" transform="translate(39.034 52.059)" fill="#fff"/>
+        <rect id="Rectangle_149659" data-name="Rectangle 149659" width="40.713" height="4.005" rx="2.002" transform="translate(39.034 60.068)" fill="#fff"/>
+      </g>
+      <g id="Group_17848" data-name="Group 17848" transform="translate(88.231 92.528)">
+        <g transform="matrix(1, 0, 0, 1, -90.49, -76.53)" filter="url(#Ellipse_1555)">
+          <ellipse id="Ellipse_1555-2" data-name="Ellipse 1555" cx="20" cy="19.5" rx="20" ry="19.5" transform="translate(90 77)" fill="#fff"/>
+        </g>
+        <path id="Path_45368" data-name="Path 45368" d="M360.009,295.023a3,3,0,0,1-2.121-.879l-8.009-8.009a3,3,0,1,1,4.243-4.243l5.888,5.888,17.9-17.9a3,3,0,0,1,4.243,4.243L362.13,294.144A3,3,0,0,1,360.009,295.023Z" transform="translate(-340.206 -266.463)" fill="#f06d0c"/>
+      </g>
+      <g id="Group_17849" data-name="Group 17849" transform="translate(15.742 59.961)">
+        <ellipse id="Ellipse_1556" data-name="Ellipse 1556" cx="4.5" cy="4" rx="4.5" ry="4" transform="translate(28 80.039)" fill="#d7e6f0"/>
+        <path id="Path_45369" data-name="Path 45369" d="M144,440v8.009A4,4,0,1,0,144,440Z" transform="translate(-111.776 -359.848)" fill="#a5c3dc"/>
+        <rect id="Rectangle_149660" data-name="Rectangle 149660" width="64" height="57" rx="28.5" transform="translate(0 0.039)" fill="#f06d0c"/>
+        <ellipse id="Ellipse_1557" data-name="Ellipse 1557" cx="28" cy="28.5" rx="28" ry="28.5" transform="translate(0 0.039)" fill="#f8a42b"/>
+        <circle id="Ellipse_1558" data-name="Ellipse 1558" cx="19.355" cy="19.355" r="19.355" transform="translate(8.864 8.738)" fill="#fff"/>
+        <circle id="Ellipse_1559" data-name="Ellipse 1559" cx="3.5" cy="3.5" r="3.5" transform="translate(16 16.039)" fill="#f8a42b"/>
+        <rect id="Rectangle_149661" data-name="Rectangle 149661" width="9" height="3" transform="translate(28 57.039)" fill="#d7e6f0"/>
+        <path id="Path_45370" data-name="Path 45370" d="M128,344v2h2a2,2,0,0,1,2,2h4v-4Z" transform="translate(-99.781 -287.875)" fill="#a5c3dc"/>
+        <rect id="Rectangle_149662" data-name="Rectangle 149662" width="12" height="24" rx="6" transform="translate(26 60.039)" fill="#f8a42b"/>
+        <path id="Rectangle_149663" data-name="Rectangle 149663" d="M0,0H0A5,5,0,0,1,5,5V19a5,5,0,0,1-5,5H0a0,0,0,0,1,0,0V0A0,0,0,0,1,0,0Z" transform="translate(33 60.039)" fill="#f06d0c"/>
+      </g>
+    </g>
+  </g>
+</svg>

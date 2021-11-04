@@ -778,5 +778,17 @@ class LogClient(CommonModel):
         kwargs[field] = data[index]
     cls.objects.create(**kwargs)
 
+class DataAdmin(models.Model):
+  currentBase = models.BooleanField("Nature de la base", unique=False, blank=False, default=False)
+  dateRef = models.DateTimeField('Date de Reception du fichier Ref', blank=True, null=True, default=None)
+  fileNameRef = models.CharField("Nom du fichier de Référence", max_length=128, unique=False, blank=False, default=None)
+  version = models.IntegerField("Numéro de version", unique=True, null=False, default=0)
+
+  @classmethod
+  def getLastSavedObject(cls):
+    pass
+
+
+
 
 

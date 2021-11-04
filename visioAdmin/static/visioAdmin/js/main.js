@@ -1,176 +1,112 @@
-var csrfmiddlewaretoken = $("nav.performancesNav input[name='csrfmiddlewaretoken']").val()
-var numberOfLinesInMessage = 30
+let token = $("#mainMain input[name='csrfmiddlewaretoken']").val()
+let etexColor = "rgb(241,100,39)"
+let selectedAction = null
 
-$("#PerfEmtpyBase").on('click', function(event) {perfEmptyBase(true)})
-$("#PerfPopulateBase").on('click', function(event) {perfPopulateBase(true, "empty")})
-$("#VisualizePdv").on('click', function(event) {visualizePdv()})
-$("#VisualizeVentes").on('click', function(event) {visualizeSales()})
-$("#VisualizePdvXlsx").on('click', function(event) {VisualizePdvXlsx()})
-$("#VisualizeVentesXlsx").on('click', function(event) {visualizeVentesXlsx()})
-$("#Target").on('click', function(event) {visualizeTarget()})
-$("#OpenAd").on('click', function(event) {openAd()})
-$("#Test").on('click', function(event) {test()})
+// Navigation
+$("#updateRef").on('click', function(event) {selectNav("updateRef")})
+$("#upload").on('click', function(event) {selectNav("upload")})
+$("#validation").on('click', function(event) {selectNav("validation")})
+$("#param").on('click', function(event) {selectNav("param")})
+$("#boxUploadClose").on('click', function(event) {closeBoxUpload()})
 
-function perfEmptyBase (start) {
-  if (start) {
-    $("div.loader").css({display:'block'})
-    $('section').empty()
-  }
+$("#updateBase").on('click', function(event) {updateBase()})
+
+function initApplication () {
+  selectNav("updateRef")
+  formatMainBox()
+  loadInit()
+}
+
+function loadInit() {
   $.ajax({
-    url : "/visioAdmin/performances/",
-    type : 'get',
-    data : {"action":"perfEmptyBase", "csrfmiddlewaretoken":csrfmiddlewaretoken, 'start':start},
+    url : "/visioAdmin/principale/",
+    type: "get",
+    data: {"action":"loadInit", "csrfmiddlewaretoken":token},
     success : function(response) {
-      if (response['errors'].length != 0) {
-        if ($('section p').length >= numberOfLinesInMessage) {
-          $('section p').last().remove()
-        }
-        $('section').prepend('<p>Error : '+ response["errors"][0] + '</p>')
-        $("div.loader").css({display:'none'})
-      } else {
-        if ($('section p').length >= numberOfLinesInMessage) {
-          $('section p').last().remove()
-        }
-        $('section').prepend('<p>'+ response["message"] + '</p>')
-        if (!response['end']) {
-          perfEmptyBase (false)
-        } else {
-          $("div.loader").css({display:'none'})
-        }
-      }
-    },
-    error : function(response) {
       console.log(response)
-      $("div.loader").css({display:'none'})
-    }
-  })
-}
-
-function perfPopulateBase (start, method) {
-  if (start && method == "empty") {
-    $('section').empty()
-    $("div.loader").css({display:'block'})
-  }
-  $.ajax({
-    url : "/visioAdmin/performances/",
-    type : 'get',
-    data : {"action":"perfPopulateBase", 'method':method, 'start':start, "csrfmiddlewaretoken":csrfmiddlewaretoken},
-    success : function(response) {
-      if (response['errors'].length != 0) {
-        if ($('section p').length >= numberOfLinesInMessage) {
-          $('section p').last().remove()
-        }
-        $('section').prepend('<p>Error : '+ response["errors"][0] + '</p>')
-        $("div.loader").css({display:'none'})
-      } else {
-        if ($('section p').length >= numberOfLinesInMessage) {
-          $('section p').last().remove()
-        }
-        $('section').prepend('<p>'+ response["message"] + '</p>')
-        if (response['query'] == "emptyDatabase") {
-          if (response['end']) {
-            perfPopulateBase (true, "populate")
-          } else {
-            perfPopulateBase (false, "empty")
-          }
-        } else {
-          if (response['end']) {
-            $("div.loader").css({display:'none'})
-          } else {
-            perfPopulateBase (false, "populate")
-          }
-        }
-      }
     },
-    error : function(response) {
-      console.log("error", response)
-      $("div.loader").css({display:'none'})
+    error: function() {
+      console.log("query loadInit error")
     }
   })
 }
 
-function visualizePdv () {
-  visualizeGeneric('Pdv', scroll=true)
+function formatMainBox() {
+  height = $("div.mainBox").height()
+  width = (height *0.94).toString() + "px"
+  marginLeft = ($("div.mainBox").width() - height - $("div.boxTextButton").width()).toString() + "px"
+  marginTop = (height *0.03).toString() + "px"
+  $("div.mainBoxImage").css({"margin-left":marginLeft, "margin-top":marginTop ,"width": width, "height":width})
 }
 
-function visualizeSales () {
-  visualizeGeneric('Sales', scroll=false)
-}
-
-function VisualizePdvXlsx () {
-  visualizeGeneric('PdvSave', scroll=false, keep=true)
-}
-
-function visualizeVentesXlsx () {
-  console.log("visualizeVentesXlsx")
-  visualizeGeneric('VentesSave', scroll=false)
-}
-
-function visualizeTarget () {
-  console.log("visualizeVentesXlsx")
-  visualizeGeneric('Target', scroll=false)
-}
-
-function visualizeGeneric(table, scroll=true) {
-  $("div.loader").css({display:'block'})
-  data = {"action":"perfImport"+table, "csrfmiddlewaretoken":csrfmiddlewaretoken}
-  $.ajax({
-    url : "/visioAdmin/performances/",
-    type : 'get',
-    data : data,
-    success : function(response) {
-      console.log("vizualize generic", response)
-      columnsTitle = []
-      $.each(response['titles'], function( _, value ) {
-        columnsTitle.push({title: value})
-      })
-      buildTable (columnsTitle, response['values'], 'table' + table, scroll)
-      if ("follow" in response) {
-        visualizeGeneric(response['follow'])
-      } else {
-        $("div.loader").css({display:'none'})
-      }
-    },
-    error : function(response) {
-      console.log("error", response)
-      $("div.loader").css({display:'none'})
+function selectNav(selection) {
+  selectedAction = selection
+  let arraySelection = ["updateRef", "upload", "validation", "param"]
+  for (let element of arraySelection) {
+    if (element === selection) {
+      $("#" + element).css({"background-color":etexColor, "color":"white"})
+      $("#" + element + "Div").css({"display":"block"})
+    } else {
+      $("#" + element).css({"background-color":"white", "color":"black"})
+      $("#" + element + "Div").css({"display":"none"})
     }
-  })
-}
-
-function buildTable (columnsTitle, values, tableId, scroll) {
-  $('section').empty()
-  if (scroll) {
-    $('section').append('<table id="'+tableId+'" class="display" style="width:100%">')
-    $('#'+tableId).DataTable({"scrollX": scroll, data: values, columns: columnsTitle})
-  } else {
-    $('section').append('<table id="'+tableId+'" class="display">')
-    $('#'+tableId).DataTable({data: values, columns: columnsTitle})
   }
 }
 
-function openAd () {
-  $('section').empty()
-  $("div.loader").css({display:'block'})
-  $.ajax({
-    url : "/visioAdmin/performances/",
-    type : 'get',
-    data : {"action":"openAd", "csrfmiddlewaretoken":csrfmiddlewaretoken},
-    success : function(response) {
-      console.log(response)
-      $('section').prepend('<p>'+ response["message"] + '</p>')
-      $("div.loader").css({display:'none'})
-    }
+// UpdateRef
+$.each(['dragenter', 'dragover', 'dragleave', 'drop'], function(index, eventName) {
+  $("#boxUploadDnd").on(eventName, function(event) {
+    event.preventDefault()
+    event.stopPropagation()
   })
+})
+
+$.each(['dragenter', 'dragover'], function(index, eventName) {
+  $("#boxUploadDnd").on(eventName, function(event) {
+    $("#boxUploadDnd").addClass('highlightBoxUpload')
+  })
+})
+
+$.each(['dragleave', 'drop'], function(index, eventName) {
+  $("#boxUploadDnd").on(eventName, function(event) {
+    $("#boxUploadDnd").removeClass('highlightBoxUpload')
+  })
+})
+
+$("#boxUploadDnd").on('drop', function(event){
+  let dt = event.originalEvent.dataTransfer
+  let files = event.originalEvent.dataTransfer.files
+  $.each(files, function(index, file) {
+    let formData = new FormData()
+    formData.append('file', file)
+    formData.append("uploadFile", "referentiel")
+    formData.append("csrfmiddlewaretoken", token)
+    $.ajax({
+      url : "/visioAdmin/principale/",
+      type: "post",
+      data: formData,
+      contentType : false,
+      processData : false,
+      success : function(response) {
+        console.log(response)
+        $("#boxUpload").css("display", "none")
+        $("#updateRefMbSave p.date").text("Mis à jour le : " + response["date"])
+        $("#updateRefMbSave p.file").text("Fichier xlsx : " + response["fileName"])
+      },
+      error: function(response) {
+        // console.log("query error")
+      }
+    })
+  })
+})
+
+function updateBase() {
+  console.log("updateBase")
+  $("#boxUpload").css({display:"block"})
 }
 
-function test () {
-  $.ajax({
-    url : "/visioAdmin/performances/",
-    type : 'get',
-    data : {"action":"test", "csrfmiddlewaretoken":csrfmiddlewaretoken},
-    success : function(response) {
-      console.log(response)
-    }
-  })
+function closeBoxUpload() {
+  $("#boxUpload").css({display:"none"})
 }
+
+initApplication ()

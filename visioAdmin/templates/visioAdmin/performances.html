@@ -4,7 +4,7 @@
 {% block content %}
   <aside class="dataLogin">
     <p>{{ userName }}</p>
-    <form method=get action="{% url 'visioAdmin:performances' %}">
+    <form class="disconnect" method=POST action="{% url 'visioAdmin:login' %}">
       {% csrf_token %}
       <input type="submit" name="action" value="disconnect"/>
     </form>
