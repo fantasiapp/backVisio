@@ -211,7 +211,6 @@ class DataDashboard:
     for key, value in jsonData.items():
       if value:
         flagSave = True
-        print("postUpdate", key, value)
     if flagSave:
       logUpdate = LogUpdate.objects.create(date=now, user=user, data=json.dumps(jsonData))
       flag = self.__updateDatabasePdv(jsonData, now)

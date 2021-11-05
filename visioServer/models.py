@@ -780,15 +780,39 @@ class LogClient(CommonModel):
 
 class DataAdmin(models.Model):
   currentBase = models.BooleanField("Nature de la base", unique=False, blank=False, default=False)
-  dateRef = models.DateTimeField('Date de Reception du fichier Ref', blank=True, null=True, default=None)
-  fileNameRef = models.CharField("Nom du fichier de Référence", max_length=128, unique=False, blank=False, default=None)
   version = models.IntegerField("Numéro de version", unique=True, null=False, default=0)
+  dateRef = models.DateTimeField('Date de Reception du fichier Ref', blank=True, null=True, default=None)
+  fileNameRef = models.CharField("Nom du fichier de Référence", max_length=128, unique=False, null=True, default="Absent")
+  dateVol = models.DateTimeField('Date de Reception du fichier Volume', blank=True, null=True, default=None)
+  fileNameVol = models.CharField("Nom du fichier de Référence", max_length=128, unique=False, null=True, default="Absent")
 
   @classmethod
   def getLastSavedObject(cls):
-    pass
+    lastSaved = cls.objects.order_by('dateRef').filter(currentBase=False)
+    currentVersion = cls.getCurrentVersionInt()
+    if lastSaved:
+      if lastSaved[0].version > currentVersion:
+        return lastSaved[0]
+    return cls.objects.create(version=currentVersion + 1)
 
+  @classmethod
+  def getSavedParam(cls, currentBase):
+    lastSaved = cls.objects.order_by('dateRef').reverse() if currentBase == "vol" else cls.objects.order_by('dateRef').reverse().filter(currentBase=currentBase)
+    if lastSaved:
+      lastSaved = lastSaved[0]
+      if currentBase == "vol":
+        dictMonth = {1:"Janvier", 2:"Février", 3:"Mars", 4:"Avril", 5:"Mai", 6:"Juin", 7:"Juillet", 8:"Août", 9:"Septembre", 10:"Octobre", 11:"Novembre", 12:"Décembre"}
+        return {"fileName":lastSaved.fileNameVol, "date":lastSaved.dateVol.strftime("%Y-%m-%d %H:%M:%S"), "month":dictMonth[lastSaved.dateVol.month - 1]}
+      return {"fileName":lastSaved.fileNameRef, "date":lastSaved.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":lastSaved.getVersion}
+    elif currentBase == "vol":
+      return {"fileName":"Aucun", "date":"jamais", "month":"aucun"}
+    return {"fileName":"Aucun", "date":"Jamais", "version": "Aucune"}
 
+  @classmethod
+  def getCurrentVersionInt(cls):
+    currentVersionStr = ParamVisio.getValue("referentielVersion")
+    return int(currentVersionStr.replace('.', ""))
 
-
-
+  @property
+  def getVersion(self):
+    return ".".join(str(self.version))

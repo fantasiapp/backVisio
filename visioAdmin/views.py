@@ -8,9 +8,9 @@ from .dataModel.manageFromOldDatabase import manageFromOldDatabase
 from .admin.adminParam import AdminParam
 import sys
 sys.path.append('..')
-from visioServer.models import DataAdmin, UserProfile
+from visioServer.models import UserProfile
 from visioServer.modelStructure.dataDashboard import DataDashboard
-from django.utils import timezone
+from .dataModel import principale
 
 
 def home(request):
@@ -20,47 +20,35 @@ def home(request):
   return redirect('/visioAdmin/login/')
 
 def main(request):
-  print("main", request.GET, request.method, request.POST.get('uploadFile'))
   if request.user.is_authenticated:
     if request.method == "POST":
       return mainActionPost(request)
     if 'action' in request.GET:
-      print("get", request.GET)
-      return mainActionGet(request)
+      return JsonResponse(mainActionGet(request))
     return render(request, 'visioAdmin/principale.html', {})
-  print("no authentification")
   return redirect('/visioAdmin/login/')
 
 def mainActionPost(request):
   if request.POST.get('uploadFile'):
-    response = handleUploadedFile(request.FILES['file'])
+    response = principale.handleUploadedFile(request.FILES['file'], request.POST.get('uploadFile'))
     if response:
       return JsonResponse(response)
     return JsonResponse({"error":"file not saved"})
 
-def handleUploadedFile(fileContent):
-  with open(f'visioAdmin/dataFile/Référentiel/{fileContent._get_name()}', 'wb+') as destination:
-    for chunk in fileContent.chunks():
-      destination.write(chunk)
-  dataAdmin = DataAdmin.getLastSavedObject()
-  dataAdmin.fileNameRef = fileContent._get_name()
-  dataAdmin.dateRef = timezone.now()
-  dataAdmin.save()
-  return {"status":"OK", "fileName":dataAdmin[0].fileName, "date":dataAdmin[0].date.strftime("%Y-%m-%d %H:%M:%S")}
-
 
 def mainActionGet(request):
-  print("action", request.GET["action"])
-  if request.GET["action"] == "updateRef":
-    print("mainAction updateRef")
-    return JsonResponse({"response":"updateRef"})
+  print("mainActionGet", request.GET["action"])
   if request.GET["action"] == "loadInit":
-    print("mainAction loadInit")
-    return JsonResponse({"response":"loadInit"})
-  return JsonResponse({"info":None})
+    return principale.loadInit()
+  if request.GET["action"] == "updateRef":
+    return {"response":"updateRef"}
+  elif request.GET["action"] == "loadPdv":
+    dataDashboard = createDataDashBoard(request)
+    adminParam = AdminParam(dataDashboard) 
+    return adminParam.visualizePdv()
+  return {"info":None}
 
 def performances(request):
-  print("performances")
   if request.method == 'GET' and 'action' in request.GET:
     if request.GET['action'] == 'disconnect':
       auth.logout(request)

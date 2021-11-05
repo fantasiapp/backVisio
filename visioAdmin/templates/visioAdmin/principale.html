@@ -33,16 +33,16 @@
                   <p class="file">Fichier xlsx : Référentiel.xlsx</p>
                 </div>
                 <div class="mainBoxButton">
-                  <button id="updateBase" class="buttonHigh">Mettre à jour le référentiel</button>
+                  <button id="updateBaseRef" class="buttonHigh">Mettre à jour le référentiel</button>
                   <div style="width:50px"></div>
-                  <button id="updateBaseCheck" class="buttonLow">Vérifier et comparer</button>
+                  <button id="updateRefCheck" class="buttonLow">Vérifier et comparer</button>
                 </div>
               </div>
               <div class="mainBoxImage">
                 <img class="boxImage" src="{% static 'visioAdmin/images/Base de sauvegarde.svg' %}">
               </div>
             </div>
-            <div class=mainBox id="updateRefSwitch">
+            <div class=mainBox id="updateSwitch">
               <div class="boxTextButton">
                 <div class="mainBoxText">
                   <p class="title"><b>Base en ligne: 2.8.0</b></p>
@@ -62,7 +62,7 @@
         <div class="updateRefLine">
           <h3>Volume Etex</h3>
           <div class="updateRefContent">
-            <div class="mainBox" id="updateRefVolume">
+            <div class="mainBox" id="updateVol">
               <div class="boxTextButton">
                 <div class="mainBoxText">
                   <p class="title"><b>Dernier mois: Septembre</b></p>
@@ -70,7 +70,7 @@
                   <p class="file">Fichier xlsx : Volume Siniat.xlsx</p>
                 </div>
                 <div class="mainBoxButton">
-                  <button id="updateVolume" class="buttonHigh">Mettre à jour les volumes</button>
+                  <button id="updateBaseVol" class="buttonHigh">Mettre à jour les volumes</button>
                 </div>
               </div>
               <div class="mainBoxImage">
@@ -231,7 +231,7 @@
       </div>
       </div>
     </article>
-    <div id="boxUpload">
+    <div id="boxUpload" data="referentiel">
       <img id="boxUploadClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
       <div id="boxUploadDnd">
         <div id="boxUploadImage">
@@ -241,6 +241,7 @@
         </div>
       </div>
     </div>
+    <article id="tableMain"></article>
   </section>
 </main>
 {% endblock %}

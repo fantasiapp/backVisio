@@ -39,6 +39,13 @@ header {
   width:100%;
 }
 #articleMain {
+  display: block;
+  height:100%;
+  width:100%;
+}
+
+#tableMain {
+  display: none;
   height:100%;
   width:100%;
 }
@@ -98,6 +105,9 @@ div.mainBox {
   flex-direction: row;
   background-color: white;
   border-radius: 1em
+}
+p.title {
+  font-weight: bold;
 }
 div.boxTextButton {
   height:100%;
