@@ -8,7 +8,7 @@
 }
 #navigationMain {
   height: 100%;
-  width:400px;
+  width:12%;
   background-color: white;
 }
 #borderMain {
@@ -19,7 +19,7 @@
 .buttonNav {
   width: 100%;
   height: 40px;
-  font-size: 1.5em;
+  font-size: 1em;
   margin: 10px 0 10px 0;
   background-color: white;
   color: black;
@@ -30,29 +30,67 @@ button.buttonNav:hover{
 }
 #sectionMain {
   height:100%;
-  width:100%;
+  width:88%;
   display:flex;
   flex-direction: column;
 }
 header {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-evenly;
   height:80px;
   width:100%;
+}
+#headerTable {
+  position:absolute;
+  display: none;
+  left:13%;
+  width:400px;
+  height:70px;
+}
+#headerTable:hover{
+  cursor:pointer
 }
 #articleMain {
   display: block;
   height:100%;
   width:100%;
 }
+#tableClose {
+  height:70px;
+  width:70px;
+}
 
-#tableMain {
+#tableArticle {
   display: none;
   height:100%;
   width:100%;
 }
+#tableHeader {
+  display:flex;
+  flex-direction: column;
+  width:100%;
+  height:5%;
+}
+div.tableHeader {
+  width:100%;
+  height:50%;
+}
+div.tableHeaderSep{
+  width:2px;
+  height:80%;
+  margin: 0 10px 0 10px;
+  background-color: black;
+}
+#tableMain {
+  width:98%;
+  height:95%;
+}
 
 #wheel {
   display:none;
-  margin:10px;
+  margin:auto;
+  margin-top:10px;
   border: 12px solid #f3f3f3;
   border-radius: 50%;
   border-top: 12px solid var(--main-etex-color);
@@ -83,9 +121,9 @@ form.disconnect {
   justify-content: space-evenly;
 }
 div.updateRefLine {
-  height:30%;
-  width:95%;
-  margin:3%;
+  height:35%;
+  width:98%;
+  margin:2%;
   display: flex;
   flex-direction:column;
   justify-content: space-evenly;
@@ -100,7 +138,7 @@ div.updateRefContent {
 }
 div.mainBox {
   height:100%;
-  width: 47%;
+  width: 48%;
   display: flex;
   flex-direction: row;
   background-color: white;
@@ -152,15 +190,15 @@ div.mainBoxImage {
   position:absolute;
   right:2%;
   top: 3%;
-  width:20px;
-  height:20px;
+  width:18px;
+  height:18px;
 }
 
 #boxUploadDnd {
   position: absolute;
   left:2%;
   right:2%;
-  top:8%;
+  top:10%;
   bottom:5%;
   background-color: #D6D6D62E;
   border: 1px dashed #151D21;

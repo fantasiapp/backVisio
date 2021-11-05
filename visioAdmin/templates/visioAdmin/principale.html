@@ -14,6 +14,9 @@
   <div id="borderMain"></div>
   <section id="sectionMain">
     <header>
+      <div id="headerTable">
+        <img id="tableClose" src="{% static '/visioAdmin/images/Fleche.svg' %}">
+      </div>
       <div id="wheel"></div>
       <form class="disconnect" method=POST action="{% url 'visioAdmin:login' %}">
         {% csrf_token %}
@@ -241,7 +244,13 @@
         </div>
       </div>
     </div>
-    <article id="tableMain"></article>
+    <article id="tableArticle">
+      <div id="tableHeader">
+        <div id="tableHeadeRow1" class="tableHeader"></div>
+        <div id="tableHeadeRow2" class="tableHeader" style="background-color: blue;"></div>
+      </div>
+      <div id="tableMain"></div>
+    </article>
   </section>
 </main>
 {% endblock %}

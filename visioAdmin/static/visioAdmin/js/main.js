@@ -12,6 +12,7 @@ $("#boxUploadClose").on('click', function(event) {closeBoxUpload()})
 $("#updateBaseRef").on('click', function(event) {updateWithFile("referentiel")})
 $("#updateRefCheck").on('click', function(event) {visualizeTablePdv()})
 $("#updateBaseVol").on('click', function(event) {updateWithFile("volume")})
+$("#headerTable").on('click', function(event) {closeTable()})
 
 function initApplication () {
   selectNav("updateRef")
@@ -51,8 +52,8 @@ function selectNav(selection) {
 
 function formatMainBox() {
   height = $("div.mainBox").height()
-  width = (height *0.94).toString() + "px"
-  marginLeft = ($("div.mainBox").width() - height - $("div.boxTextButton").width()).toString() + "px"
+  width = (height *0.80).toString() + "px"
+  marginLeft = ($("div.mainBox").width() - (height * 0.70) - $("div.boxTextButton").width()).toString() + "px"
   marginTop = (height *0.03).toString() + "px"
   $("div.mainBoxImage").css({"margin-left":marginLeft, "margin-top":marginTop ,"width": width, "height":width})
 }
@@ -147,7 +148,7 @@ function visualizeTable(table, scroll=true) {
     type : 'get',
     data : data,
     success : function(response) {
-      console.log("vizualize generic", response)
+      
       columnsTitle = []
       $.each(response['titles'], function( _, value ) {
         columnsTitle.push({title: value})
@@ -165,7 +166,9 @@ function visualizeTable(table, scroll=true) {
 function loadTable (columnsTitle, values, tableId, scroll) {
   $("#articleMain").css({display:'none'})
   $('#tableMain').empty()
-  $('#tableMain').css({display:'block'})
+  $('#tableArticle').css({display:'block'})
+  $('#headerTable').css({display:'block'})
+  addTableHeader(tableId)
   if (scroll) {
     $('#tableMain').append('<table id="'+tableId+'" class="display" style="width:100%">')
     $('#'+tableId).DataTable({"scrollX": scroll, data: values, columns: columnsTitle})
@@ -174,6 +177,24 @@ function loadTable (columnsTitle, values, tableId, scroll) {
     $('tableMain').append('<table id="'+tableId+'" class="display">')
     $('#'+tableId).DataTable({data: values, columns: columnsTitle})
   }
+}
+
+function addTableHeader(tableId) {
+  console.log("addTableHeader", tableId)
+  if (tableId == "tablePdv") {
+    $('#tableHeadeRow1').css({"display":"flex", "flex-direction": "row"})
+    $('#tableHeadeRow1').append("<p>La version sauvegardée</p>")
+    $('#tableHeadeRow1').append('<div class="tableHeaderSep"></div>')
+    $('#tableHeadeRow1').append("<p>La version en ligne</p>")
+    $('#tableHeadeRow1').append('<div class="tableHeaderSep"></div>')
+    $('#tableHeadeRow1').append("<p>Comparer la version sauvegardé avec la version en ligne</p>")
+  }
+}
+
+function closeTable() {
+  $('#tableArticle').css({display:'none'})
+  $('#headerTable').css({display:'none'})
+  $("#articleMain").css({display:'block'})
 }
 
 initApplication ()
