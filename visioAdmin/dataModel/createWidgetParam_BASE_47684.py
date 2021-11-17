@@ -95,110 +95,95 @@ class CreateWidgetParam:
     if not cls.__colors:
       cls.__colors={}
       data = [
-        ["segment", "Purs Spécialistes", "#DEDEDE", 0],
-        ["segment", "Multi Spécialistes", "#E1962A", 1],
-        ["segment", "Généralistes", "#888888", 2],
-        ["segment", "Autres", "#DC6206", 3],
+        ["segment", "Purs Spécialistes", "#DEDEDE"],
+        ["segment", "Multi Spécialistes", "#E1962A"],
+        ["segment", "Généralistes", "#888888"],
+        ["segment", "Autres", "#DC6206"],
 
-        ["mainIndustries","Siniat", "#B3007E", 0],
-        ["mainIndustries","Placo", "#0056A6", 1],
-        ["mainIndustries","Knauf", "#67D0FF", 2],
-        ["mainIndustries","Challengers", "#888888", 3],
+        ["industry","Siniat", "#B3007E"],
+        ["industry","Placo", "#0056A6"],
+        ["industry","Knauf", "#67D0FF"],
+        ["industry","Challengers", "#888888"],
 
-        ["industryTarget","Siniat", "#B3007E", 1],
-        ["industryTarget","Potentiel ciblé", "#CD77E2", 0],
-        ["industryTarget","Placo", "#0056A6", 2],
-        ["industryTarget","Knauf", "#67D0FF", 3],
-        ["industryTarget","Challengers", "#888888", 4],
+        ["industryP2CD","Siniat", "#B3007E"],
+        ["industryP2CD","Placo", "#0056A6"],
+        ["industryP2CD","Knauf", "#67D0FF"],
+        ["industryP2CD","Isolava", "#888888"],
+        ["industryP2CD","Fassa", "#888888"],
+        ["industryP2CD","Rockwool", "#888888"],
+        ["industryP2CD","Efisol", "#888888"],
+        ["industryP2CD","Semin", "#888888"],
+        ["industryP2CD","Gyproc", "#888888"],
+        ["industryP2CD","MDD", "#888888"],
+        ["industryP2CD","Deltisol", "#888888"],
+        ["industryP2CD","Sopreba", "#888888"],
+        ["industryP2CD","Norgyps", "#888888"],
+        ["industryP2CD","Pladur", "#888888"],
+        ["industryP2CD","IsoVer", "#888888"],
 
-        ["enduitIndustry","Prégy", "#B3007E", 1],
-        ["enduitIndustry","Salsi", "#D00000", 0],
-        ["enduitIndustry","Croissance", "#DEDEDE", 2],
-        ["enduitIndustry","Conquête", "#466A50", 3],
+        ["industryTarget","Siniat", "#B3007E"],
+        ["industryTarget","Potentiel ciblé", "#CD77E2"],
+        ["industryTarget","Placo", "#0056A6"],
+        ["industryTarget","Knauf", "#67D0FF"],
+        ["industryTarget","Challengers", "#888888"],
 
-        ["enduitIndustryTarget","Prégy", "#B3007E", 1],
-        ["enduitIndustryTarget","Salsi", "#D00000", 0],
-        ["enduitIndustryTarget","Cible Croissance", "#CD77E2", 4],
-        ["enduitIndustryTarget","Cible Conquête", "#5BB273", 5],
-        ["enduitIndustryTarget","Croissance", "#DEDEDE", 2],
-        ["enduitIndustryTarget","Conquête", "#466A50", 3],
+        ["indFinition","Prégy", "#B3007E"],
+        ["indFinition","Salsi", "#D00000"],
+        ["indFinition","Croissance", "#DEDEDE"],
+        ["indFinition","Conquête", "#466A50"],
 
-        ["segmentDnEnduit","P2CD + Enduit", "#B3007E", 1],
-        ["segmentDnEnduit","Enduit hors P2CD", "#AC0000", 2],
-        ["segmentDnEnduit","Pur prospect", "#8B8B8B", 3],
-        ["segmentDnEnduit","Non documenté", "#DEDEDE", 0],
+        ["indFinitionTarget","Prégy", "#B3007E"],
+        ["indFinitionTarget","Salsi", "#D00000"],
+        ["indFinitionTarget","Cible Croissance", "#CD77E2"],
+        ["indFinitionTarget","Cible Conquête", "#5BB273"],
+        ["indFinitionTarget","Croissance", "#DEDEDE"],
+        ["indFinitionTarget","Conquête", "#466A50"],
 
-        ["segmentDnEnduitTarget","P2CD + Enduit", "#B3007E", 1],
-        ["segmentDnEnduitTarget","Enduit hors P2CD", "#AC0000", 3],
-        ["segmentDnEnduitTarget","Cible P2CD", "#D00000", 2],
-        ["segmentDnEnduitTarget","Cible Pur Prospect", "#6F6F6F", 4],
-        ["segmentDnEnduitTarget","Pur prospect", "#8B8B8B", 5],
-        ["segmentDnEnduitTarget","Non documenté", "#DEDEDE", 0],
+        ["dnFinition","P2CD + Enduit", "#B3007E"],
+        ["dnFinition","Enduit hors P2CD", "#AC0000"],
+        ["dnFinition","Pur prospect", "#8B8B8B"],
+        ["dnFinition","Non documenté", "#DEDEDE"],
 
-        ["segmentDnEnduitTargetVisits","P2CD + Enduit", "#B3007E", 2],
-        ["segmentDnEnduitTargetVisits","Cible P2CD + Enduit", "#CD77E2", 1],
-        ["segmentDnEnduitTargetVisits","Enduit hors P2CD", "#AC0000", 4],
-        ["segmentDnEnduitTargetVisits","Cible Enduit hors P2CD", "#D00000", 3],
-        ["segmentDnEnduitTargetVisits","Pur prospect", "#8B8B8B", 5],
-        ["segmentDnEnduitTargetVisits","Cible Pur Prospect", "#6F6F6F", 6],
-        ["segmentDnEnduitTargetVisits","Non documenté", "#DEDEDE", 0],
+        ["dnFinitionTarget","P2CD + Enduit", "#B3007E"],
+        ["dnFinitionTarget","Enduit hors P2CD", "#AC0000"],
+        ["dnFinitionTarget","Cible P2CD", "#D00000"],
+        ["dnFinitionTarget","Cible Pur Prospect", "#6F6F6F"],
+        ["dnFinitionTarget","Pur prospect", "#8B8B8B"],
+        ["dnFinitionTarget","Non documenté", "#DEDEDE"],
 
-        ["clientProspect","Client", "#B3007E", 1],
-        ["clientProspect","Prospect", "#888888", 2],
-        ["clientProspect","Non documenté", "#DEDEDE", 0],
+        ["dnFinitionTargetVisits","P2CD + Enduit", "#B3007E"],
+        ["dnFinitionTargetVisits","Cible P2CD + Enduit", "#CD77E2"],
+        ["dnFinitionTargetVisits","Enduit hors P2CD", "#AC0000"],
+        ["dnFinitionTargetVisits","Cible Enduit hors P2CD", "#D00000"],
+        ["dnFinitionTargetVisits","Pur prospect", "#8B8B8B"],
+        ["dnFinitionTargetVisits","Cible Pur Prospect", "#6F6F6F"],
+        ["dnFinitionTargetVisits","Non documenté", "#DEDEDE"],
 
-        ["clientProspectTarget","Client", "#B3007E", 2],
-        ["clientProspectTarget","Potentiel ciblé", "#CD77E2", 0],
-        ["clientProspectTarget","Prospect", "#888888", 3],
-        ["clientProspectTarget","Non documenté", "#DEDEDE", 1],
+        ["clientProspect","Client", "#B3007E"],
+        ["clientProspect","Prospect", "#888888"],
+        ["clientProspect","Non documenté", "#DEDEDE"],
 
-        ["suiviAD","Non renseignées", "#D00000", 2],
-        ["suiviAD","Non mises à jour", "#FFE200", 1],
-        ["suiviAD","Terminées", "#4AA763", 0],
+        ["clientProspectTarget","Client", "#B3007E"],
+        ["clientProspectTarget","Potentiel ciblé", "#CD77E2"],
+        ["clientProspectTarget","Prospect", "#888888"],
+        ["clientProspectTarget","Non documenté", "#DEDEDE"],
 
-        ["histoCurve","Nombre de PdV complétés", "#363565", 0],
-        ["histoCurve","Cumul en pourcentage", "#F06D0C", 1],
+        ["suiviAD","Non renseignées", "#D00000"],
+        ["suiviAD","Non mises à jour", "#FFE200"],
+        ["suiviAD","Terminées", "#4AA763"],
 
-        ["weeks","avant", "#363565", 0],
-        ["weeks","s-6", "#363565", 1],
-        ["weeks","s-5", "#363565", 2],
-        ["weeks","s-4", "#363565", 3],
-        ["weeks","s-3", "#363565", 4],
-        ["weeks","s-2", "#363565", 5],
-        ["weeks","s-1", "#363565", 6],
-        ["weeks","s-0", "#363565", 7],
-
-        ["avancementAD", "", "", 0],
-        ["visits", "", "", 0],
-        ["tergetedVisits", "", "", 0],
-
-        ["histoCurve", "Nombre de PdV complétés", "", 0],
-        ["histoCurve", "Cumul en pourcentage", "", 1],
-
-        ["pointFeuFilter", "Non point Feu", "", 0],
-        ["pointFeuFilter", "Point feu'", "", 1],
-
-        ["visitedFilter", "Visité", "", 0],
-        ["visitedFilter", "Non visité", "", 1],
-
-        ["ciblage", "Non ciblé", "", 0],
-        ["ciblage", "Ciblé", "", 1],
-
-        ["industriel", "Siniat", "", 0],
-        ["industriel", "Placo", "", 1],
-        ["industriel", "Knauf", "", 2],
-        ["industriel", "Autres", "", 3],
-
+        ["histo&curve","Nombre de PdV complétés", "#363565"],
+        ["histo&curve","Cumul en pourcentage", "#F06D0C"]
       ]
       for list in data:
-        label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2], orderForCompute=list[3])
+        label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2])
         cls.__colors[f"{list[0]}:{list[1]}"] = label
 
       cls.__axis = {}
       listTypeAxis = set(listColor[0] for listColor in data)
       for typeAxis in listTypeAxis:
         listLabel = LabelForGraph.objects.filter(axisType = typeAxis)
-        axis = AxisForGraph.objects.create(name=typeAxis)
+        axis = AxisForGraph.objects.create(name= typeAxis)
         for label in listLabel:
           axis.labels.add(label)
         cls.__axis[typeAxis] = axis
@@ -211,35 +196,35 @@ class CreateWidgetParam:
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Volumétrie par segment", "@sum"],
         ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de points de vente par segment", "@sum", "b", "PdV", "donut"],
-        ["enseigne", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="mainIndustries").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "km²", "histoRow"]
+        ["enseigne", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
-        ["enduitIndustry", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="enduitIndustry").id, ["@other"], "no", "Volumétrie", "@sum", "a", "T"],
-        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, ["@other"], "no", "Nombre de points de vente", "@sum", "b", "PdV", "donut"],
-        ["enseigne", "enduitIndustry", "enduit", [], AxisForGraph.objects.get(name="enduitIndustry").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "T", "histoRow"]
+        ["enduitIndustry", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volumétrie", "@sum", "a", "T"],
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de points de vente", "@sum", "b", "PdV", "donut"],
+        ["enseigne", "enduitIndustry", "enduit", [], AxisForGraph.objects.get(name="indFinition").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "T", "histoRow"]
       ], "PdM P2CD":[
-        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="mainIndustries").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
-        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="mainIndustries").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="mainIndustries").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
+        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit":[
-        ["enduitIndustry", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="enduitIndustry").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
-        ["enduitIndustry", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="enduitIndustry").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "enduitIndustry", "Enduit", [], AxisForGraph.objects.get(name="enduitIndustry").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["enduitIndustry", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
+        ["enduitIndustry", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustry", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM P2CD Simulation":[
         ["industryTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industryTarget").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%", "pieTarget"],
         ["industryTarget", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industryTarget").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
         ["enseigne", "industryTarget", "p2cd", [], AxisForGraph.objects.get(name="industryTarget").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit Simulation":[
-        ["enduitIndustryTarget", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="enduitIndustryTarget").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%", "pieTarget"],
-        ["enduitIndustryTarget", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="enduitIndustryTarget").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
-        ["enseigne", "enduitIndustryTarget", "Enduit", [], AxisForGraph.objects.get(name="enduitIndustryTarget").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["enduitIndustryTarget", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%", "pieTarget"],
+        ["enduitIndustryTarget", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
+        ["enseigne", "enduitIndustryTarget", "Enduit", [], AxisForGraph.objects.get(name="indFinitionTarget").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "DN P2CD":[
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
         ["enseigne", "clientProspect", "dn", [], AxisForGraph.objects.get(name="clientProspect").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
       ], "DN Enduit":[
-        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
-        ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
-        ["enseigne", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="segmentDnEnduit").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
+        ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
+        ["enseigne", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="dnFinition").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
       ], "DN P2CD Simulation":[
         ["clientProspectTarget", "segmentCommercial", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "pieTarget"],
         ["clientProspectTarget", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, [], "no", "DN par Segment", "", "b", "PdV", "histoColumn"],
@@ -249,28 +234,28 @@ class CreateWidgetParam:
       ], "Points de Vente Enduit":[
         ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD":[
-        ["mainIndustries", "lg-1", "P2CD", AxisForGraph.objects.get(name="mainIndustries").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumn"],
-        ["mainIndustries", "lg-1", "P2CD", AxisForGraph.objects.get(name="mainIndustries").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["mainIndustries", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumn"],
+        ["mainIndustries", "lg-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["clientProspect", "lg-1", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse Enduit":[
-        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustry").id, [], "no", "Volumétrie par division géographique", "", "a", "T", "histoColumn"],
-        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
-        ["segmentDnEnduit", "agentFinitions", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
+        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "no", "Volumétrie par division géographique", "", "a", "T", "histoColumn"],
+        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduit", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse P2CD Simulation":[
         ["industryTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumnTarget"],
         ["industryTarget", "lg-1", "P2CD", AxisForGraph.objects.get(name="industryTarget").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["clientProspectTarget", "lg-1", "dn", AxisForGraph.objects.get(name="clientProspectTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumnTarget"]
       ], "Synthèse Enduit Simulation":[
-        ["enduitIndustryTarget", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustryTarget").id, [], "no", "Volumétrie par division géographique", "", "a", "T", "histoColumnTarget"],
-        ["enduitIndustryTarget", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustryTarget").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
-        ["segmentDnEnduitTarget", "agentFinitions", "dn", AxisForGraph.objects.get(name="segmentDnEnduitTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
+        ["enduitIndustryTarget", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "no", "Volumétrie par division géographique", "", "a", "T", "histoColumnTarget"],
+        ["enduitIndustryTarget", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinitionTarget").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduitTarget", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinitionTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Suivi AD":[
-        ["avancementAD", "avancementAD", "avancementAD", AxisForGraph.objects.get(name="avancementAD").id, ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
-        ["histoCurve", "weeks", "dn", AxisForGraph.objects.get(name="histoCurve").id, [], "no", "Évolution de l'AD au cours des dernières semaines", "", "b", "%|PdV", "histoCurve"],
+        ["avancementAD", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
+        ["histo&curve", "weeks", "dn", AxisForGraph.objects.get(name="histo&curve").id, [], "no", "Évolution de l'AD au cours des dernières semaines", "", "b", "%|PdV", "histoCurve"],
         ["suiviAD", "lg-1", "dn", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
-        ["visits", "visits", "visits", AxisForGraph.objects.get(name="visits").id, ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
-        ["targetedVisits", "targetedVisits", "targetedVisits", AxisForGraph.objects.get(name="targetedVisits").id, ["@other"], "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
+        ["visits", "segmentCommercial", "p2cd", [], ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
+        ["targetedVisits", "segmentCommercial", "dn", [], ["@other"], "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
         ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites en volume", "@sum", "c", "T"],
         ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites en DN", "@sum", "d", "visites"]
       ]
@@ -278,39 +263,39 @@ class CreateWidgetParam:
       "Marché P2CD":[
         ["segmentMarketing", "segmentCommercial", "p2cd", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Volumétrie par segment", "@sum"],
         ["segmentMarketing", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segment").id, ["@other"], "no", "Nombre de points de vente par segment", "@sum", "b", "PdV", "donut"],
-        ["lt-1", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="mainIndustries").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "km²", "histoRow"]
+        ["lt-1", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "km²", "histoRow"]
       ], "Marché Enduit":[
-        ["enduitIndustry", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="enduitIndustry").id, ["@other"], "no", "Volumétrie", "@sum", "a", "T"],
-        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, ["@other"], "no", "Nombre de points de vente", "@sum", "b", "PdV", "donut"],
-        ["lt-1", "enduitIndustry", "enduit", [], AxisForGraph.objects.get(name="enduitIndustry").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "T", "histoRow"]
+        ["enduitIndustry", "segmentCommercial", "enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "no", "Volumétrie", "@sum", "a", "T"],
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "Nombre de points de vente", "@sum", "b", "PdV", "donut"],
+        ["lt-1", "enduitIndustry", "enduit", [], AxisForGraph.objects.get(name="indFinition").id, "no", "Volumétrie par enseigne", "Tous segments", "c", "T", "histoRow"]
       ], "PdM P2CD":[
-        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="mainIndustries").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
-        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="mainIndustries").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
-        ["lt-1", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="mainIndustries").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
+        ["mainIndustries", "segmentMarketing", "p2cd", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
+        ["lt-1", "mainIndustries", "p2cd", [], AxisForGraph.objects.get(name="industry").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
       ], "PdM Enduit":[
-        ["enduitIndustry", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="enduitIndustry").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
-        ["enduitIndustry", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="enduitIndustry").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
-        ["lt-1", "enduitIndustry", "Enduit", [], AxisForGraph.objects.get(name="enduitIndustry").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
+        ["enduitIndustry", "segmentCommercial", "Enduit", AxisForGraph.objects.get(name="indFinition").id, ["@other"], "classic", "Parts de marché par industrie", "", "a", "%"],
+        ["enduitIndustry", "segmentMarketing", "Enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par segment", "", "b", "%", "histoColumn"],
+        ["lt-1", "enduitIndustry", "Enduit", [], AxisForGraph.objects.get(name="indFinition").id, "classic", "Parts de marché par enseigne", "Tous segments", "c", "%", "histoRow"]
       ],"DN P2CD":[
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
         ["clientProspect", "segmentMarketing", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
         ["lt-1", "clientProspect", "dn", [], AxisForGraph.objects.get(name="clientProspect").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
       ], "DN Enduit":[
-        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
-        ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
-        ["lt-1", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="segmentDnEnduit").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
+        ["segmentDnEnduit", "segmentCommercial", "dn", AxisForGraph.objects.get(name="dnFinition").id, ["@other"], "no", "DN totale", "@sum", "a", "PdV", "donut"],
+        ["segmentDnEnduit", "segmentMarketing", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par segment", "", "b", "PdV", "histoColumn"],
+        ["lt-1", "segmentDnEnduit", "dn", [], AxisForGraph.objects.get(name="dnFinition").id, "no", "DN par enseigne", "Tous segments", "c", "PdV", "histoRow"]
       ],"Points de Vente P2CD":[
         ["pdvs", "colTableP2cd", "p2cd", [], [], "no", "@titleTableP2cd", "", "a", "m²", "table"]
       ], "Points de Vente Enduit":[
         ["pdvs", "colTableEnduit", "enduit", [], [], "no", "@titleTableEnduit", "", "a", "T", "table"]
       ], "Synthèse P2CD":[
-        ["mainIndustries", "lgp-1", "P2CD", AxisForGraph.objects.get(name="mainIndustries").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumn"],
-        ["mainIndustries", "lgp-1", "P2CD", AxisForGraph.objects.get(name="mainIndustries").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["mainIndustries", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "no", "Volumétrie par division géographique", "", "a", "km²", "histoColumn"],
+        ["mainIndustries", "lgp-1", "P2CD", AxisForGraph.objects.get(name="industry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["clientProspect", "lgp-1", "dn", AxisForGraph.objects.get(name="clientProspect").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Synthèse Enduit":[
-        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustry").id, [], "no", "Volumétrie par division géographique", "", "a", "T", "histoColumn"],
-        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustry").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
-        ["segmentDnEnduit", "agentFinitions", "dn", AxisForGraph.objects.get(name="segmentDnEnduit").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
+        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "no", "Volumétrie par division géographique", "", "a", "T", "histoColumn"],
+        ["enduitIndustry", "agentFinitions", "enduit", AxisForGraph.objects.get(name="indFinition").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
+        ["segmentDnEnduit", "agentFinitions", "dn", AxisForGraph.objects.get(name="dnFinition").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], 
       'other':[
         ["segmentMarketing", "segmentCommercial", "p2cd", [], ["@other"], "no", "Vente en volume"],
