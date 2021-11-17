@@ -189,6 +189,11 @@ class CreateWidgetParam:
         ["industriel", "Knauf", "", 2],
         ["industriel", "Autres", "", 3],
 
+        ["segmentMarketingFilter", "Purs Spécialistes", "", 0],
+        ["segmentMarketingFilter", "Multi Spécialistes", "", 1],
+        ["segmentMarketingFilter", "Généralistes", "", 2],
+        ["segmentMarketingFilter", "Non documenté", "", 3],
+
       ]
       for list in data:
         label = LabelForGraph.objects.create(axisType=list[0], label=list[1], color=list[2], orderForCompute=list[3])
