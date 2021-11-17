@@ -170,7 +170,7 @@ class CreateWidgetParam:
 
         ["avancementAD", "", "", 0],
         ["visits", "", "", 0],
-        ["tergetedVisits", "", "", 0],
+        ["targetedVisits", "", "", 0],
 
         ["histoCurve", "Nombre de PdV complétés", "", 0],
         ["histoCurve", "Cumul en pourcentage", "", 1],
