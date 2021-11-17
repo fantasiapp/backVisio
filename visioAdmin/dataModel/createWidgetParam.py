@@ -271,8 +271,8 @@ class CreateWidgetParam:
       ], 'Suivi des Visites':[
         ["visits", "visits", "visits", AxisForGraph.objects.get(name="visits").id, ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
         ["targetedVisits", "targetedVisits", "targetedVisits", AxisForGraph.objects.get(name="targetedVisits").id, ["@other"], "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
-        ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites en volume", "@sum", "c", "T"],
-        ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="dnFinitionTargetVisits").id, ["@other"], "no", "Répartition des visites en DN", "@sum", "d", "visites"]
+        ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="segmentDnEnduitTargetVisits").id, ["@other"], "no", "Répartition des visites en volume", "@sum", "c", "T"],
+        ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="segmentDnEnduitTargetVisits").id, ["@other"], "no", "Répartition des visites en DN", "@sum", "d", "visites"]
       ]
       }, "trade":{
       "Marché P2CD":[
