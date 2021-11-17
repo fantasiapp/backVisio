@@ -193,6 +193,16 @@ class Drv(CommonModel):
   def __str__(self) ->str:
     return self.name
 
+class DrvSave(CommonModel):
+  name = models.CharField('drv', max_length=16, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "DRV save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class Agent(CommonModel):
   name = models.CharField('agent', max_length=64, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
@@ -204,6 +214,16 @@ class Agent(CommonModel):
 
   def __str__(self) ->str:
     return self.name
+
+class AgentSave(CommonModel):
+  name = models.CharField('agent', max_length=64, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Secteur save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
 
 class AgentFinitions(CommonModel):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
@@ -220,6 +240,19 @@ class AgentFinitions(CommonModel):
   def __str__(self) ->str:
     return self.name
 
+class AgentFinitionsSave(CommonModel):
+  name = models.CharField('agent_finitions', max_length=64, unique=False)
+  drv = models.ForeignKey('drvSave', on_delete=models.DO_NOTHING, blank=False, default=None)
+  ratioTargetedVisit = models.FloatField('Ratio des visites ciblées', unique=False, blank=False, default=0.3)
+  TargetedNbVisit = models.IntegerField('Ratio des visites ciblées', unique=False, blank=False, default=800)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Agent Finitions Save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class Dep(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
@@ -231,6 +264,16 @@ class Dep(CommonModel):
 
   def __str__(self) ->str:
     return self.name
+
+class DepSave(CommonModel):
+  name = models.CharField('dep', max_length=2, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Département save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
 
 class Bassin(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
@@ -248,6 +291,16 @@ class Bassin(CommonModel):
   def listValues(self):
     return [bassin.replace("Négoce_", "") for bassin in super().listValues]
 
+class BassinSave(CommonModel):
+  name = models.CharField('bassin', max_length=64, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Bassin save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class Ville(CommonModel):
   name = models.CharField('ville', max_length=128, unique=True)
   readingData = {"nature":"normal", "position":22, "name":"ville", "pdvFiltered":True}
@@ -257,6 +310,15 @@ class Ville(CommonModel):
 
   def __str__(self) ->str:
     return self.name
+
+class VilleSave(CommonModel):
+  name = models.CharField('ville', max_length=128, unique=True)
+
+  class Meta:
+    verbose_name = "Ville save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
 
 class SegmentMarketing(CommonModel):
   name = models.CharField('segment_marketing', max_length=32, unique=False)
@@ -270,6 +332,16 @@ class SegmentMarketing(CommonModel):
   def __str__(self) ->str:
     return self.name
 
+class SegmentMarketingSave(CommonModel):
+  name = models.CharField('segment_marketing', max_length=32, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Segment Marketing save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class SegmentCommercial(CommonModel):
   name = models.CharField('segment_commercial', max_length=16, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
@@ -281,6 +353,16 @@ class SegmentCommercial(CommonModel):
 
   def __str__(self) ->str:
     return self.name
+
+class SegmentCommercialSave(CommonModel):
+  name = models.CharField('segment_commercial', max_length=16, unique=False)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Segment Commercial save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
 
 class Enseigne(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
@@ -294,6 +376,16 @@ class Enseigne(CommonModel):
   def __str__(self) ->str:
     return self.name
 
+class EnseigneSave(CommonModel):
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Enseigne save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class Ensemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
@@ -305,6 +397,16 @@ class Ensemble(CommonModel):
 
   def __str__(self) ->str:
     return self.name
+
+class EnsembleSave(CommonModel):
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Ensemble save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
 
 class SousEnsemble(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
@@ -318,6 +420,16 @@ class SousEnsemble(CommonModel):
   def __str__(self) ->str:
     return self.name
 
+class SousEnsembleSave(CommonModel):
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Sous-Ensemble save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class Site(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
@@ -330,6 +442,16 @@ class Site(CommonModel):
   def __str__(self) ->str:
     return self.name
 
+class SiteSave(CommonModel):
+  name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  class Meta:
+    verbose_name = "Site save"
+
+  def __str__(self) ->str:
+    return self.name + " save"
+
 class Pdv(CommonModel):
   code = models.CharField('PDV code', max_length=10, blank=False, default="Inconnu")
   name = models.CharField('PDV', max_length=64, blank=False, default="Inconnu")
@@ -341,10 +463,10 @@ class Pdv(CommonModel):
   ville = models.ForeignKey("ville", on_delete=models.PROTECT, blank=False)
   latitude = models.FloatField('Latitude', unique=False, blank=False, default=0.0)
   longitude = models.FloatField('Longitude', unique=False, blank=False, default=0.0)
-  segmentCommercial = models.ForeignKey("segmentCommercial", on_delete=models.PROTECT, blank=False, default=1)
-  segmentMarketing = models.ForeignKey("segmentMarketing", on_delete=models.PROTECT, blank=False, default=1)
-  enseigne = models.ForeignKey('Enseigne', verbose_name='Enseigne', on_delete=models.PROTECT, blank=False, default=7)
-  ensemble = models.ForeignKey('Ensemble', verbose_name='Ensemble', on_delete=models.PROTECT, blank=False, default=43)
+  segmentCommercial = models.ForeignKey("segmentCommercial", on_delete=models.PROTECT, blank=False, default=17)
+  segmentMarketing = models.ForeignKey("segmentMarketing", on_delete=models.PROTECT, blank=False, default=5)
+  enseigne = models.ForeignKey('Enseigne', verbose_name='Enseigne', on_delete=models.PROTECT, blank=False, default=18)
+  ensemble = models.ForeignKey('Ensemble', verbose_name='Ensemble', on_delete=models.PROTECT, blank=False, default=2)
   sousEnsemble = models.ForeignKey('SousEnsemble', verbose_name='Sous-Ensemble', on_delete=models.PROTECT, blank=False, default=1)
   site = models.ForeignKey('site', on_delete=models.PROTECT, blank=False, default=1)
   available = models.BooleanField(default=True)
@@ -367,7 +489,8 @@ class Pdv(CommonModel):
   @classmethod
   def dictValues(cls, currentYear=True):
     indexSale = cls.listFields().index("sale")
-    return {id:value for id, value in super().dictValues(currentYear=currentYear).items() if value[indexSale]}
+    indexAvaliable = cls.listFields().index("available")
+    return {id:value for id, value in super().dictValues(currentYear=currentYear).items() if value[indexSale] and value[indexAvaliable]}
 
   @classmethod
   def computeListId(cls, dataDashBoard, data):
@@ -413,14 +536,42 @@ class Pdv(CommonModel):
     elif volume:
       Sales.objects.create(date=now, pdv=self, industry=Industry.objects.get(id=industryId), product=Product.objects.get(id=productId), volume=volume)
 
+class PdvSave(CommonModel):
+  code = models.CharField('PDV code', max_length=10, blank=False, default="Inconnu")
+  name = models.CharField('PDV', max_length=64, blank=False, default="Inconnu")
+  drv = models.ForeignKey('DrvSave', verbose_name='Région', on_delete=models.PROTECT,  blank=False)
+  agent = models.ForeignKey('AgentSave', verbose_name='Secteur', on_delete=models.PROTECT, blank=False)
+  agentFinitions = models.ForeignKey('AgentFinitionsSave', verbose_name='Secteur Finition', on_delete=models.DO_NOTHING, null=True, default=None)
+  dep = models.ForeignKey("DepSave", verbose_name='Département', on_delete=models.PROTECT, blank=False)
+  bassin = models.ForeignKey("BassinSave", verbose_name='Bassin', on_delete=models.PROTECT, blank=False)
+  ville = models.ForeignKey("VilleSave", on_delete=models.PROTECT, blank=False)
+  latitude = models.FloatField('Latitude', unique=False, blank=False, default=0.0)
+  longitude = models.FloatField('Longitude', unique=False, blank=False, default=0.0)
+  segmentCommercial = models.ForeignKey("segmentCommercialSave", on_delete=models.PROTECT, blank=False, default=17)
+  segmentMarketing = models.ForeignKey("segmentMarketingSave", on_delete=models.PROTECT, blank=False, default=5)
+  enseigne = models.ForeignKey('EnseigneSave', verbose_name='Enseigne', on_delete=models.PROTECT, blank=False, default=18)
+  ensemble = models.ForeignKey('EnsembleSave', verbose_name='Ensemble', on_delete=models.PROTECT, blank=False, default=1)
+  sousEnsemble = models.ForeignKey('SousEnsembleSave', verbose_name='Sous-Ensemble', on_delete=models.PROTECT, blank=False, default=1)
+  site = models.ForeignKey('siteSave', on_delete=models.PROTECT, blank=False, default=1)
+  available = models.BooleanField(default=True)
+  sale = models.BooleanField("Ne vend pas de plaque", default=True)
+  redistributed = models.BooleanField("Redistribué", default=True)
+  redistributedFinitions = models.BooleanField("redistribué Enduit", default=True)
+  pointFeu = models.BooleanField('Point Feu', default=False)
+  onlySiniat = models.BooleanField('100% Siniat', default=False)
+  closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
+  idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+
+  def __str__(self) ->str: return self.name + " " + self.code + " save"
+
 class Visit(CommonModel):
   date = models.DateField(verbose_name="Mois des visites", default=date.today)
   nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
-  pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, null=False, default=1)
+  pdv = models.ForeignKey("Pdv", on_delete=models.CASCADE, blank=False, null=False, default=1)
   currentYear = None
 
   class Meta:
-    verbose_name = "Visites Mensuels"
+    verbose_name = "Visites Mensuelles"
 
   @property
   def nbVisitCurrentYear(self):
@@ -439,6 +590,16 @@ class Visit(CommonModel):
       listFields = super().listFields()
       del listFields["pdv"]
       return listFields
+
+class VisitSave(CommonModel):
+  date = models.DateField(verbose_name="Mois des visites", default=date.today)
+  nbVisit = models.IntegerField(verbose_name="Nombre de visites", blank=False, default=1)
+  pdv = models.ForeignKey("PdvSave", on_delete=models.CASCADE, blank=False, null=False, default=1)
+
+  class Meta:
+    verbose_name = "Visites Mensuelles save"
+
+  def __str__(self) ->str: return " visite Pdv" + self.code + " save"
 
  #Modèles pour l'AD
 
@@ -486,6 +647,20 @@ class Sales(CommonModel):
     lf = super().listFields()
     del lf[1]
     return lf
+
+class SalesSave(CommonModel):
+  date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
+  pdv = models.ForeignKey("PdvSave", on_delete=models.CASCADE, blank=False, default=1)
+  industry = models.ForeignKey("Industry", on_delete=models.CASCADE, blank=False, default=17)
+  product = models.ForeignKey("Product", on_delete=models.CASCADE, blank=False, default=6)
+  volume = models.FloatField('Volume', unique=False, blank=True, default=0.0)
+
+class Meta:
+    verbose_name = "Ventes save"
+    unique_together = ('pdv', 'industry', 'product')
+
+def __str__(self) ->str:
+    return str(self.pdv) + " " + str(self.industry) + " " + str(self.product) + " save"
 
 class TreeNavigation(CommonModel):
   geoOrTrade = models.CharField(max_length=6, unique=False, blank=False, default="Geo")
@@ -598,6 +773,7 @@ class LabelForGraph(CommonModel):
   axisType = models.CharField(max_length=32, unique=False, blank=False, default=None)
   label = models.CharField(max_length=32, unique=False, blank=False, default=None)
   color = models.CharField(max_length=32, unique=False, blank=False, default=None)
+  orderForCompute = models.IntegerField(blank=True, default=None)
   readingData = {"nature":"normal", "position":7, "name":"labelForGraph"}
 
   def __str__(self) ->str:
@@ -629,7 +805,7 @@ class UserProfile(models.Model):
 
 class Target(CommonModel):
   date = models.DateTimeField('Date de Saisie', blank=True, null=True, default=None)
-  pdv = models.ForeignKey("PDV", on_delete=models.CASCADE, blank=False, default=1)
+  pdv = models.ForeignKey("Pdv", on_delete=models.CASCADE, blank=False, default=1)
   redistributed = models.BooleanField("Redistribué", default=True)
   redistributedFinitions = models.BooleanField("Redistribué Enduit", default=True)
   sale = models.BooleanField("Ne vend pas de plaque", default=True)
@@ -793,6 +969,7 @@ class DataAdmin(models.Model):
     if lastSaved:
       if lastSaved[0].version > currentVersion:
         return lastSaved[0]
+    cls.__copyCurrentSave()
     return cls.objects.create(version=currentVersion + 1)
 
   @classmethod

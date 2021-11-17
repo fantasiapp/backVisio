@@ -1,4 +1,4 @@
-from visioServer.models import DataAdmin
+from visioServer.models import DataAdmin, ParamVisio
 from django.utils import timezone
 
 dictMonth = {1:"Janvier", 2:"Février", 3:"Mars", 4:"Avril", 5:"Mai", 6:"Juin", 7:"Juillet", 8:"Août", 9:"Septembre", 10:"Octobre", 11:"Novembre", 12:"Décembre"}
@@ -8,6 +8,7 @@ def loadInit():
   dictInit["updateRef"] = DataAdmin.getSavedParam(False)
   dictInit["currentRef"] = DataAdmin.getSavedParam(True)
   dictInit["updateVol"] = DataAdmin.getSavedParam("vol")
+  dictInit["isAdOpen"] = ParamVisio.getValue("isAdOpen")
   return dictInit
 
 def handleUploadedFile(fileContent, fileNature):

@@ -29,13 +29,13 @@ class ManageFromOldDatabase:
   dictIndustry = {}
   dictUsers = {}
   __depFinition = {
-    8:[64,40,33,17,16,24,47,32,65,9,31,81,82,46,87,23],
-    9:[29,22,56,35,44,85,49,53,50,14,61,72,37,79,86,36,41,18],
-    10:[28,27,76,80,60,95,78,91,77,75,92,94,93],
-    11:[13,84,83,4,5,6],
-    12:[19,15,63,3,43,42,69,71,1,38,26,7,73,74],
-    13:[66,11,34,12,30,48],
-    14:[62,59,2,8,51,10,89,45,58,21,52,55,54,57,88,70,39,25,90,68,67]
+    1:[64,40,33,17,16,24,47,32,65,9,31,81,82,46,87,23],
+    2:[29,22,56,35,44,85,49,53,50,14,61,72,37,79,86,36,41,18],
+    3:[28,27,76,80,60,95,78,91,77,75,92,94,93],
+    4:[13,84,83,4,5,6],
+    5:[19,15,63,3,43,42,69,71,1,38,26,7,73,74],
+    6:[66,11,34,12,30,48],
+    7:[62,59,2,8,51,10,89,45,58,21,52,55,54,57,88,70,39,25,90,68,67]
     }
 
   typeObject = {
@@ -180,7 +180,7 @@ class ManageFromOldDatabase:
     for currentYear in [True, False]:
       if not currentYear:
         decal = len(depFinition)
-        depFinition = {id - decal:value for id, value in depFinition.items()}
+        depFinition = {id + decal:value for id, value in depFinition.items()}
       dictDep = {dep.name:dep.id for dep in Dep.objects.filter(currentYear=currentYear)}
       for idFinition, listDep in depFinition.items():
         listDepStr = {str(dep) if dep > 9 else f"0{str(dep)}" for dep in listDep}
@@ -548,7 +548,6 @@ class ManageFromOldDatabase:
         dvP2CD = volP2CD / len(listAgent)
         ddP2CD, rdP2CD = dnP2CD // len(listAgent), dnP2CD % len(listAgent)
         dvFinition = volFinition / len(listAgent)
-        ddFinition, rdFinition = dnFinition // len(listAgent), dnFinition % len(listAgent)
         flagStart = True
         for agent in listAgent:
           if flagStart:
@@ -556,15 +555,9 @@ class ManageFromOldDatabase:
             TargetLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD + rdP2CD, currentYear=currentYear)
           else:
             TargetLevel.objects.create(date=now, agent=agent, vol=dvP2CD, dn=ddP2CD, currentYear=currentYear)
-        flagStart = True
-        listAgentFinitions = AgentFinitions.objects.filter(currentYear=currentYear)
-        dvFinition = volFinition / len(listAgentFinitions)
-        ddFinition, rdFinition = dnFinition // len(listAgentFinitions), dnFinition % len(listAgentFinitions)
+      listAgentFinitions = AgentFinitions.objects.filter(currentYear=currentYear)
+      dvFinition = volFinition / len(listAgentFinitions)
       for agentFinition in listAgentFinitions:
-        if flagStart:
-          flagStart = False
-          TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=0)
-        else:
           TargetLevel.objects.create(date=now, agentFinitions=agentFinition, vol=dvFinition, dn=0, currentYear=currentYear)
     return ("TargetLevel", False)
 

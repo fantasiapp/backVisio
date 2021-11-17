@@ -222,7 +222,7 @@
                   <p class="file">Actuellement l'AD est fermé</p>
                 </div>
                 <div class="mainBoxButton">
-                  <button id="AdOpenButton" class="buttonHigh">Ouvrir l'AD</button>
+                  <button id="AdOpenButton" class="buttonHigh"><span>Ouvrir l'AD</span></button>
                 </div>
               </div>
               <div class="mainBoxImage">
@@ -234,21 +234,32 @@
       </div>
       </div>
     </article>
-    <div id="boxUpload" data="referentiel">
-      <img id="boxUploadClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
+    <div id="protect"></div>
+    <div id="boxUpload" class="box upload" data="referentiel">
+      <img id="boxUploadClose" class="boxClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
       <div id="boxUploadDnd">
         <div id="boxUploadImage">
           <img id="boxUploadImg" src="{% static 'visioAdmin/images/Telecharger.svg' %}">
+          <p id="fileUploaded"></p>
           <p id="boxUploadTxt">Glisser votre fichier</p>
           </div>
         </div>
       </div>
     </div>
+    <div id="boxWarning" class="box warning">
+      <img id="boxWarningClose" class="boxClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
+      <img class="boxLogo" src="{% static 'visioAdmin/images/warning.jpeg' %}">
+      <p id="warningTitle">Attention</p>
+      <p id="warningContent">Ceci est le message du warning</p>
+    </div>
+    <div id="boxWarningAgent" class="box warning">
+      <img class="boxLogo" src="{% static 'visioAdmin/images/warning.jpeg' %}">
+      <p id="warningTitle">Agent(s) remplacé(s)</p>
+      <div id="agentContent"></div>
+      <button id="agentOK" class="buttonHigh" data="activate">Valider</button>
+    </div>
     <article id="tableArticle">
-      <div id="tableHeader">
-        <div id="tableHeadeRow1" class="tableHeader"></div>
-        <div id="tableHeadeRow2" class="tableHeader" style="background-color: blue;"></div>
-      </div>
+      <div id="tableHeader"></div>
       <div id="tableMain"></div>
     </article>
   </section>

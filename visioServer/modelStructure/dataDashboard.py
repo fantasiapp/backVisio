@@ -85,6 +85,9 @@ class DataDashboard:
 
   @property
   def userGeoId(self): return self.__userGeoId
+
+  @property
+  def pdvs(self): return getattr(self, "__pdvs")
   
   @property
   def dataQuery(self):

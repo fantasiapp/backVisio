@@ -1,10 +1,11 @@
-from visioServer.models import ParamVisio, Sales, Pdv, Industry, Product, Target
+from visioServer.models import ParamVisio, Sales, Pdv, Industry, Product, Target, DataAdmin
 from visioServer.modelStructure.dataDashboard import DataDashboard
 # from django.db import models
 from datetime import datetime
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import json
 import os
+from visioAdmin.dataModel.readXlsx import ReadXlsxRef
 
 
 class AdminParam:
@@ -19,8 +20,8 @@ class AdminParam:
       AdminParam.titleTarget = json.loads(os.getenv('TITLE_TARGET'))
       AdminParam.dataSales = json.loads(os.getenv('DATA_SALES'))
 
-  def openAd(self):
-    isAdOpen = ParamVisio.dictValues()["isAdOpen"]
+  def switchAdStatus(self):
+    isAdOpen = ParamVisio.getValue("isAdOpen")
     before = "Ouverte" if isAdOpen else "Fermée"
     ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
     if ParamVisio.getValue("isAdOpen"):
@@ -34,15 +35,21 @@ class AdminParam:
       for sale in Sales.objects.filter(date__isnull=False):
         sale.date = None
         sale.save()
-    after = "Fermée" if isAdOpen else "Ouverte"
-    return {"message":f"L'AD était {before}, elle est maintenant {after}"}
+    return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
 
-  def visualizePdv(self):
+  def visualizePdvCurrent(self):
     pdvs = getattr(self.dataDashboard, "__pdvs")
     indexes = Pdv.listIndexes()
     listFields = Pdv.listFields()
     pdvsToExport = [self.__editPdv(line, listFields, indexes, self.fieldNamePdv) for line in pdvs.values()]
     return {'titles':list(self.fieldNamePdv.values()), 'values':pdvsToExport}
+
+  def visualizePdvSaved(self):
+    fileName = DataAdmin.getLastSavedObject().fileNameRef
+    readXlsRef = ReadXlsxRef(fileName, self.dataDashboard)
+    if not readXlsRef.errors:
+      return readXlsRef.json
+    return {"titles":["A", "B"], "values":[["1", "2"], ["3", "4"]]}
 
   def __editPdv(self, line, listFields, indexes, fieldNamePdv):
     lineFormated = []
@@ -78,15 +85,15 @@ class AdminParam:
     for sale in line[indexSale]:
       if sale[fieldSales.index("industry")] == dictId["Siniat"]:
         if sale[fieldSales.index("product")] == dictId["Plaque"]:
-          saleLine[0] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
+          saleLine[0] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
         if sale[fieldSales.index("product")] == dictId["Cloison"]:
-          saleLine[1] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
+          saleLine[1] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
         if sale[fieldSales.index("product")] == dictId["Doublage"]:
-          saleLine[2] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
+          saleLine[2] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
       if sale[fieldSales.index("industry")] == dictId["Prégy"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
-        saleLine[3] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
+        saleLine[3] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
       if sale[fieldSales.index("industry")] == dictId["Salsi"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
-        saleLine[4] = '{:,}'.format(sale[fieldSales.index("volume")]).replace(',', ' ')
+        saleLine[4] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
     return pdvLine + saleLine
 
   def visualizeTarget(self):

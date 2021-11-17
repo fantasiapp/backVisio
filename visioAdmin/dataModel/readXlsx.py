@@ -1,10 +1,15 @@
 from django import db
 from openpyxl import load_workbook
 from pathlib import Path
+from visioServer.models import *
+from dotenv import load_dotenv
 from unidecode import unidecode
+import json
+import os
 
 class ReadXlsxRef:
-  path = "visio/dataValues/xlsx/"
+  path = "visioAdmin/dataFile/FromEtex/Référentiel/"
+  __dataDashboard = False
   __sheetName = "ReferentielVisio"
   __keyField = "Code SAP initial"
   __dicoFields = {
@@ -27,16 +32,20 @@ class ReadXlsxRef:
     # "Nb visites F"
     }
 
-  def __init__(self, fileName, tablePdv):
-    self.__tableIndex = tablePdv.json["tableIndex"]
-    self.__dbValues = tablePdv.json['values']
-    self.__titles = ["status"] + tablePdv.json['titles']
+  def __init__(self, fileName, dataDashboard):
+    if not ReadXlsxRef.__dataDashboard:
+      ReadXlsxRef.__dataDashboard = dataDashboard
+    self.__tableIndex = Pdv.listFields()
+    self.__dbValues = list(dataDashboard.pdvs.values())
+    # self.__titles = ["status"] + tablePdv.json['titles']
+    self.__titles = ["status"] + list(json.loads(os.getenv('FIELD_PDV_BASE_PRETTY')).values())
     self.__columnKey = None
     self.__columnField = {}
     self.__errors = []
     self.__dictValues = {}
     self.__isModified = False
-    pathFile = Path.cwd() / f"{self.path}{fileName}.xlsx"
+    pathFile = Path.cwd() / f"{self.path}{fileName}"
+    print("pathFile", pathFile)
     if pathFile.exists():
         xlsxworkbook = load_workbook(pathFile, data_only=True)
         try:
@@ -47,7 +56,7 @@ class ReadXlsxRef:
           self.__readFields()
           self.__writeValues()
     else:
-      self.__errors.append(f"Le fichier {fileName}.xlsx n'existe pas")
+      self.__errors.append(f"Le fichier {fileName} n'existe pas")
 
   @property
   def errors(self):
@@ -58,8 +67,9 @@ class ReadXlsxRef:
     dictXlsx = dict(self.__dictValues)
     lastIndex = len(self.__dbValues[0]) - 1
     existingPdV = [self.__buildLine(dbaseLine[0], dictXlsx, dbaseLine, lastIndex) for dbaseLine in self.__dbValues]
-    newPdv = [self.__lineBold(line) for line in dictXlsx.values()]
-    return existingPdV + newPdv
+    existingPdV = [line for line in existingPdV if line]
+    # newPdv = [self.__lineBold(line) for line in dictXlsx.values()]
+    return existingPdV # + newPdv
 
   @property
   def json(self)->dict:
@@ -69,15 +79,19 @@ class ReadXlsxRef:
     return ['Nouveau'] + [f'<b>{value}</b>' for value in line] + ['<b>Nouvelle valeur</b>']
 
   def __buildLine(self, code:str, dictXlsx:dict, dbaseLine:list, lastIndex:int):
-    if dbaseLine[lastIndex]:
-      return ['Réouverture'] + self.__createNewValues(dictXlsx.pop(code), dbaseLine) + [dbaseLine[lastIndex]]
+    print("__buildLine", code)
     if code in dictXlsx:
-      newValues = self.__createNewValues(dictXlsx.pop(code), dbaseLine)
-      status = 'Modifié' if self.__isModified else 'Normal'
-      return [status] + newValues + ['']
-    else:
-      lastValue = dbaseLine[lastIndex] if dbaseLine[lastIndex] else 'Pdv fermé'
-      return ['Fermeture'] + [f'<i>{val}</i>' for index, val in enumerate(dbaseLine) if index != lastIndex] + [f'<i>{lastValue}</i>']
+      return ["test"] + dictXlsx[code]
+    return False
+    # if dbaseLine[lastIndex]:
+    #   return ['Réouverture'] + self.__createNewValues(dictXlsx.pop(code), dbaseLine) + [dbaseLine[lastIndex]]
+    # if code in dictXlsx:
+    #   newValues = self.__createNewValues(dictXlsx.pop(code), dbaseLine)
+    #   status = 'Modifié' if self.__isModified else 'Normal'
+    #   return [status] + newValues + ['']
+    # else:
+    #   lastValue = dbaseLine[lastIndex] if dbaseLine[lastIndex] else 'Pdv fermé'
+    #   return ['Fermeture'] + [f'<i>{val}</i>' for index, val in enumerate(dbaseLine) if index != lastIndex] + [f'<i>{lastValue}</i>']
 
 
   def __readFields(self):
@@ -117,6 +131,7 @@ class ReadXlsxRef:
     if codeItem == dbaseItem if type(codeItem) == type(dbaseItem) else str(codeItem) == str(dbaseItem):
       return True
     field = self.__titles[index + 1].strip()
+    print("__computeNewValueTest", field, codeItem, dbaseItem, index)
     if field in ["Latitude", "Longitude"]:
       if type(dbaseItem) != float or type(codeItem) != float:
         return False
@@ -138,6 +153,8 @@ class ReadXlsxRef:
         return codeItem in ["Autres métiers", "Plateforme de redist"]
     elif field in ["Ensemble", "Sous-Ensemble", "PDV"]:
       return codeItem.strip().replace("  ", " ") == dbaseItem.strip().replace("  ", " ")
+    elif field == "Drv":
+      return True
     raise(TypeError)
 
 
@@ -206,7 +223,6 @@ class ReadXlsxVentes:
         indexBase = self.__titles.index(field) - 1
         if not list[indexBase]: list[indexBase] = "0.00"
         if not self.__dictValues[pdvCode][indexXlsx]: self.__dictValues[pdvCode][indexXlsx] = 0.0
-        print("compute", list[indexBase], self.__dictValues[pdvCode][indexXlsx])
         if abs(float(list[indexBase].replace(" ", "").replace(",", ".")) - self.__dictValues[pdvCode][indexXlsx]) > 0.01:
           list[indexBase] = f'<i>{self.__formatNumber(list[indexBase])}</i> <b>{self.__formatNumber(self.__dictValues[pdvCode][indexXlsx])}</b>'
           status = "Modifié"
@@ -217,12 +233,9 @@ class ReadXlsxVentes:
     missing = []
     existingPdv = [listValues[0] for listValues in self.__dbValues]
     for pdvCode, listValues in self.__dictValues.items():
-      # print(listValues)
       newList = list(listValues)
       if not pdvCode in existingPdv:
         newList.insert(3, "")
-        # if all([True if type(element) == float else None for element in list]):
-        #   newList[3] = 
 
 
         missing.append(["Absent du Référentiel", pdvCode, "", "", "", ""] + [self.__printInRed(self.__formatNumber(element)) for element in newList])

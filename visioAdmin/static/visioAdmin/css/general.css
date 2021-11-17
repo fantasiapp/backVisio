@@ -46,6 +46,19 @@ button.buttonHigh {
 button.buttonHigh:hover{
   background-color: white;
   color: var(--main-etex-color);
+  cursor:pointer;
+}
+
+button.inhibit{
+  background-color:lightgrey;
+  border: 2px solid grey;
+  cursor:default
+}
+
+button.inhibit:hover{
+  background-color:lightgrey;
+  color:white;
+  cursor:default
 }
 
 button.buttonLow {
@@ -61,6 +74,7 @@ button.buttonLow {
 button.buttonLow:hover{
   background-color: var(--main-etex-color);
   color: white;
+  cursor:pointer;
 }
 
 img.boxImage {
