@@ -172,9 +172,6 @@ class CreateWidgetParam:
         ["visits", "", "", 0],
         ["targetedVisits", "", "", 0],
 
-        ["histoCurve", "Nombre de PdV complétés", "", 0],
-        ["histoCurve", "Cumul en pourcentage", "", 1],
-
         ["pointFeuFilter", "Non point Feu", "", 0],
         ["pointFeuFilter", "Point feu", "", 1],
 
