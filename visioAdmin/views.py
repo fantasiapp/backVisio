@@ -51,8 +51,9 @@ def mainActionGet(request):
   adminUpdate = AdminUpdate(dataDashboard) 
   if request.GET["action"] == "selectAgent": return adminUpdate.updateRefWithAgent(dict(request.GET))
   elif request.GET["action"] == "switchBase": return adminUpdate.switchBase()
-  elif request.GET["action"] == "visualizePdvCurrent": return adminUpdate.visualizePdvCurrent()
-  elif request.GET["action"] == "visualizePdvSaved": return adminParam.visualizePdvSaved()
+  elif request.GET["action"] == "visualizePdvCurrent": return adminUpdate.visualizePdv("current")
+  elif request.GET["action"] == "visualizePdvSaved": return adminUpdate.visualizePdv("saved")
+  elif request.GET["action"] == "visualizePdvBoth": return adminUpdate.visualizePdv("both")
   elif request.GET["action"] == "visualizeSalesCurrent": return adminUpdate.visualizeSalesCurrent()
   elif request.GET["action"] == "switchAdStatus": return adminParam.switchAdStatus()
   return {"info":None}

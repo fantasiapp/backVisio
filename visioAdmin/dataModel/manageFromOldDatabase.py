@@ -579,6 +579,14 @@ class ManageFromOldDatabase:
 # Paramètres
 
   def getParamVisio(self):
+    jsonData = {
+      "enduitAxis":['enduitIndustry', 'segmentDnEnduit', 'segmentDnEnduitTarget', 'enduitIndustryTarget'],
+      "nonRegularAxis":['mainIndustries', 'enduitIndustry', 'segmentDnEnduit', 'clientProspect', 'clientProspectTarget', 'segmentDnEnduitTarget', 'segmentDnEnduitTargetVisits', 'enduitIndustryTarget', 'industryTarget', 'suiviAD', 'weeks'],
+      "dnIndicators":['dn', 'visits', 'targetedVisits', 'avancementAD'],
+      "rodAfterFirstCategAxis":['industryTarget', 'clientProspectTarget'],
+      "rodAfterSecondCategAxis":['enduitIndustryTarget'],
+      "dnLikeAxis":['segmentDnEnduit', 'clientProspect', 'clientProspectTarget', 'segmentDnEnduitTarget', 'segmentDnEnduitTargetVisits', 'suiviAD', 'weeks']
+      }
     ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", fvalue="1.0.0", typeValue="str")
     ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", fvalue="4.0.0", typeValue="str")
     ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", fvalue="2", typeValue="float")
@@ -588,6 +596,7 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
     ParamVisio.objects.create(field="isAdOpen", prettyPrint="Ouverture de l'AD", fvalue="True", typeValue="bool")
     ParamVisio.objects.create(field="delayBetweenUpdates", prettyPrint="Délai entre deux mise à jour", fvalue="10.0", typeValue="float")
+    ParamVisio.objects.create(field="json", prettyPrint="Json", fvalue=json.dumps(jsonData), typeValue="json")
     return ("ParamVisio", False)
 
 

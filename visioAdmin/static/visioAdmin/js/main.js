@@ -282,7 +282,8 @@ function tableHeaderCurrent() {
 
 function tableHeaderBoth() {
   if (selectTable("Both")) {
-    console.log("tableHeaderBoth")
+    $("#tableMain").empty()
+    visualizeTable('Pdv', 'Both', false)
   }
 }
 
@@ -306,6 +307,7 @@ function visualizeTable(tableName, kpiName, tableHeader) {
 }
 
 function selectTable (tableName) {
+  console.log(tableName, selectedTableState["table"])
   if (selectedTableState["table"] != tableName) {
     $("#tableHeader" + tableName +" p").addClass("tableHeaderHighLight")
     $("#tableHeader" + selectedTableState["table"] +" p").removeClass("tableHeaderHighLight")
@@ -359,11 +361,6 @@ function loadTable (columnsTitle, values, tableId, scroll, tableHeader) {
     $('tableMain').append('<table id="'+tableId+'" class="display">')
     $('#'+tableId).DataTable({data: values, columns: columnsTitle})
   }
-  translateTable()
-}
-
-function translateTable() {
-
 }
 
 function addTableHeader(tableId) {

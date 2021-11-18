@@ -130,7 +130,7 @@ class CommonModel(models.Model):
 class ParamVisio(CommonModel):
   field = models.CharField(max_length=64, unique=True, blank=False)
   prettyPrint = models.CharField(max_length=64, unique=False, blank=False, default=None)
-  fvalue = models.CharField(max_length=64, unique=False, blank=False)
+  fvalue = models.CharField(max_length=4096, unique=False, blank=False)
   typeValue = models.CharField(max_length=64, unique=False, blank=False)
   readingData = {"nature":"normal", "position":6, "name":"params"}
 
@@ -160,15 +160,21 @@ class ParamVisio(CommonModel):
     elif typeValue == "float": return float
     elif typeValue == "int": return int
     elif typeValue == "bool": return bool
+    elif typeValue == "json": return "json"
     return False
 
   @classmethod
   def setValue(cls, field, newValue):
     typeValue = cls.getFieldType(field)
-    if isinstance(newValue, typeValue):
-      param = cls.objects.get(field=field)
-      param.fvalue = str(newValue)
+    param = cls.objects.get(field=field)
+    if typeValue != "json":
+      if isinstance(newValue, typeValue):
+        param.fvalue = str(newValue)
+        param.save()
+    else:
+      param.fvalue = json.dumps(newValue)
       param.save()
+
 
   @property
   def value(self):

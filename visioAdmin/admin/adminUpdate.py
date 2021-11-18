@@ -1,4 +1,5 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import fields
 from visioAdmin.admin.adminParam import AdminParam
 from visioServer.models import *
 from visioServer.modelStructure.dataDashboard import DataDashboard
@@ -53,31 +54,26 @@ class AdminUpdate:
       cls.__errorStatus = "Information"
     cls.__errors.append(content)
 
-  def visualizePdvCurrent(self):
-    pdvs = getattr(self.dataDashboard, "__pdvs")
-    indexes = Pdv.listIndexes()
-    listFields = Pdv.listFields()
-    pdvsToExport = [self.__editPdv(line, listFields, indexes, self.fieldNamePdv) for line in pdvs.values()]
+  def visualizePdv(self, nature):
+    if nature == "both":
+      self.__visualizePdvBoth()
+    file = "refSave.json" if nature == "saved" else "ref.json"
+    if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
+      self.__createSaveJson()
+    with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
+      pdvsToExport = json.load(jsonFile)
     return {'titles':list(self.fieldNamePdv.values()), 'values':pdvsToExport}
 
-  def __editPdv(self, line, listFields, indexes, fieldNamePdv):
-    lineFormated = []
-    for index in range(len(line)):
-      if listFields[index] in fieldNamePdv:
-        if index in indexes:
-          dictData = getattr(DataDashboard, f"__{listFields[index]}", False)
-          if dictData:
-            value = dictData[line[index]]
-            if isinstance(value, list):
-              value = value[0]
-            lineFormated.append(value)
-        elif isinstance(line[index], bool):
-          lineFormated.append("Oui" if line[index] else "Non")
-        elif listFields[index] == "closedAt":
-            lineFormated.append(line[index][:10] if line[index] else '')
-        else:
-          lineFormated.append(line[index])
-    return lineFormated
+
+  def __visualizePdvBoth(self):
+    for key, file in {"current":"ref.json", "saved":"refSave.json"}:
+      pass
+    if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
+      self.__createSaveJson()
+    with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
+      pdvsToExport = json.load(jsonFile)
+
+    return visualizePdv("saved")
 
   def visualizeSalesCurrent(self):
     pdvs = getattr(self.dataDashboard, "__pdvs")
@@ -269,7 +265,6 @@ class AdminUpdate:
         bassinBase = Bassin.objects.filter(currentYear=True)
         dicoField = {bassin.id:bassin.name for bassin in bassinBase}
       listId[field] = {name:id for id, name in dicoField.items()}
-    print("listId agent", listId["agent"])
     return listId
 
   def __checkDiff(self, lineAnalysis, structurePdvs, pdvCurrent):
@@ -434,6 +429,8 @@ class AdminUpdate:
     self.__createElement()
     self.__createPdvSave()
     self.__computeNbVisits()
+    self.__createRefSaveJson()
+    self.__createRefJson()
     return AdminUpdate.response 
 
   def __createElement(self):
@@ -549,6 +546,57 @@ class AdminUpdate:
     self.__createDefaultValues(SalesSave)
     self.__importSiniatVolume()
     self.__importOtherVolume()
+
+  def __createRefSaveJson(self):
+    pdvs = PdvSave.objects.all()
+    listName = Pdv.listFields()
+    fieldsObject = [name for name in listName if getattr(Pdv, name, False) and (isinstance(Pdv._meta.get_field(name), models.ForeignKey))]
+    pdvsToExport = [self.__computePdvSaveJson(pdv, fieldsObject) for pdv in pdvs]
+    with open("./visioAdmin/dataFile/Json/refSave.json", 'w') as jsonFile:
+      json.dump(pdvsToExport, jsonFile, indent = 3)
+
+  def __createRefJson(self):
+    pdvs = getattr(self.dataDashboard, "__pdvs")
+    indexes = Pdv.listIndexes()
+    listFields = Pdv.listFields()
+    pdvsToExport = [self.__computePdvJson(line, listFields, indexes, self.fieldNamePdv) for line in pdvs.values()]
+    with open("./visioAdmin/dataFile/Json/ref.json", 'w') as jsonFile:
+      json.dump(pdvsToExport, jsonFile, indent = 3)
+
+  def __computePdvSaveJson(self, pdv, fieldsObject):
+    lineFormated = []
+    for  field in self.fieldNamePdv.keys():
+      fieldVal = getattr(pdv, field)
+      value = "a"
+      if field == "closedAt":
+        value = fieldVal.strftime("%m/%d/%Y") if pdv.closedAt else ""
+      elif isinstance(fieldVal, bool):
+        value = "Oui" if fieldVal else "Non"
+      elif field in fieldsObject:
+        value = fieldVal.name
+      else:
+        value = fieldVal
+      lineFormated.append(value)
+    return lineFormated
+
+  def __computePdvJson(self, line, listFields, indexes, fieldNamePdv):
+    lineFormated = []
+    for index in range(len(line)):
+      if listFields[index] in fieldNamePdv:
+        if index in indexes:
+          dictData = getattr(DataDashboard, f"__{listFields[index]}", False)
+          if dictData:
+            value = dictData[line[index]]
+            if isinstance(value, list):
+              value = value[0]
+            lineFormated.append(value)
+        elif isinstance(line[index], bool):
+          lineFormated.append("Oui" if line[index] else "Non")
+        elif listFields[index] == "closedAt":
+            lineFormated.append(line[index][:10] if line[index] else '')
+        else:
+          lineFormated.append(line[index])
+    return lineFormated
 
   def __importSiniatVolume(self):
     siniat = Industry.objects.get(name="Siniat")
@@ -733,7 +781,6 @@ class AdminUpdate:
       existingVille = {ville.name for ville in VilleSave.objects.all()}
       print("existingVille", existingVille)
       villePast = {line[indexVille] for line in getattr(self.dataDashboard, "__pdvs_ly") if not line[indexVille] in existingVille}
-      print("villePast", villePast)
       for ville in villePast:
         VilleSave.objects.create(name=ville)
       dictIdEquiv[table] = {ville.id:VilleSave.get(name=ville.name) for ville in Ville.objects.all() if  VilleSave.filter(name=ville.name)}
