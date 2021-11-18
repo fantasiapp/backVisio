@@ -176,7 +176,7 @@ class CreateWidgetParam:
         ["histoCurve", "Cumul en pourcentage", "", 1],
 
         ["pointFeuFilter", "Non point Feu", "", 0],
-        ["pointFeuFilter", "Point feu'", "", 1],
+        ["pointFeuFilter", "Point feu", "", 1],
 
         ["visitedFilter", "Visité", "", 0],
         ["visitedFilter", "Non visité", "", 1],

@@ -19,6 +19,7 @@ class DataDashboard:
       DataDashboard.__flagLoad = False
       print("loading data in RAM")
       for name, model in CommonModel.computeTableClass():
+        print("init", name, model)
         DataDashboard.createFromModel(model, name, isNotOnServer)
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
