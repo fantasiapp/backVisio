@@ -270,12 +270,12 @@ class CreateWidgetParam:
         ["enduitIndustryTarget", "agentFinitions", "enduit", AxisForGraph.objects.get(name="enduitIndustryTarget").id, [], "cols", "Parts de marché par division géographique", "", "b", "%", "histoColumn"],
         ["segmentDnEnduitTarget", "agentFinitions", "dn", AxisForGraph.objects.get(name="segmentDnEnduitTarget").id, [], "no", "DN par division géographique", "", "c", "PdV", "histoColumn"]
       ], "Suivi AD":[
-        ["avancementAD", "avancementAD", "avancementAD", AxisForGraph.objects.get(name="avancementAD").id, ["@other"], "no", "Avancement de l'AD", "", "a", "", "gauge"],
-        ["histoCurve", "weeks", "dn", AxisForGraph.objects.get(name="histoCurve").id, [], "no", "Évolution de l'AD au cours des dernières semaines", "", "b", "%|PdV", "histoCurve"],
+        ["avancementAD", "avancementAD", "avancementAD", AxisForGraph.objects.get(name="avancementAD").id, AxisForGraph.objects.get(name="avancementAD").id, "no", "Avancement de l'AD", "", "a", "", "gauge"],
+        ["histoCurve", "weeks", "dn", AxisForGraph.objects.get(name="histoCurve").id, AxisForGraph.objects.get(name="weeks").id, "no", "Évolution de l'AD au cours des dernières semaines", "", "b", "%|PdV", "histoCurve"],
         ["suiviAD", "lg-1", "dn", AxisForGraph.objects.get(name="suiviAD").id, [], "cols", "Avancement de l'AD par division géographique", "", "c", "%", "histoColumn"]
       ], 'Suivi des Visites':[
-        ["visits", "visits", "visits", AxisForGraph.objects.get(name="visits").id, ["@other"], "no", "Avancée des visites", "", "a", "", "gauge"],
-        ["targetedVisits", "targetedVisits", "targetedVisits", AxisForGraph.objects.get(name="targetedVisits").id, ["@other"], "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
+        ["visits", "visits", "visits", AxisForGraph.objects.get(name="visits").id, AxisForGraph.objects.get(name="visits").id, "no", "Avancée des visites", "", "a", "", "gauge"],
+        ["targetedVisits", "targetedVisits", "targetedVisits", AxisForGraph.objects.get(name="targetedVisits").id, AxisForGraph.objects.get(name="targetedVisits").id, "no", "Proportion de visites ciblées", "", "b", "", "gauge"],
         ['segmentDnEnduitTargetVisits', "segmentMarketing", "enduit", AxisForGraph.objects.get(name="segmentDnEnduitTargetVisits").id, ["@other"], "no", "Répartition des visites en volume", "@sum", "c", "T"],
         ['segmentDnEnduitTargetVisits', "segmentMarketing", "visits", AxisForGraph.objects.get(name="segmentDnEnduitTargetVisits").id, ["@other"], "no", "Répartition des visites en DN", "@sum", "d", "visites"]
       ]
