@@ -184,6 +184,8 @@ class ParamVisio(CommonModel):
       return float(self.fvalue)
     elif self.typeValue == "bool":
       return self.fvalue == "True"
+    elif self.typeValue == "json":
+      return json.loads(self.fvalue)
     return self.fvalue
     
 
