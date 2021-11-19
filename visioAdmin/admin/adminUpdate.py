@@ -92,7 +92,9 @@ class AdminUpdate:
             print(lineExported)
         pdvsToExport.append(lineExported)
       else:
-        newPdv.append(line[indexCode]) 
+        pdvsToExport.append(line)
+        newPdv.append(line[indexCode])
+    print("newPdv", newPdv)
     return {'titles':fieldsName, 'values':pdvsToExport, 'new':newPdv}
 
   def visualizeSalesCurrent(self):
