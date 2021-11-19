@@ -66,14 +66,34 @@ class AdminUpdate:
 
 
   def __visualizePdvBoth(self):
-    for key, file in {"current":"ref.json", "saved":"refSave.json"}:
-      pass
-    if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
-      self.__createSaveJson()
-    with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
-      pdvsToExport = json.load(jsonFile)
-
-    return visualizePdv("saved")
+    data, pdvIdCode, index, fieldsName, pdvsToExport, newPdv = {}, {}, 0, list(self.fieldNamePdv.values()), [], []
+    indexCode = fieldsName.index("PDV code")
+    for key, file in {"current":"ref.json", "saved":"refSave.json"}.items():
+      if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
+        self.__createSaveJson()
+      with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
+        data[key] = json.load(jsonFile)
+    for line in data["current"]:
+      pdvIdCode[line[indexCode]] = index 
+      index += 1
+    for index in range(len(data["saved"])):
+      line = data["saved"][index]
+      code = line[indexCode]
+      indexEquiv = pdvIdCode[code] if code in pdvIdCode else None
+      if indexEquiv:
+        lineEquiv = data["current"][indexEquiv]
+        lineExported = []
+        for indexField in range(len(line)):
+          if line[indexField] == lineEquiv[indexField]:
+            lineExported.append(line[indexField])
+          else:
+            print(line[indexCode], line[indexField], lineEquiv[indexField])
+            lineExported.append(str(line[indexField])+"<br>"+str(lineEquiv[indexField]))
+            print(lineExported)
+        pdvsToExport.append(lineExported)
+      else:
+        newPdv.append(line[indexCode]) 
+    return {'titles':fieldsName, 'values':pdvsToExport, 'new':newPdv}
 
   def visualizeSalesCurrent(self):
     pdvs = getattr(self.dataDashboard, "__pdvs")
