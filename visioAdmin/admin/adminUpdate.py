@@ -441,17 +441,6 @@ class AdminUpdate:
     tableName = classesSelected.objects.model._meta.db_table
     with connection.cursor() as cursor:
       cursor.execute(f"ALTER TABLE {tableName} AUTO_INCREMENT=1;")
-    listDefault = {
-      "non segmenté":(17, SegmentCommercialSave), 
-      "Fermé":(5, SegmentMarketingSave),
-      "Not assigned":(1, SiteSave),
-      "Not assigned":(1, SousEnsembleSave),
-      "Not assigned":(1, EnsembleSave),
-      "Non identifié":(18, EnseigneSave),
-      }
-    for name, (id, classObject) in listDefault.items():
-      if classesSelected == classObject:
-        classObject.objects.create(id=id, name=name, idF=id)
 
 
   def __saveDataVol(self):
@@ -530,8 +519,8 @@ class AdminUpdate:
     cloison =  Product.objects.get(name="cloison")
     doublage =  Product.objects.get(name="doublage")
     enduit = Product.objects.get(name="enduit")
-    listTitlesSiniat = list(self.xlsxData["siniat"]["titles"].keys())
-    listTitlesSalsi = list(self.xlsxData["salsi"]["titles"].keys())
+    listTitlesSiniat = list(self.xlsxData["siniat"]["titles"])
+    listTitlesSalsi = list(self.xlsxData["salsi"]["titles"])
     indexPdv = listTitlesSiniat.index("code pdv")
     indexPlaque = listTitlesSiniat.index("Plaques")
     indexCloison = listTitlesSiniat.index("Cloisons")
@@ -542,7 +531,7 @@ class AdminUpdate:
     for data in self.xlsxData["siniat"]["data"]:
       for dictData in dictSiniat:
         if data[dictData["iVol"]]:
-          pdv = PdvSave.objects.filter(code=data[indexPdv])
+          pdv = PdvSave.objects.filter(code=data[indexPdv], currentYear=True)
           if pdv:
             SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]])
     for data in self.xlsxData["salsi"]["data"]:
@@ -623,216 +612,6 @@ class AdminUpdate:
         tableNameTo = "visioServer_" + table.lower() + rename["to"]
         print(f'RENAME TABLE `{tableNameFrom}` TO `{tableNameTo}`')
         cursor.execute(f'RENAME TABLE `{tableNameFrom}` TO `{tableNameTo}`')
-
-
-
-  # def switchBase(self):
-  #   dictTables={
-  #     "visit":{"current":Visit, "save":VisitSave},
-  #     "sales":{"current":Sales, "save":SalesSave},
-  #     "pdv":{"current":Pdv, "save":PdvSave},
-  #     "agentFinitions":{"current":AgentFinitions, "save":AgentFinitionsSave},
-  #     "agent":{"current":Agent, "save":AgentSave},
-  #     "dep":{"current":Dep, "save":DepSave},
-  #     "drv":{"current":Drv, "save":DrvSave},
-  #     "bassin":{"current":Bassin, "save":BassinSave},
-  #     "ville":{"current":Ville, "save":VilleSave},
-  #     "segmentCommercial":{"current":SegmentCommercial, "save":SegmentCommercialSave},
-  #     "segmentMarketing":{"current":SegmentMarketing, "save":SegmentMarketingSave},
-  #     "site":{"current":Site, "save":SiteSave},
-  #     "sousEnsemble":{"current":SousEnsemble, "save":SousEnsembleSave},
-  #     "ensemble":{"current":Ensemble, "save":EnsembleSave},
-  #     "enseigne":{"current":Enseigne, "save":EnseigneSave},
-  #   }
-  #   dataTable = self.__readTable(dictTables)
-  #   # return {"switchBase": "work in progress"}
-  #   self.__eraseTableForSwitch(dictTables)
-  #   return self.__fillUpTableForSwicth(dataTable, dictTables)
-
-  def __readTable(self, dictTables):
-    if not os.path.isfile("./visioAdmin/dataFile/Json/readTableSwitch.json"):
-      dataTable = {"target":{}, "targetLevel":{}}
-      for name, dictTable in dictTables.items():
-        newDict = {}
-        for status, modelTable in dictTable.items():
-          if "currentYear" in [field.name for field in modelTable._meta.fields]:
-            newDict[status] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.filter(currentYear=True)]
-            newDict["lastYear"] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.filter(currentYear=False)]
-          else:
-            newDict[status] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.all()]
-        dataTable[name] = newDict
-
-      dataTable["target"]["save"]= [self.__computeIdValue(Target, modelObject) for modelObject in Target.objects.all()]
-      dataTable["targetLevel"]["save"] = [self.__computeIdValue(TargetLevel, modelObject) for modelObject in TargetLevel.objects.filter(currentYear=True)]
-      dataTable["targetLevel"]["lastYear"] = [self.__computeIdValue(TargetLevel, modelObject) for modelObject in TargetLevel.objects.filter(currentYear=False)]
-      jsonStr = json.dumps(dataTable, cls=DjangoJSONEncoder)
-      with open("./visioAdmin/dataFile/Json/readTableSwitch.json", 'w') as jsonFile:
-        jsonFile.write(jsonStr)
-    with open("./visioAdmin/dataFile/Json/readTableSwitch.json") as jsonFile:
-      jsonStr = jsonFile.read()
-    result = json.loads(jsonStr)
-    return json.loads(jsonStr)
-    # return dataTable
-
-  def __computeIdValue(self, modelTable, modelObject):
-    listField = [field for field in modelTable._meta.fields if field.name != "currentYear"]
-    listForeign = [field for field in listField if isinstance(field, models.ForeignKey)]
-    return {field.name:getattr(modelObject, field.name).id if field in listForeign and getattr(modelObject, field.name) else getattr(modelObject, field.name) for field in listField}
-
-  def __eraseTableForSwitch(self, dictTables):
-    listModel = [TargetLevel] + [dictModel["current"] for dictModel in dictTables.values()] + [dictModel["save"] for dictModel in dictTables.values()]
-    for model in listModel:
-      model.objects.all().delete()
-      tableName = model.objects.model._meta.db_table
-      with connection.cursor() as cursor:
-        cursor.execute(f"ALTER TABLE {tableName} AUTO_INCREMENT=1;")
-
-  def __fillUpTableForSwicth(self, dataTable, dictTable):
-    listTable = list(dataTable.keys())
-    listTable.reverse()
-    dictIdEquivCurrent = self.__fillUpTableForSwicthCurrent(dataTable, dictTable, listTable)
-    # return {"switchBase": "work in progress"}
-    # self.__fillUpTableForSwicthLastYear(dataTable, dictTable, listTable, dictIdEquivCurrent)
-    self.__fillUpTableForSwicthSave(dataTable, dictTable, listTable)
-    return {"switchBase": "work in progress"}
-    
-
-  def __fillUpTableForSwicthCurrent(self, dataTable, dictTable, listTable):
-    dictIdEquiv = {}
-    for table in listTable:
-      if table in dictTable:
-        self.__applySwitchCurrent(table, dictIdEquiv, dictTable[table]["current"], dataTable[table]["save"])
-        if table == "segmentCommercial":
-          return
-    self.__applySwitchCurrent("targetLevel", dictIdEquiv, TargetLevel, dataTable["targetLevel"]["save"])
-    return dictIdEquiv
-
-  def __applySwitchCurrent(self, table, dictIdEquiv, targetTable, valueTable):
-    dictIdEquiv[table] = {}
-    listFieldName = [field.name for field in targetTable._meta.fields]
-    for line in valueTable:
-      id = line["id"]
-      if targetTable != Pdv:
-        del line["id"]
-      kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
-      if "currentYear" in listFieldName:
-        kwargs["currentYear"] = True
-      objectCreated = targetTable.objects.create(**kwargs)
-      dictIdEquiv[table][id] = objectCreated.id
-      if "idF" in listFieldName:
-        objectCreated.idF = objectCreated.id
-        objectCreated.save()
-      
-  def __fillUpTableForSwicthLastYear(self, dataTable, dictTable, listTable, DictIdEquivCurrent):
-    dictIdEquiv = {}
-    for table in listTable:
-      if table in dictTable and "lastYear" in dataTable[table]:
-        self.__applySwitchLastYear(table, dictIdEquiv, dictTable[table]["current"], dataTable[table]["lastYear"], DictIdEquivCurrent)
-    self.__applySwitchLastYear("targetLevel", dictIdEquiv, TargetLevel, dataTable["targetLevel"]["lastYear"], DictIdEquivCurrent)
-
-  def __applySwitchLastYear(self, table, dictIdEquiv, targetTable, valueTable, DictIdEquivCurrent):
-    dictIdEquiv[table] = {}
-    listFieldName = [field.name for field in targetTable._meta.fields]
-    if "currentYear" in listFieldName:
-      for line in valueTable:
-        id = line["id"]
-        del line["id"]
-        # kwargs = {field:self.__findObjectForSwitch(field, self.__computeValueLastYear(field, value, dictIdEquiv, targetTable), dictIdEquiv, targetTable) for field, value in line.items()}
-        kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
-        kwargs["currentYear"] = False
-        if "idF" in listFieldName:
-          if targetTable == Agent:
-            if kwargs["idF"] in DictIdEquivCurrent:
-              kwargs["idF"] = DictIdEquivCurrent[kwargs["idF"]]
-          elif targetTable == Pdv:
-            currentPdv = Pdv.objects.filter(code=kwargs["code"], currentYear=True)
-            if currentPdv:
-              kwargs["idF"] = currentPdv[0].id
-          else:
-            currentObject = targetTable.objects.filter(name=kwargs["name"])
-            if currentObject:
-              kwargs["idF"] = currentObject[0].id
-        if (not "pdv" in line) or ("pdv" in line and kwargs["pdv"]):
-          objectCreated = targetTable.objects.create(**kwargs)
-          dictIdEquiv[table][id] = objectCreated.id
-
-    elif table == "visit":
-      currentYear = ParamVisio.getValue("currentYear")
-      listVisit = [self.__computeKwargsVisit(visit, listFieldName, dictIdEquiv) for visit in Visit.object.all() if visit.date.year < currentYear]
-      for kwargs in listVisit:
-        VisitSave.object.create(**kwargs)
-
-    elif table == "ville":
-      indexVille = getattr(self.dataDashboard, "__structurePdvs").index("ville")
-      existingVille = {ville.name for ville in VilleSave.objects.all()}
-      villePast = {line[indexVille] for line in getattr(self.dataDashboard, "__pdvs_ly") if not line[indexVille] in existingVille}
-      for ville in villePast:
-        VilleSave.objects.create(name=ville)
-      dictIdEquiv[table] = {ville.id:VilleSave.get(name=ville.name) for ville in Ville.objects.all() if  VilleSave.filter(name=ville.name)}
-
-  def __computeKwargsVisit(self, visit, listFieldName, dictIdEquiv):
-    kwargs = {}
-    for field in listFieldName:
-      if field != "id":
-        if field == "pdv":
-          newId = dictIdEquiv[visit[field].id]
-          kwargs["pdv"] = newId
-        else:
-          kwargs[field] = visit[field]
-      
-  def __fillUpTableForSwicthSave(self, dataTable, dictTable, listTable):
-    dictIdEquiv = {}
-    for table in listTable:
-      if table in dictTable:
-        self.__applySwitchSave(table, dictIdEquiv, dictTable[table]["save"], dataTable[table]["current"])
-
-  def __applySwitchSave(self, table, dictIdEquiv, targetTable, valueTable):
-    dictIdEquiv[table] = {}
-    listFieldName = [field.name for field in targetTable._meta.fields]
-    for line in valueTable:
-      id = line["id"]
-      if targetTable != Pdv:
-        del line["id"]
-      kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
-      if "currentYear" in listFieldName:
-        del kwargs["currentYear"]
-      objectCreated = targetTable.objects.create(**kwargs)
-      dictIdEquiv[table][id] = objectCreated.id
-      if "idF" in listFieldName:
-        objectCreated.idF = objectCreated.id
-        objectCreated.save()
-
-  def __findObjectForSwitch(self, fieldName, value, dictIdEquiv, targetTable):
-    field = targetTable._meta.get_field(fieldName)
-    if isinstance(field, models.ForeignKey) and value:
-      if field.name in dictIdEquiv and value in dictIdEquiv[field.name]:
-        newId = dictIdEquiv[field.name][value]
-      elif  field.name in dictIdEquiv:
-        return None
-      else:
-        # Traite le cas des industries des produits et des villes
-        newId = value
-      modelObject = field.remote_field.model
-      objectWithId = modelObject.objects.filter(id=newId)
-      if objectWithId:
-        return objectWithId[0]
-      return None
-    return value
-
-  def __computeValueLastYear(self, fieldName, value, DictIdEquivCurrent, targetTable):
-    field = targetTable._meta.get_field(fieldName)
-    if isinstance(field, models.ForeignKey) and value:
-      if field.name in DictIdEquivCurrent and value in DictIdEquivCurrent[field.name]:
-        return DictIdEquivCurrent[field.name][value]
-      return None
-    return value
-
-
-
-
-
-
-
 
     
 
