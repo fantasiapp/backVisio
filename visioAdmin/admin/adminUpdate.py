@@ -1,9 +1,11 @@
+from typing import Dict
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import fields
 from visioAdmin.admin.adminParam import AdminParam
 from visioServer.models import *
 from visioServer.modelStructure.dataDashboard import DataDashboard
 import json
+from django.core.serializers.json import DjangoJSONEncoder
 import os
 from openpyxl import load_workbook
 from pathlib import Path
@@ -54,115 +56,132 @@ class AdminUpdate:
       cls.__errorStatus = "Information"
     cls.__errors.append(content)
 
-  def visualizePdv(self, nature):
-    if nature == "both":
-      self.__visualizePdvBoth()
-    file = "refSave.json" if nature == "saved" else "ref.json"
+
+  def visualizeTable(self, kpi, table):
+    if table == "Both":
+      return self.__visualizeBoth(kpi)
+    else:
+      return self.__visualize(kpi, table)
+
+  def __visualize(self, kpi, table):
+    file = self.__findFileForVisualize(kpi, table)
+    titles = self.fieldNamePdv if kpi == "Ref" else self.fieldNameSales
     if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
-      self.__createSaveJson()
+      self.__createJson(kpi)
     with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
       pdvsToExport = json.load(jsonFile)
-    return {'titles':list(self.fieldNamePdv.values()), 'values':pdvsToExport}
+    return {'titles':list(titles.values()), 'values':pdvsToExport}
 
+  def __findFileForVisualize(self, kpi, table):
+    if kpi == "Ref":
+      return "refSave.json" if table == "Saved" else "ref.json"
+    return "volSave.json" if table == "Saved" else "vol.json"
 
-  def __visualizePdvBoth(self):
-    data, pdvIdCode, index, fieldsName, pdvsToExport, newPdv = {}, {}, 0, list(self.fieldNamePdv.values()), [], []
-    indexCode = fieldsName.index("PDV code")
-    for key, file in {"current":"ref.json", "saved":"refSave.json"}.items():
-      if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
-        self.__createSaveJson()
-      with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
-        data[key] = json.load(jsonFile)
-    for line in data["current"]:
+  def __visualizeBoth(self, kpi):
+    data, pdvIdCode, index, pdvsToExport, newPdv = {}, {}, 0, [], []
+    fieldsName = list(self.fieldNamePdv.values()) if kpi == "Ref" else list(self.fieldNameSales.values())
+    indexCode, indexClosedAt = fieldsName.index("PDV code"), fieldsName.index("Fermé le")
+    dictFile = {"Current":"ref.json", "Saved":"refSave.json"} if kpi == "Ref" else {"Current":"vol.json", "Saved":"volSave.json"}
+    for key, file in dictFile.items():
+      self.__fillupDataForBoth(key, data, kpi, file)
+    for line in data["Current"]:
       pdvIdCode[line[indexCode]] = index 
       index += 1
-    for index in range(len(data["saved"])):
-      line = data["saved"][index]
+    for index in range(len(data["Saved"])):
+      line = data["Saved"][index]
       code = line[indexCode]
       indexEquiv = pdvIdCode[code] if code in pdvIdCode else None
       if indexEquiv:
-        lineEquiv = data["current"][indexEquiv]
+        lineEquiv = data["Current"][indexEquiv]
         lineExported = []
         for indexField in range(len(line)):
           if line[indexField] == lineEquiv[indexField]:
             lineExported.append(line[indexField])
           else:
-            print(line[indexCode], line[indexField], lineEquiv[indexField])
-            lineExported.append(str(line[indexField])+"<br>"+str(lineEquiv[indexField]))
-            print(lineExported)
+            lineExported.append(str(line[indexField])+'<br><span class="currentvalue">'+str(lineEquiv[indexField])+'</span>')
         pdvsToExport.append(lineExported)
       else:
+        line[indexClosedAt] = "Nouveau"
         pdvsToExport.append(line)
         newPdv.append(line[indexCode])
-    print("newPdv", newPdv)
     return {'titles':fieldsName, 'values':pdvsToExport, 'new':newPdv}
 
-  def visualizeSalesCurrent(self):
-    pdvs = getattr(self.dataDashboard, "__pdvs")
-    indexes = Pdv.listIndexes()
-    listFields = Pdv.listFields()
-    dictId = {field:(Industry if val == "ind" else Product).objects.get(name=field).id for field, val in self.dataSales.items()}
-    salesToExport = [self.__editSales(line, listFields, indexes, self.fieldNameSales, dictId, Sales.listFields()) for line in pdvs.values()]
-    return {'titles':list(self.fieldNameSales.values()) + ["Plaque", "Cloison", "Doublage", "Prégy", "Salsi"], 'values':salesToExport}
 
-  def __editSales(self, line, listFields, indexes, fieldNameSales, dictId, fieldSales):
-    pdvLine = self.__editPdv(line, listFields, indexes, fieldNameSales)
-    indexSale = listFields.index("sales")
-    saleLine = [0, 0, 0, 0, 0]
-    for sale in line[indexSale]:
-      if sale[fieldSales.index("industry")] == dictId["Siniat"]:
-        if sale[fieldSales.index("product")] == dictId["Plaque"]:
-          saleLine[0] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
-        if sale[fieldSales.index("product")] == dictId["Cloison"]:
-          saleLine[1] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
-        if sale[fieldSales.index("product")] == dictId["Doublage"]:
-          saleLine[2] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
-      if sale[fieldSales.index("industry")] == dictId["Prégy"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
-        saleLine[3] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
-      if sale[fieldSales.index("industry")] == dictId["Salsi"] and sale[fieldSales.index("product")] == dictId["Enduit"]:
-        saleLine[4] = '{:,}'.format(int(sale[fieldSales.index("volume")])).replace(',', ' ')
-    return pdvLine + saleLine
+  def __fillupDataForBoth(self, key, data, kpi, file):
+    if not os.path.isfile(f"./visioAdmin/dataFile/Json/{file}"):
+      self.__createJson(kpi)
+    with open(f"./visioAdmin/dataFile/Json/{file}") as jsonFile:
+      data[key] = json.load(jsonFile)
+
+# UpdateFile
+
+ # import Ref
 
   def updateFile (self, fileNature):
-    if fileNature == "referentiel":
+    if fileNature == "Ref":
       return self.__updateFileRef()
-    if fileNature == "volume":
+    if fileNature == "Vol":
       return self.__updateFileVol()
 
   def __updateFileRef(self):
-    dictSheet = self.__updateLoad("referentiel")
+    dictSheet = self.__updateLoad("Ref")
     AdminUpdate.xlsxData = dictSheet["Ref"] if dictSheet else False
     if AdminUpdate.xlsxData:
       title = self.__findTitlesRef()
       if not title: return False
       data = self.__findValuesRef(list(title.values()), title[self.keyFieldRef])
-      AdminUpdate.xlsxData = self.__buildStructureRef(title, data, getattr(self.dataDashboard, "__structurePdvs"))
-      response = self.__saveDataRef()
-      if response:
-        return response
-      else:
-        return self.updateRefWithAgent({})
-    else:
+      self.__copyCurrentToSave()
+      AdminUpdate.replacedAgent = self.__updateBaseSave(title, data)
+      listAgent = self.__createQueryNewAgent()
+      AdminUpdate.replacedAgent = listAgent
+      AdminUpdate.xlsxData = {"title":list(title.keys()), "data":data}
+      if listAgent:
+        return {"warningAgent":listAgent}
+      return self.updateRefWithAgent()
+      # A faire, le cas ou il n'y a pas d'agent nouveau
       return False
 
+  def __copyCurrentToSave(self):
+    listTable = ["visit","sales","pdv","agentFinitions","agent","dep","drv","bassin","ville","segmentCommercial","segmentMarketing","site","sousEnsemble","ensemble","enseigne"]
+    with connection.cursor() as cursor:
+      for table in listTable:
+        tableName = "visioServer_" + table.lower()
+        cursor.execute(f'DELETE FROM `{tableName}save`')
+        cursor.execute(f"ALTER TABLE {tableName}save AUTO_INCREMENT=1;")
+      listTable.reverse()
+      for table in listTable:
+        tableName = "visioServer_" + table.lower()
+        cursor.execute(f"SELECT * FROM `{tableName}`;")
+        tableValues = [self.joinForCopy(line) for line in cursor.fetchall()]
+        listValues = ",".join(tableValues)
+        cursor.execute(f'SHOW FIELDS FROM {tableName}')
+        fields = [line[0] for line in cursor.fetchall()]
+        listFields = "`,`".join(fields)
+        query = f'INSERT INTO {tableName}save(`{listFields}`) values {listValues};'
+        cursor.execute(query)
+
+  def joinForCopy(self, line):
+    newLine = [json.dumps(item, cls=DjangoJSONEncoder) for item in line]
+    return "("+','.join(newLine)+")"
+
   def __updateFileVol(self):
-    dictSheet = self.__updateLoad("volume")
+    dictSheet = self.__updateLoad("Vol")
     if dictSheet:
       AdminUpdate.xlsxData = dictSheet
       titles = self.__findTitlesVol()
       if not titles: return False
       data = self.__findValuesVol(titles, titles["siniat"][self.keyFieldVol])
-      AdminUpdate.xlsxData = {key:{"titles":value, "data":data[key]} for key, value in titles.items()}
+      AdminUpdate.xlsxData = {key:{"titles":value.keys(), "data":data[key]} for key, value in titles.items()}
       self.__saveDataVol()
     return False
 
   def __updateLoad(self, fileNature):
-    fileName = DataAdmin.getLastSavedObject().fileNameRef if fileNature == "referentiel" else DataAdmin.getLastSavedObject().fileNameVol
-    path = self.pathRef if fileNature == "referentiel" else self.pathVol
+    fileName = DataAdmin.getLastSavedObject().fileNameRef if fileNature == "Ref" else DataAdmin.getLastSavedObject().fileNameVol
+    path = self.pathRef if fileNature == "Ref" else self.pathVol
     pathFile = Path.cwd() / f"{path}{fileName}"
     dictSheet = {}
     if pathFile.exists():
-      for key, sheetName in {"Ref":self.sheetNameRef}.items() if fileNature == "referentiel" else self.sheetNameVol.items():
+      for key, sheetName in {"Ref":self.sheetNameRef}.items() if fileNature == "Ref" else self.sheetNameVol.items():
         try:
           xlsxworkbook = load_workbook(pathFile, data_only=True)
           dictSheet[key] = xlsxworkbook[sheetName]
@@ -231,125 +250,191 @@ class AdminUpdate:
         row += 1
     return data
 
-  def __buildStructureRef(self, title, data, structurePdvs):
-    structure = {"pdvs":{}, "newPdvs":[]}
-    listId = self.__buildInverseStructure(structurePdvs)
+  def __updateBaseSave(self, title, data):
+    listId, listNewAGent = self.__buildInverseStructure(), {"new":{}, "existing":set()}
+    foreignField = {field.name:field for field in PdvSave._meta.fields if isinstance(field, models.ForeignKey)}
+    indexNbVisit, now = list(title.keys()).index("Nb visites F"), timezone.now()
+    visitMonth = now.month - 1 if now.month != 1 else 12
+    visitYear = now.year if visitMonth != 12 else now.year - 1
+    dateVisit = date(year=visitYear, month=visitMonth, day=1)
     for line in data:
-      indexData, lineAnalysis = 0, {"missingValues":[]}
-      for xlsxTitle in title.keys():
-        self.__treatLineField(line[indexData], self.fieldXlsxDbRef[xlsxTitle], lineAnalysis, listId)
-        indexData += 1
-      id = lineAnalysis["idPdv"]
-      del lineAnalysis["idPdv"]
-      if id == "new":
-        structure["newPdvs"].append(lineAnalysis)
+      pdv = self.__pdvAlreadyExists(line, listId)
+      if pdv:
+        indexLine = 0
+        for xlsxTitle in title.keys():
+          self.__updatePdv(pdv, line[indexLine], self.fieldXlsxDbRef[xlsxTitle], listId, foreignField, listNewAGent)
+          indexLine += 1
+        pdv.save()
       else:
-        self.__checkDiff(lineAnalysis, structurePdvs, getattr(self.dataDashboard, "__pdvs")[id])
-        structure["pdvs"][id] = lineAnalysis
-    structure["oldPdvs"] = [id for id in getattr(self.dataDashboard, "__pdvs").keys() if not id in structure["pdvs"]]
-    return structure
+        pdv = self.__createNewPdv(line, listId, list(title.keys()), listNewAGent)
+      self.__computeNbVisit(pdv, line[indexNbVisit], dateVisit)
+    return listNewAGent
 
-  def __treatLineField(self, value, dbField, lineAnalysis, listId):
-    if dbField == "code_old": self.__treatLineCodeOld(value, lineAnalysis, listId)
-    elif dbField == "code" and lineAnalysis["code"] != value:
-      lineAnalysis["codeNew"] = value
-    elif dbField == "pointFeu":
-      lineAnalysis[dbField] = True if value == "O" else False
-    elif dbField in listId:
-      if value in listId[dbField]:
-        lineAnalysis[dbField] = listId[dbField][value]
-      elif dbField == "segmentMarketing":
-        lineAnalysis[dbField] = listId[dbField]["Autres"]
-      elif value != None:
-        lineAnalysis[dbField] = value
-        lineAnalysis["missingValues"].append(dbField)
-    else: lineAnalysis[dbField] = value
+  def __computeNbVisit(self, pdv, value, dateVisit):
+    if value and isinstance(value, int):
+      oldVisitList = VisitSave.objects.filter(pdv=pdv)
+      for oldVisit in oldVisitList:
+        if oldVisit.date.year == dateVisit.year:
+          oldVisit.delete()
+      VisitSave.objects.create(date=dateVisit, nbVisit=value, pdv=pdv)
 
-  def __treatLineCodeOld(self, value, lineAnalysis, listId):
-    lineAnalysis["code"] = value
-    if str(value) in listId["pdvCode"]:
-      lineAnalysis["idPdv"] = listId["pdvCode"][str(value)]
-    else:
-      lineAnalysis["idPdv"] = "new"
-
-  def __buildInverseStructure (self, structurePdvs):
-    listId = {}
-    indexCode = structurePdvs.index("code")
-    listId["pdvCode"] = {line[indexCode]:id for id, line in getattr(self.dataDashboard, "__pdvs").items()}
-    for field in ["ville", "dep", "agent", "drv", "segmentMarketing", "enseigne", "ensemble", "sousEnsemble", "site", "bassin", "segmentCommercial"]:
-      dicoField = getattr(self.dataDashboard, f"__{field}")
-      if field == "segmentMarketing":
-        dicoEquiv = {"Purs Spécialistes":"Pur Spécialiste", "Multi Spécialistes":"Multispécialiste", "Généralistes":"Généraliste"}
-        dicoField = {id:dicoEquiv[name] for id, name in dicoField.items() if name in dicoEquiv}
-        other = SegmentMarketing.objects.get(name="Autres", currentYear=True)
-        dicoField[other.id] = other.name
-      elif field == "bassin":
-        bassinBase = Bassin.objects.filter(currentYear=True)
-        dicoField = {bassin.id:bassin.name for bassin in bassinBase}
-      listId[field] = {name:id for id, name in dicoField.items()}
+  def __buildInverseStructure (self):
+    """Donne pour les différents modèles la valeur clé : le name comme clé et l'Id comme valeur"""
+    listId = {"pdvCode":{pdv.code:pdv.id for pdv in Pdv.objects.filter(currentYear=True)}}
+    for model in [Ville, Dep, Agent, Drv, SegmentMarketing, Enseigne, Ensemble, SousEnsemble, Site, Bassin, SegmentCommercial]:
+      nameM = model._meta.object_name
+      listObject = model.objects.filter(currentYear=True) if "currentYear" in model._meta.fields else model.objects.all()
+      listId[nameM[0].lower() + nameM[1:]] = {objectM.name:objectM.id for objectM in listObject}
     return listId
 
-  def __checkDiff(self, lineAnalysis, structurePdvs, pdvCurrent):
-    unusedFields = lineAnalysis['missingValues'] + ['missingValues', 'code', 'codeNew', 'nbVisits']
-    diff = [field for field, value in lineAnalysis.items() if not field in unusedFields and self.__areDifferent(field, value, structurePdvs, pdvCurrent)]
-    lineAnalysis["differences"] = diff
+  def __pdvAlreadyExists(self, line, listId):
+    IndexCodeOld = list(self.fieldXlsxDbRef.values()).index("code_old")
+    IndexCodeNew = list(self.fieldXlsxDbRef.values()).index("code")
+    code = line[IndexCodeOld]
+    if str(code) in listId["pdvCode"]:
+      pdv = PdvSave.objects.get(code=str(code), currentYear=True)
+      if code != line[IndexCodeNew]:
+        pdv.code = line[IndexCodeNew]
+        pdvOld = PdvSave.objects.filter(code=str(code), currentYear=False)
+        if pdvOld:
+          pdvOld[0].code = line[IndexCodeNew]
+          pdvOld[0].save()
+      return pdv
+    return False
 
-  def __areDifferent(self, field, value, structurePdvs, pdvCurrent):
-    index = structurePdvs.index(field)
-    return abs(value - pdvCurrent[index]) > 0.001 if isinstance(value, float) else value != pdvCurrent[index]
-
-  def __saveDataRef(self):
-    self.__agentFinitionsDelete()
-    dictClass = {
-      "drv":{"current":Drv, "save":DrvSave},
-      "ville":{"current":Ville, "save":VilleSave},
-      "dep":{"current":Dep, "save":DepSave},
-      "segmentMarketing":{"current":SegmentMarketing, "save":SegmentMarketingSave},
-      "segmentCommercial":{"current":SegmentCommercial, "save":SegmentCommercialSave},
-      "enseigne":{"current":Enseigne, "save":EnseigneSave},
-      "ensemble":{"current":Ensemble, "save":EnsembleSave},
-      "sousEnsemble":{"current":SousEnsemble, "save":SousEnsembleSave},
-      "site":{"current":Site, "save":SiteSave},
-      "bassin":{"current":Bassin, "save":BassinSave},
-      }
-    AdminUpdate.creationElement = self.__saveDataRefFillUpTable(dictClass)
-    AdminUpdate.replacedAgent = self.__saveDataRefFillUpAgent()
-    if AdminUpdate.replacedAgent:
-      listAgent = [{"newName":key, "oldName":value['oldName']} for key, value in AdminUpdate.replacedAgent.items()]
-      return {"warningAgent":listAgent}
-    else:
-      return self.__endTreatment()
-
-  def __saveDataRefFillUpTable(self, dictClass):
-    creation = {}
-    for table, classes in dictClass.items():
-      creation[table] = {}
-      setPdv = {line[table] for line in AdminUpdate.xlsxData["pdvs"].values() if not table in line['missingValues'] and table in line}
-      setNewPdv = {line[table] for line in AdminUpdate.xlsxData["newPdvs"] if not table in line['missingValues'] and table in line}
-      setOldPdv = {getattr(Pdv.objects.get(id=id), table).id for id in AdminUpdate.xlsxData["oldPdvs"]}
-      setIdUsed = setPdv | setNewPdv | setOldPdv
-      setPdvMissing = {line[table] for line in AdminUpdate.xlsxData["pdvs"].values() if table in line['missingValues'] and table in line}
-      setNewPdvMissing = {line[table] for line in AdminUpdate.xlsxData["newPdvs"] if table in line['missingValues'] and table in line}
-      setNewValues = setPdvMissing | setNewPdvMissing
-      self.__createDefaultValues(classes["save"])
-      for id in setIdUsed:
-        if not classes["save"].objects.filter(id=id):
-          existingObject = classes["current"].objects.get(id=id)
-          if not table in ["ville"]:
-            classes["save"].objects.create(id=id, name=existingObject.name, idF=existingObject.idF)
-          else:
-            classes["save"].objects.create(id=id, name=existingObject.name)
-      for name in setNewValues:
-        exists = classes["save"].objects.filter(name=name)
-        if exists:
-          creation[table][name] = exists[0].id
+  def __createNewPdv(self, line, listId, title, listNewAgent):
+    indexCode = title.index("Code SAP Final")
+    kwargs, indexLine = {"code":str(line[indexCode])}, 0
+    foreignField = {field.name:field for field in PdvSave._meta.fields if isinstance(field, models.ForeignKey)}
+    for xlsxTitle in title:
+      value = line[indexLine]
+      dbField = self.fieldXlsxDbRef[xlsxTitle]
+      if not dbField in ["code_old", "code", "nbVisits"]:
+        newValue = self.__checkForSynonym(value, dbField)
+        if dbField in foreignField:
+          objectFound = self.__findObjectForPdv(dbField, newValue, listId, foreignField[dbField], listNewAgent)
+          if objectFound:
+            kwargs[dbField] = objectFound
+          elif dbField == "agent":
+            kwargs[dbField] = AgentSave.objects.filter(currentYear=True)[0]
         else:
-          new = classes["save"].objects.create(name=name)
-          if not table in ["ville"]:
-            new.idF = new.id
-            new.save()
-          creation[table][name] = new.id
-    return creation
+          kwargs[dbField] = newValue
+      indexLine += 1
+    agentFinitions = PdvSave.objects.filter(currentYear=True, dep=kwargs["dep"]).first().agentFinitions
+    kwargs["agentFinitions"] = agentFinitions
+    newPdv = PdvSave.objects.create(**kwargs)
+    newPdv.idF = newPdv.id
+    newPdv.save()
+    return newPdv
+
+  def __updatePdv(self, pdv, value, dbField, listId, foreignField, listNewAgent):
+    if not dbField in ["code_old", "code", "nbVisits"]:
+      newValue = self.__checkForSynonym(value, dbField)
+      if dbField in foreignField:
+        objectFound = self.__findObjectForPdv(dbField, newValue, listId, foreignField[dbField], listNewAgent)
+        if objectFound and objectFound != getattr(pdv, dbField):
+          setattr(pdv, dbField, objectFound)
+        elif dbField == "agent" and value in listNewAgent["new"]:
+          listNewAgent["new"][value].append(pdv)
+      else:
+        oldValue = getattr(pdv, dbField)
+        if oldValue != newValue:
+          setattr(pdv, dbField, newValue)
+
+  def __checkForSynonym(self, value, dbField):
+    synonym = False
+    if dbField in list(Synonyms.dictTable.keys()):
+      synonym = Synonyms.getValue(dbField, value)
+    if dbField == "pointFeu":
+      return True if value == "O" else False
+    if not value:
+      if dbField == "segmentCommercial": return "non segmenté"
+    return synonym if synonym else value
+
+  def __findObjectForPdv(self, dbField, value, listId, objectField, listNewAgent):
+    if dbField == "agent":
+      return self.__checkNewAgent(value, listId["agent"], listNewAgent)
+    classObject = objectField.remote_field.model
+    listField = [field.name for field in classObject._meta.fields]
+    if value in listId[dbField]:
+      return classObject.objects.get(id=listId[dbField][value])
+    kwargs = {"name":value}
+    if "currentYear" in listField:
+      kwargs["currentYear"] = True
+    objectCreated = classObject.objects.filter(**kwargs)
+    if objectCreated:
+      return objectCreated[0]
+    objectCreated = classObject.objects.create(**kwargs)
+    if "idF" in listField:
+      setattr(classObject, "idF", objectCreated.id)
+    return objectCreated
+
+  def __checkNewAgent(self, value, listIdAgent, listNewAgent):
+    if value in listNewAgent["new"]:
+      return False
+    if value in listIdAgent:
+      listNewAgent["existing"].add(value)
+      return AgentSave.objects.get(id=listIdAgent[value])
+    listNewAgent["new"][value] = []
+    return False
+
+  def __createQueryNewAgent(self):
+    listAgent = []
+    listReplaced = {key:[pdv.agent.name for pdv in value] for key, value in AdminUpdate.replacedAgent["new"].items()}
+    for NewName, listOldName in listReplaced.items():
+      setOldName, oldNameFrequency = set(listOldName), {}
+      for oldName in setOldName:
+        oldNameFrequency[oldName] = listOldName.count(oldName)
+        oldNameFrequencySorted = [oldName for oldName, _ in sorted(oldNameFrequency.items(), key=lambda item: -item[1])]
+      if oldNameFrequencySorted[0] not in AdminUpdate.replacedAgent["existing"]:
+        listAgent.append({"newName":NewName, "oldName":oldNameFrequencySorted[0]})
+    return listAgent
+
+  def updateRefWithAgent(self, getDict={}):
+    pdvList = self.__updateRefWithAgent(getDict)
+    self.__closePdv(pdvList)
+    return AdminUpdate.response
+
+  def __updateRefWithAgent(self, getDict):
+    dictReplacedAgent = {oldName:value[0] for oldName, value in getDict.items() if not oldName in ["action", "csrfmiddlewaretoken"]}
+    pdvList = {pdv.code:pdv for pdv in PdvSave.objects.filter(currentYear=True)}
+    agentListReplace = [agentReplacing for agentReplacing, status in dictReplacedAgent.items() if status == "replace"]
+    agentList = {agent["newName"]:AgentSave.objects.get(name=agent["oldName"], currentYear=True) for agent in AdminUpdate.replacedAgent if agent["newName"] in agentListReplace}
+    for newName, agent in agentList.items():
+      agent.name = newName
+      agent.save()
+    indexCode = AdminUpdate.xlsxData["title"].index("Code SAP Final")
+    indexAgent = AdminUpdate.xlsxData["title"].index("Libellé Agent SAP")
+    for line in AdminUpdate.xlsxData["data"]:
+      code = str(line[indexCode])
+      agentName = line[indexAgent]
+      pdv = pdvList[code] if code in pdvList else False
+      if pdv and pdv.agent.name != agentName:
+        newAgent = AgentSave.objects.filter(name=agentName, currentYear=True)
+        if newAgent:
+          newAgent = newAgent[0]
+        else:
+          newAgent = AgentSave.objects.create(name=agentName, currentYear=True)
+          newAgent.idF = newAgent.id
+          newAgent.save()
+        pdv.agent = newAgent
+        pdv.save()
+    return pdvList
+
+  def __closePdv(self, pdvList):
+    now = timezone.now()
+    indexCode = AdminUpdate.xlsxData["title"].index("Code SAP Final")
+    listCode = [line[indexCode] for line in AdminUpdate.xlsxData["data"]]
+    for code, pdv in pdvList.items():
+      if code in listCode:
+        pdv.closedAt = None
+        pdv.avaliable = True
+      else:
+        if pdv.closedAt and pdv.closedAt.year < now.year:
+          pdv.available = False
+        else:
+          pdv.closedAt = now
+      pdv.save()
 
   def __createDefaultValues(self, classesSelected):
     classesSelected.objects.all().delete()
@@ -369,209 +454,22 @@ class AdminUpdate:
         classObject.objects.create(id=id, name=name, idF=id)
 
 
-  def __saveDataRefFillUpAgent(self):
-    indexAgent = getattr(self.dataDashboard, "__structurePdvs").index("agent")
-    currentPdvs = getattr(self.dataDashboard, "__pdvs")
-    currentAgent = getattr(self.dataDashboard, "__agent")
-    dataAgent = {id:line['agent'] for id, line in AdminUpdate.xlsxData["pdvs"].items() if 'agent' in line['missingValues']}
-    dictAgent = {}
-    for idPdv, newName in dataAgent.items():
-      if not newName in dictAgent:
-        dictAgent[newName] = {}
-      oldIdAgent = currentPdvs[idPdv][indexAgent]
-      if not oldIdAgent in dictAgent[newName]:
-        dictAgent[newName][oldIdAgent] = {"oldName":currentAgent[oldIdAgent], "idPdvs":[]}
-      dictAgent[newName][oldIdAgent]["idPdvs"].append(idPdv)
-    dictCandidate = {}
-    for newName, dictOldNames in dictAgent.items():
-      countOldNames = {len(dictOld["idPdvs"]):idAgent for idAgent, dictOld in dictOldNames.items()}
-      indexMax = max(countOldNames, key=countOldNames.get)
-      dictCandidate[newName] = {"idOld":countOldNames[indexMax], "oldName":currentAgent[countOldNames[indexMax]]}
-    for newAgent, dictOldNames in dictCandidate.items():
-      idOldAgent = dictOldNames["idOld"]
-      if self.__agentStillExists(idOldAgent):
-        del dictCandidate[newAgent]
-    return dictCandidate
-
-  def __agentStillExists(self, idOldAgent):
-    for pdv in list(AdminUpdate.xlsxData["pdvs"].values()) +  AdminUpdate.xlsxData["newPdvs"]:
-      if pdv["agent"] == idOldAgent:
-        return True
-    return False
-
-  def updateRefWithAgent(self, getDict):
-    self.__createDefaultValues(AgentSave)
-    dictReplacedAgent = {oldName:value[0] for oldName, value in getDict.items() if not oldName in ["action", "csrfmiddlewaretoken"]}
-    replaced, AdminUpdate.creationElement["agent"], used = [], {}, []
-    currentAgent = getattr(self.dataDashboard, "__agent")
-    # traitement des agent à remplacer
-    for line in self.xlsxData["pdvs"].values():
-      if 'agent' in line['missingValues']:
-        newName = line["agent"]
-        if dictReplacedAgent[newName] == "replace":
-          if not newName in replaced:
-            id = self.replacedAgent[newName]["idOld"]
-            AgentSave.objects.create(id=id, name=newName, idF=id)
-            used.append(id)
-            replaced.append(newName)
-          indexAgent = line['missingValues'].index('agent')
-          del line['missingValues'][indexAgent]
-          line["agent"] = id
-          if not "differences" in line:
-            line["differences"] = []
-          line["differences"].append("agent")
-      else:
-        if not line["agent"] in used:
-          name = currentAgent[line["agent"]]
-          AgentSave.objects.create(id=line["agent"], name=name, idF=line["agent"])
-          used.append(line["agent"])
-    # Traitement des anciensPdv
-    for agent in [Pdv.objects.get(id=id).agent for id in AdminUpdate.xlsxData["oldPdvs"]]:
-      if not agent.id in used:
-        AgentSave.objects.create(id=agent.id, name=agent.name, idF=agent.id)
-        used.append(agent.id)
-    # Traitement des nouveaux agents
-    for line in list(AdminUpdate.xlsxData["pdvs"].values()) + AdminUpdate.xlsxData["newPdvs"]:
-      if 'agent' in line['missingValues']:
-        newName = line["agent"]
-        if not newName in self.creationElement["agent"]:
-          newAgent = AgentSave.objects.create(name=newName)
-          newAgent.idF = newAgent.id
-          AdminUpdate.creationElement["agent"][newName] = newAgent.id
-        indexAgent = line['missingValues'].index('agent')
-        del line['missingValues'][indexAgent]
-        line["agent"] = self.creationElement["agent"][newName]
-        if not "differences" in line:
-          line["differences"] = []
-        line["differences"].append("agent")
-    del AdminUpdate.creationElement["agent"]
-    return self.__endTreatment()
-
-  def __endTreatment(self):
-    self.__createElement()
-    self.__createPdvSave()
-    self.__computeNbVisits()
-    self.__createRefSaveJson()
-    self.__createRefJson()
-    return AdminUpdate.response 
-
-  def __createElement(self):
-    for line in list(AdminUpdate.xlsxData["pdvs"].values()) + AdminUpdate.xlsxData["newPdvs"]:
-      for missingField in line['missingValues']:
-        value = line[missingField]
-        line[missingField] = AdminUpdate.creationElement[missingField][value]
-      del line['missingValues']
-
-  def __agentFinitionsDelete(self):
-    for objectModel in [PdvSave, AgentFinitionsSave]:
-      self.__createDefaultValues(objectModel)
-
-  def __createPdvSave(self):
-    self.__createExistingPdvSave()
-    self.__createNewPdvSave()
-    self.__createCanceledPdvSave()
-
-  def __createExistingPdvSave(self):
-    for id, value in AdminUpdate.xlsxData["pdvs"].items():
-      kwargs = {field:self.__computeDataForKwargs(field, data) for field, data in value.items() if not field in ['nbVisits', 'differences', 'codeNew']}
-      kwargs["id"] = id
-      kwargs["idF"] = id
-      kwargs["agentFinitions"] = self.__computeAgentFinitionsForPdv(kwargs["dep"], kwargs["drv"])
-      for fieldName in ["sale", "available", "redistributed", "redistributedFinitions", "onlySiniat", "closedAt"]:
-        objectPdv = Pdv.objects.get(id=id)
-        kwargs[fieldName] = getattr(objectPdv, fieldName)
-      if not kwargs["available"] or not kwargs["redistributed"]:
-        kwargs["segmentMarketing"] = SegmentMarketingSave.objects.get(name="Fermé")
-      if "codeNew" in value:
-        value["differences"].append("code")
-        kwargs["code"] = value["codeNew"]
-      if kwargs["closedAt"]:
-        kwargs["closedAt"] = None
-        kwargs["available"] = True
-      PdvSave.objects.create(**kwargs)
-
-  def __createNewPdvSave(self):
-    for value in AdminUpdate.xlsxData["newPdvs"]:
-      kwargs = {field:self.__computeDataForKwargs(field, data) for field, data in value.items() if not field in ['nbVisits', 'differences', 'codeNew']}
-      kwargs["agentFinitions"] = self.__computeAgentFinitionsForPdv(kwargs["dep"], kwargs["drv"])
-      if "codeNew" in value:
-        kwargs["code"] = value["codeNew"]
-      savePdv = PdvSave.objects.create(**kwargs)
-      savePdv.idf = savePdv.id
-      savePdv.save()
-
-  def __createCanceledPdvSave(self):
-    now = timezone.now()
-    for id in AdminUpdate.xlsxData["oldPdvs"]:
-      oldPdv = Pdv.objects.get(id=id)
-      kwargs = {}
-      kwargs = {field.name:self.__computeDataForCanceledPdv(field.name, oldPdv) for field in PdvSave._meta.fields}
-      if kwargs["closedAt"]:
-        if kwargs["closedAt"].year < now.year - 1:
-          kwargs["available"] = False
-      else:
-        kwargs["closedAt"] = now
-      PdvSave.objects.create(**kwargs)
-      
-      
-  def __computeDataForCanceledPdv(self, fieldName, oldPdv):
-    valueField = getattr(oldPdv, fieldName)
-    if isinstance(PdvSave._meta.get_field(fieldName), models.ForeignKey):
-      saveModel = PdvSave._meta.get_field(fieldName).remote_field.model
-      saveObject = saveModel.objects.filter(name=valueField.name)
-      if not saveObject and isinstance(valueField, Agent):
-        saveObject = saveModel.objects.filter(id=valueField.id)
-      return saveObject[0]
-    return valueField
-    
-
-  def __computeDataForKwargs(self, field, data):
-    if isinstance(PdvSave._meta.get_field(field), models.ForeignKey):
-      classObject = PdvSave._meta.get_field(field).remote_field.model
-      instanceObject = classObject.objects.filter(id=data)
-      if instanceObject:
-        return instanceObject[0]
-      else:
-        print("__computeDataForKwargs", field, data)
-        return None
-    return data
-
-  def __computeAgentFinitionsForPdv(self, objectDep, objectDrv):
-    depOld = Dep.objects.get(id=objectDep.id)
-    pdvOld = Pdv.objects.filter(dep=depOld, currentYear=True).first()
-    agentFinitionsOld = pdvOld.agentFinitions
-    agentFinitionsList = AgentFinitionsSave.objects.filter(id=agentFinitionsOld.id)
-    if agentFinitionsList:
-      return agentFinitionsList[0]
-    return AgentFinitionsSave.objects.create(
-      id=agentFinitionsOld.id,
-      name=agentFinitionsOld.name,
-      drv=objectDrv,
-      ratioTargetedVisit=agentFinitionsOld.ratioTargetedVisit,
-      TargetedNbVisit=agentFinitionsOld.TargetedNbVisit,
-      idF=agentFinitionsOld.id
-      )
-
-  def __computeNbVisits(self):
-    now = timezone.now()
-    self.__createDefaultValues(VisitSave)
-    for id, value in AdminUpdate.xlsxData["pdvs"].items():
-      if "nbVisits" in value and value["nbVisits"]:
-        VisitSave.objects.create(date=now, nbVisit=value["nbVisits"], pdv=PdvSave.objects.get(id=id))
-    for value in AdminUpdate.xlsxData["newPdvs"]:
-      if "nbVisits" in value and value["nbVisits"]:
-        id = PdvSave.objects.get(code=value["code"]).id
-        VisitSave.objects.create(date=now, nbVisit=value["nbVisits"], pdv=PdvSave.objects.get(id=id))
-
-
   def __saveDataVol(self):
     self.__createDefaultValues(SalesSave)
     self.__importSiniatVolume()
     self.__importOtherVolume()
+    self.__createJson("Vol")
+
+  def __createJson(self, kpi):
+    if kpi == "Ref":
+      self.__createRefSaveJson()
+      self.__createRefJson()
+    else:
+      self.__createVolJson()
 
   def __createRefSaveJson(self):
     pdvs = PdvSave.objects.all()
-    listName = Pdv.listFields()
+    listName = PdvSave.listFields()
     fieldsObject = [name for name in listName if getattr(Pdv, name, False) and (isinstance(Pdv._meta.get_field(name), models.ForeignKey))]
     pdvsToExport = [self.__computePdvSaveJson(pdv, fieldsObject) for pdv in pdvs]
     with open("./visioAdmin/dataFile/Json/refSave.json", 'w') as jsonFile:
@@ -589,11 +487,13 @@ class AdminUpdate:
     lineFormated = []
     for  field in self.fieldNamePdv.keys():
       fieldVal = getattr(pdv, field)
-      value = "a"
+      value = ""
       if field == "closedAt":
         value = fieldVal.strftime("%m/%d/%Y") if pdv.closedAt else ""
       elif isinstance(fieldVal, bool):
         value = "Oui" if fieldVal else "Non"
+      elif field == "bassin":
+        value = fieldVal.name.replace('Négoce_', "")
       elif field in fieldsObject:
         value = fieldVal.name
       else:
@@ -619,6 +519,8 @@ class AdminUpdate:
         else:
           lineFormated.append(line[index])
     return lineFormated
+
+  # import Vol
 
   def __importSiniatVolume(self):
     siniat = Industry.objects.get(name="Siniat")
@@ -667,47 +569,110 @@ class AdminUpdate:
       return pdvNew[0]
     return False
 
-  def switchBase(self):
-    dictTables={
-      "visit":{"current":Visit, "save":VisitSave},
-      "sales":{"current":Sales, "save":SalesSave},
-      "pdv":{"current":Pdv, "save":PdvSave},
-      "agentFinitions":{"current":AgentFinitions, "save":AgentFinitionsSave},
-      "agent":{"current":Agent, "save":AgentSave},
-      "dep":{"current":Dep, "save":DepSave},
-      "drv":{"current":Drv, "save":DrvSave},
-      "bassin":{"current":Bassin, "save":BassinSave},
-      "ville":{"current":Ville, "save":VilleSave},
-      "segmentCommercial":{"current":SegmentCommercial, "save":SegmentCommercialSave},
-      "segmentMarketing":{"current":SegmentMarketing, "save":SegmentMarketingSave},
-      "site":{"current":Site, "save":SiteSave},
-      "sousEnsemble":{"current":SousEnsemble, "save":SousEnsembleSave},
-      "ensemble":{"current":Ensemble, "save":EnsembleSave},
-      "enseigne":{"current":Enseigne, "save":EnseigneSave},
-    }
-    dataTable = self.__readTable(dictTables)
-    self.__eraseTableForSwitch(dictTables)
-    self.__fillUpTableForSwicth(dataTable, dictTables)
+  def __createVolJson(self):
+    for nature in ["Current", "Saved"]:
+      fileRef, dictSales = "vol.json" if nature == "Current" else "volSave.json", {}
+      listSales = [objectSales for objectSales in Sales.objects.filter(currentYear=True)] if nature == "Current" else [objectSales for objectSales in SalesSave.objects.all()]
+      for sale in listSales:
+        self.__computeVolJson(sale, dictSales)
+      with open(f"./visioAdmin/dataFile/Json/{fileRef}", 'w') as jsonFile:
+        json.dump(list(dictSales.values()), jsonFile, indent = 3)
+    
 
-    return {"switchBase":"workInProgress"}
+  def __computeVolJson(self, sales, dictSales):
+    if sales.industry.name in ["Siniat", "Prégy", "Salsi"] and sales.product.name != "mortier":
+      if not sales.pdv.code in dictSales:
+        lineFormated = [sales.pdv.code, sales.pdv.name]
+        lineFormated.append("Non" if sales.pdv.sale else "Oui")
+        lineFormated.append("Non" if sales.pdv.redistributed else "Oui")
+        lineFormated.append("Non" if sales.pdv.redistributedFinitions else "Oui")
+        lineFormated.append("Oui" if sales.pdv.onlySiniat else "Non")
+        lineFormated.append(sales.pdv.closedAt.strftime("%m/%d/%Y") if sales.pdv.closedAt else "")
+        lineFormated += [0, 0, 0, 0, 0]
+        dictSales[sales.pdv.code] = lineFormated
+      lineFormated = dictSales[sales.pdv.code]
+      index = False
+      if sales.industry.name == "Siniat": 
+        if sales.product.name == "plaque": index = 7
+        if sales.product.name == "cloison": index = 8
+        if sales.product.name == "doublage": index = 9
+      if sales.industry.name == "Prégy" and sales.product.name == "enduit": index = 10
+      if sales.industry.name == "Salsi" and sales.product.name == "enduit": index = 11
+      if index:
+        dictSales[sales.pdv.code][index] = '{:,}'.format(int(sales.volume)).replace(',', ' ')
+
+
+  # switch Base
+
+  def switchBase(self):
+    listTable = ["visit","sales","pdv","agentFinitions","agent","dep","drv","bassin","ville","segmentCommercial","segmentMarketing","site","sousEnsemble","ensemble","enseigne"]
+    extention = {"current":"", "save":"save", "temp":"temp"}
+    listRename = [
+      {"from":extention["current"], "to":extention["temp"]},
+      {"from":extention["save"], "to":extention["current"]},
+      {"from":extention["temp"], "to":extention["save"]}
+      ]
+    for rename in listRename:
+      self.__renameTable(listTable, rename)
+    return {"switchBase": "work in progress"}
+
+  def __renameTable(self, listTable, rename):
+    with connection.cursor() as cursor:
+      for table in listTable:
+        tableNameFrom = "visioServer_" + table.lower() + rename["from"]
+        tableNameTo = "visioServer_" + table.lower() + rename["to"]
+        print(f'RENAME TABLE `{tableNameFrom}` TO `{tableNameTo}`')
+        cursor.execute(f'RENAME TABLE `{tableNameFrom}` TO `{tableNameTo}`')
+
+
+
+  # def switchBase(self):
+  #   dictTables={
+  #     "visit":{"current":Visit, "save":VisitSave},
+  #     "sales":{"current":Sales, "save":SalesSave},
+  #     "pdv":{"current":Pdv, "save":PdvSave},
+  #     "agentFinitions":{"current":AgentFinitions, "save":AgentFinitionsSave},
+  #     "agent":{"current":Agent, "save":AgentSave},
+  #     "dep":{"current":Dep, "save":DepSave},
+  #     "drv":{"current":Drv, "save":DrvSave},
+  #     "bassin":{"current":Bassin, "save":BassinSave},
+  #     "ville":{"current":Ville, "save":VilleSave},
+  #     "segmentCommercial":{"current":SegmentCommercial, "save":SegmentCommercialSave},
+  #     "segmentMarketing":{"current":SegmentMarketing, "save":SegmentMarketingSave},
+  #     "site":{"current":Site, "save":SiteSave},
+  #     "sousEnsemble":{"current":SousEnsemble, "save":SousEnsembleSave},
+  #     "ensemble":{"current":Ensemble, "save":EnsembleSave},
+  #     "enseigne":{"current":Enseigne, "save":EnseigneSave},
+  #   }
+  #   dataTable = self.__readTable(dictTables)
+  #   # return {"switchBase": "work in progress"}
+  #   self.__eraseTableForSwitch(dictTables)
+  #   return self.__fillUpTableForSwicth(dataTable, dictTables)
 
   def __readTable(self, dictTables):
-    dataTable = {"target":{}, "targetLevel":{}}
-    for name, dictTable in dictTables.items():
-      print("__readTable", name)
-      newDict = {}
-      for status, modelTable in dictTable.items():
-        if status == "current" and not name in ["ville", "visit"]:
-          newDict[status] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.filter(currentYear=True)]
-          newDict["lastYear"] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.filter(currentYear=False)]
-        else:
-          newDict[status] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.all()]
-      dataTable[name] = newDict
+    if not os.path.isfile("./visioAdmin/dataFile/Json/readTableSwitch.json"):
+      dataTable = {"target":{}, "targetLevel":{}}
+      for name, dictTable in dictTables.items():
+        newDict = {}
+        for status, modelTable in dictTable.items():
+          if "currentYear" in [field.name for field in modelTable._meta.fields]:
+            newDict[status] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.filter(currentYear=True)]
+            newDict["lastYear"] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.filter(currentYear=False)]
+          else:
+            newDict[status] = [self.__computeIdValue(modelTable, modelObject) for modelObject in modelTable.objects.all()]
+        dataTable[name] = newDict
 
-    dataTable["target"] ["save"]= [self.__computeIdValue(Target, modelObject) for modelObject in Target.objects.all()]
-    dataTable["targetLevel"]["save"] = [self.__computeIdValue(TargetLevel, modelObject) for modelObject in TargetLevel.objects.filter(currentYear=True)]
-    dataTable["targetLevel"]["lastYear"] = [self.__computeIdValue(TargetLevel, modelObject) for modelObject in TargetLevel.objects.filter(currentYear=False)]
-    return dataTable
+      dataTable["target"]["save"]= [self.__computeIdValue(Target, modelObject) for modelObject in Target.objects.all()]
+      dataTable["targetLevel"]["save"] = [self.__computeIdValue(TargetLevel, modelObject) for modelObject in TargetLevel.objects.filter(currentYear=True)]
+      dataTable["targetLevel"]["lastYear"] = [self.__computeIdValue(TargetLevel, modelObject) for modelObject in TargetLevel.objects.filter(currentYear=False)]
+      jsonStr = json.dumps(dataTable, cls=DjangoJSONEncoder)
+      with open("./visioAdmin/dataFile/Json/readTableSwitch.json", 'w') as jsonFile:
+        jsonFile.write(jsonStr)
+    with open("./visioAdmin/dataFile/Json/readTableSwitch.json") as jsonFile:
+      jsonStr = jsonFile.read()
+    result = json.loads(jsonStr)
+    return json.loads(jsonStr)
+    # return dataTable
 
   def __computeIdValue(self, modelTable, modelObject):
     listField = [field for field in modelTable._meta.fields if field.name != "currentYear"]
@@ -715,9 +680,8 @@ class AdminUpdate:
     return {field.name:getattr(modelObject, field.name).id if field in listForeign and getattr(modelObject, field.name) else getattr(modelObject, field.name) for field in listField}
 
   def __eraseTableForSwitch(self, dictTables):
-    listModel = [Target, TargetLevel] + [dictModel["current"] for dictModel in dictTables.values()] + [dictModel["save"] for dictModel in dictTables.values()]
+    listModel = [TargetLevel] + [dictModel["current"] for dictModel in dictTables.values()] + [dictModel["save"] for dictModel in dictTables.values()]
     for model in listModel:
-      print("__eraseTableForSwitch", model)
       model.objects.all().delete()
       tableName = model.objects.model._meta.db_table
       with connection.cursor() as cursor:
@@ -726,39 +690,40 @@ class AdminUpdate:
   def __fillUpTableForSwicth(self, dataTable, dictTable):
     listTable = list(dataTable.keys())
     listTable.reverse()
-    dictIdEquiv = self.__fillUpTableForSwicthCurrent(dataTable, dictTable, listTable)
-    self.__fillUpTableForSwicthLastYear(dataTable, dictTable, listTable, dictIdEquiv)
+    dictIdEquivCurrent = self.__fillUpTableForSwicthCurrent(dataTable, dictTable, listTable)
+    # return {"switchBase": "work in progress"}
+    # self.__fillUpTableForSwicthLastYear(dataTable, dictTable, listTable, dictIdEquivCurrent)
     self.__fillUpTableForSwicthSave(dataTable, dictTable, listTable)
+    return {"switchBase": "work in progress"}
+    
 
   def __fillUpTableForSwicthCurrent(self, dataTable, dictTable, listTable):
-    print("start __fillUpTableForSwicthCurrent")
     dictIdEquiv = {}
     for table in listTable:
       if table in dictTable:
         self.__applySwitchCurrent(table, dictIdEquiv, dictTable[table]["current"], dataTable[table]["save"])
-    self.__applySwitchCurrent("target", dictIdEquiv, Target, dataTable["target"]["save"])
+        if table == "segmentCommercial":
+          return
     self.__applySwitchCurrent("targetLevel", dictIdEquiv, TargetLevel, dataTable["targetLevel"]["save"])
     return dictIdEquiv
 
   def __applySwitchCurrent(self, table, dictIdEquiv, targetTable, valueTable):
-    print("table", table)
     dictIdEquiv[table] = {}
     listFieldName = [field.name for field in targetTable._meta.fields]
     for line in valueTable:
       id = line["id"]
-      del line["id"]
+      if targetTable != Pdv:
+        del line["id"]
       kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
       if "currentYear" in listFieldName:
         kwargs["currentYear"] = True
-      if (not "pdv" in line) or ("pdv" in line and kwargs["pdv"]):
-        objectCreated = targetTable.objects.create(**kwargs)
-        dictIdEquiv[table][id] = objectCreated.id
-        if "idF" in listFieldName:
-          objectCreated.idF = objectCreated.id
-          objectCreated.save()
-
+      objectCreated = targetTable.objects.create(**kwargs)
+      dictIdEquiv[table][id] = objectCreated.id
+      if "idF" in listFieldName:
+        objectCreated.idF = objectCreated.id
+        objectCreated.save()
+      
   def __fillUpTableForSwicthLastYear(self, dataTable, dictTable, listTable, DictIdEquivCurrent):
-    print("start __fillUpTableForSwicthLastYear")
     dictIdEquiv = {}
     for table in listTable:
       if table in dictTable and "lastYear" in dataTable[table]:
@@ -766,15 +731,14 @@ class AdminUpdate:
     self.__applySwitchLastYear("targetLevel", dictIdEquiv, TargetLevel, dataTable["targetLevel"]["lastYear"], DictIdEquivCurrent)
 
   def __applySwitchLastYear(self, table, dictIdEquiv, targetTable, valueTable, DictIdEquivCurrent):
-    print("table", table)
     dictIdEquiv[table] = {}
-    targetTable = targetTable
     listFieldName = [field.name for field in targetTable._meta.fields]
     if "currentYear" in listFieldName:
       for line in valueTable:
         id = line["id"]
         del line["id"]
-        kwargs = {field:self.__findObjectForSwitch(field, self.__computeValueLastYear(field, value, DictIdEquivCurrent, targetTable), dictIdEquiv, targetTable) for field, value in line.items()}
+        # kwargs = {field:self.__findObjectForSwitch(field, self.__computeValueLastYear(field, value, dictIdEquiv, targetTable), dictIdEquiv, targetTable) for field, value in line.items()}
+        kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
         kwargs["currentYear"] = False
         if "idF" in listFieldName:
           if targetTable == Agent:
@@ -801,7 +765,6 @@ class AdminUpdate:
     elif table == "ville":
       indexVille = getattr(self.dataDashboard, "__structurePdvs").index("ville")
       existingVille = {ville.name for ville in VilleSave.objects.all()}
-      print("existingVille", existingVille)
       villePast = {line[indexVille] for line in getattr(self.dataDashboard, "__pdvs_ly") if not line[indexVille] in existingVille}
       for ville in villePast:
         VilleSave.objects.create(name=ville)
@@ -818,21 +781,26 @@ class AdminUpdate:
           kwargs[field] = visit[field]
       
   def __fillUpTableForSwicthSave(self, dataTable, dictTable, listTable):
-    print("start __fillUpTableForSwicthSave")
     dictIdEquiv = {}
     for table in listTable:
-      print("table", table)
-      dictIdEquiv[table] = {}
-      targetTable = dictTable[table]["save"]
-      for line in dataTable[table]["current"]:
-        id = line["id"]
+      if table in dictTable:
+        self.__applySwitchSave(table, dictIdEquiv, dictTable[table]["save"], dataTable[table]["current"])
+
+  def __applySwitchSave(self, table, dictIdEquiv, targetTable, valueTable):
+    dictIdEquiv[table] = {}
+    listFieldName = [field.name for field in targetTable._meta.fields]
+    for line in valueTable:
+      id = line["id"]
+      if targetTable != Pdv:
         del line["id"]
-        kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
-        objectCreated = targetTable.objects.create(**kwargs)
-        dictIdEquiv[table][id] = objectCreated.id
-        if "idF" in [field.name for field in targetTable._meta.fields]:
-          objectCreated.idF = objectCreated.id
-          objectCreated.save()
+      kwargs = {field:self.__findObjectForSwitch(field, value, dictIdEquiv, targetTable) for field, value in line.items()}
+      if "currentYear" in listFieldName:
+        del kwargs["currentYear"]
+      objectCreated = targetTable.objects.create(**kwargs)
+      dictIdEquiv[table][id] = objectCreated.id
+      if "idF" in listFieldName:
+        objectCreated.idF = objectCreated.id
+        objectCreated.save()
 
   def __findObjectForSwitch(self, fieldName, value, dictIdEquiv, targetTable):
     field = targetTable._meta.get_field(fieldName)
@@ -840,15 +808,14 @@ class AdminUpdate:
       if field.name in dictIdEquiv and value in dictIdEquiv[field.name]:
         newId = dictIdEquiv[field.name][value]
       elif  field.name in dictIdEquiv:
-        print("strange case", targetTable, field.name, value)
         return None
       else:
+        # Traite le cas des industries des produits et des villes
         newId = value
       modelObject = field.remote_field.model
       objectWithId = modelObject.objects.filter(id=newId)
       if objectWithId:
         return objectWithId[0]
-      print("strange case bis", field.name, value, targetTable)
       return None
     return value
 

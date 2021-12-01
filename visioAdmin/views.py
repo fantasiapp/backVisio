@@ -42,21 +42,30 @@ def mainActionPost(request):
         return JsonResponse(updateResponse)
       return JsonResponse(response)
     return JsonResponse({"error":True, "title":"Erreur", "content":"Le fichier n'a pas été chargé."})
+  if request.POST.get('defineSynonym'):
+    dataDashboard = createDataDashBoard(request)
+    adminParam = AdminParam(dataDashboard)
+    return JsonResponse(adminParam.fillupSynonym(request.POST.get('dictSynonym')))
+
+
 
 def mainActionGet(request):
   print("mainActionGet", request.GET["action"])
   if request.GET["action"] == "loadInit": return principale.loadInit()
   dataDashboard = createDataDashBoard(request)
   adminParam = AdminParam(dataDashboard)
-  adminUpdate = AdminUpdate(dataDashboard) 
+  adminUpdate = AdminUpdate(dataDashboard)
+  # update Ref
   if request.GET["action"] == "selectAgent": return adminUpdate.updateRefWithAgent(dict(request.GET))
-  elif request.GET["action"] == "switchBase": return adminUpdate.switchBase()
-  elif request.GET["action"] == "visualizePdvCurrent": return adminUpdate.visualizePdv("current")
-  elif request.GET["action"] == "visualizePdvSaved": return adminUpdate.visualizePdv("saved")
-  elif request.GET["action"] == "visualizePdvBoth": return adminUpdate.visualizePdv("both")
-  elif request.GET["action"] == "visualizeSalesCurrent": return adminUpdate.visualizeSalesCurrent()
+  elif request.GET["action"] == "switchBase":
+    response = adminUpdate.switchBase()
+    dataDashboard = createDataDashBoard(request)
+    return response
+  elif request.GET["action"] == "visualizeTable": return adminUpdate.visualizeTable(request.GET["kpi"], request.GET["table"])
+  # param
+  elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
   elif request.GET["action"] == "switchAdStatus": return adminParam.switchAdStatus()
-  return {"info":None}
+  return {"info":"Not yet implemented"}
 
 def login(request):
   if request.method == 'POST' and request.POST.get('login') == "Se connecter":

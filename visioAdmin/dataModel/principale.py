@@ -12,13 +12,13 @@ def loadInit():
   return dictInit
 
 def handleUploadedFile(fileContent, fileNature):
-  dir = "Référentiel/" if fileNature == "referentiel" else "Volume/"
+  dir = "Référentiel/" if fileNature == "Ref" else "Volume/"
   path = "visioAdmin/dataFile/FromEtex/" + dir + fileContent._get_name()
   with open(path, 'wb+') as destination:
     for chunk in fileContent.chunks():
       destination.write(chunk)
   dataAdmin = DataAdmin.getLastSavedObject()
-  if fileNature == "referentiel":
+  if fileNature == "Ref":
     dataAdmin.fileNameRef = fileContent._get_name()
     dataAdmin.dateRef = timezone.now()
     dataAdmin.save()

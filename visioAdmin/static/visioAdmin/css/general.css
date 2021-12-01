@@ -2,8 +2,9 @@ html {
   margin: 0px;
 }
 body {
-  font-family: 'Roboto', sans-serif;
+  font: normal 70% 'Roboto', sans-serif;
   --main-etex-color:rgb(241,100,39);
+  /* font-size:0.7em; */
   margin: 0;
   height: 100%;
   width: 100%;
@@ -34,9 +35,9 @@ p {
 }
 
 button.buttonHigh {
-  height: 50px;
+  height: 30px;
   width:350px;
-  border-radius: 25px;
+  border-radius: 15px;
   background-color: var(--main-etex-color);
   color: white;
   font-size: 1em;
@@ -62,9 +63,9 @@ button.inhibit:hover{
 }
 
 button.buttonLow {
-  height: 50px;
+  height: 30px;
   width:350px;
-  border-radius: 25px;
+  border-radius: 15px;
   background-color: white;
   color: var(--main-etex-color);
   font-size: 1em;

@@ -14,6 +14,16 @@
    * Body styles
    */
 }
+table.dataTable td {
+  font-size: 0.6em;
+}
+table.dataTable tr.dtrg-level-0 td {
+  font-size: 0.7em;
+}
+th.sorting {
+  font-size: 0.7em;
+}
+
 table.dataTable thead th,
 table.dataTable tfoot th {
   font-weight: bold;
@@ -388,7 +398,8 @@ table.dataTable td {
   margin-top: -25px;
   padding-top: 20px;
   text-align: center;
-  font-size: 1.2em;
+  /* font-size: 1.2em; */
+  font-size: 0.7em;
   background-color: white;
   background: -webkit-gradient(linear, left top, right top, color-stop(0%, rgba(255, 255, 255, 0)), color-stop(25%, rgba(255, 255, 255, 0.9)), color-stop(75%, rgba(255, 255, 255, 0.9)), color-stop(100%, rgba(255, 255, 255, 0)));
   background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.9) 25%, rgba(255, 255, 255, 0.9) 75%, rgba(255, 255, 255, 0) 100%);

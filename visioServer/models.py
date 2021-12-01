@@ -204,6 +204,7 @@ class Drv(CommonModel):
 class DrvSave(CommonModel):
   name = models.CharField('drv', max_length=16, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "DRV save"
@@ -226,6 +227,7 @@ class Agent(CommonModel):
 class AgentSave(CommonModel):
   name = models.CharField('agent', max_length=64, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Secteur save"
@@ -254,6 +256,7 @@ class AgentFinitionsSave(CommonModel):
   ratioTargetedVisit = models.FloatField('Ratio des visites ciblées', unique=False, blank=False, default=0.3)
   TargetedNbVisit = models.IntegerField('Ratio des visites ciblées', unique=False, blank=False, default=800)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Agent Finitions Save"
@@ -276,6 +279,7 @@ class Dep(CommonModel):
 class DepSave(CommonModel):
   name = models.CharField('dep', max_length=2, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Département save"
@@ -301,6 +305,7 @@ class Bassin(CommonModel):
 
 class BassinSave(CommonModel):
   name = models.CharField('bassin', max_length=64, unique=False)
+  currentYear = models.BooleanField("Année courante", default=True)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
 
   class Meta:
@@ -343,6 +348,7 @@ class SegmentMarketing(CommonModel):
 class SegmentMarketingSave(CommonModel):
   name = models.CharField('segment_marketing', max_length=32, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Segment Marketing save"
@@ -365,6 +371,7 @@ class SegmentCommercial(CommonModel):
 class SegmentCommercialSave(CommonModel):
   name = models.CharField('segment_commercial', max_length=16, unique=False)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Segment Commercial save"
@@ -387,6 +394,7 @@ class Enseigne(CommonModel):
 class EnseigneSave(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Enseigne save"
@@ -409,6 +417,7 @@ class Ensemble(CommonModel):
 class EnsembleSave(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Ensemble save"
@@ -431,6 +440,7 @@ class SousEnsemble(CommonModel):
 class SousEnsembleSave(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Sous-Ensemble save"
@@ -453,6 +463,7 @@ class Site(CommonModel):
 class SiteSave(CommonModel):
   name = models.CharField('name', max_length=64, unique=False, blank=False, default="Inconnu")
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   class Meta:
     verbose_name = "Site save"
@@ -569,6 +580,7 @@ class PdvSave(CommonModel):
   onlySiniat = models.BooleanField('100% Siniat', default=False)
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
+  currentYear = models.BooleanField("Année courante", default=True)
 
   def __str__(self) ->str: return self.name + " " + self.code + " save"
 
@@ -607,7 +619,7 @@ class VisitSave(CommonModel):
   class Meta:
     verbose_name = "Visites Mensuelles save"
 
-  def __str__(self) ->str: return " visite Pdv" + self.code + " save"
+  def __str__(self) ->str: return " visite Pdv" + self.pdv.code + " nb: " + str(self.nbVisit) + " save"
 
  #Modèles pour l'AD
 
@@ -662,12 +674,13 @@ class SalesSave(CommonModel):
   industry = models.ForeignKey("Industry", on_delete=models.CASCADE, blank=False, default=17)
   product = models.ForeignKey("Product", on_delete=models.CASCADE, blank=False, default=6)
   volume = models.FloatField('Volume', unique=False, blank=True, default=0.0)
+  currentYear = models.BooleanField("Année courante", default=True)
 
-class Meta:
+  class Meta:
     verbose_name = "Ventes save"
     unique_together = ('pdv', 'industry', 'product')
 
-def __str__(self) ->str:
+  def __str__(self) ->str:
     return str(self.pdv) + " " + str(self.industry) + " " + str(self.product) + " save"
 
 class TreeNavigation(CommonModel):
@@ -1001,3 +1014,48 @@ class DataAdmin(models.Model):
   @property
   def getVersion(self):
     return ".".join(str(self.version))
+
+class Synonyms(models.Model):
+  field = models.CharField("Nom de la table concerné", max_length=64, unique=False, null=True, default=None)
+  originalName = models.CharField("Label dans le fichier Excel", max_length=128, unique=False, null=True, default=None)
+  synonym = models.CharField("Label dans le fichier Excel", max_length=128, unique=False, null=True, default=None)
+  dictTable = {"enseigne":Enseigne, "segmentMarketing":SegmentMarketing, "drv":Drv, "ville":Ville}
+  prettyPrint = {"enseigne":"Enseigne", "segmentMarketing":"Segment Marketing", "drv":"Drv", "ville":"Ville"}
+
+  class Meta:
+    unique_together = ('field', 'originalName')
+
+  @classmethod
+  def getDictValues(cls, prettyPrint=True):
+    dictValues = {}
+    for field in cls.dictTable.keys():
+      key = cls.prettyPrint[field] if prettyPrint else field
+      unsorted = {syn.originalName:syn.synonym for syn in cls.objects.filter(field=field)}
+      sortedOriginalName = sorted(list(unsorted.keys()))
+      dictValues[key] = {originalName:unsorted[originalName] for originalName in sortedOriginalName}
+    return dictValues
+
+  @classmethod
+  def fillupTable(cls, field, listOriginal):
+    for originalName in listOriginal:
+      if not cls.objects.filter(field=field, originalName=originalName):
+        cls.objects.create(field=field, originalName=originalName)
+
+  @classmethod
+  def setValue(cls, field, originalName, value):
+    synonymObject = cls.objects.filter(field=field, originalName=originalName)
+    if synonymObject:
+      synonymObject = synonymObject[0]
+      if synonymObject.synonym != value:
+        synonymObject.synonym = value
+        synonymObject.save()
+
+  @classmethod
+  def getValue(cls, field, originalName):
+    synonymObject = cls.objects.filter(field=field, originalName=originalName)
+    if synonymObject:
+      synonym = synonymObject[0].synonym
+      return synonym if synonym else False
+    return False
+
+

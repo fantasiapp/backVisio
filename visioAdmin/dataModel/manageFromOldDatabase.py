@@ -389,7 +389,7 @@ class ManageFromOldDatabase:
     fields, listLevelName = Pdv._meta.fields, []
     for fieldId in geoTreeStructure:
       listLevelName.append((fields[fieldId + 1].name, fields[fieldId + 1].verbose_name))
-    return [("root", "France")] + listLevelName
+    return [("root", "National")] + listLevelName
 
   def createDashboards(self, geoOrTrade):
     if geoOrTrade == "geo":
