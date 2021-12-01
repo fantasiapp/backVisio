@@ -536,12 +536,12 @@ class AdminUpdate:
             SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]])
     for data in self.xlsxData["salsi"]["data"]:
       if data[indexSalsi]:
-        pdv = PdvSave.objects.filter(code=data[indexPdv])
+        pdv = PdvSave.objects.filter(code=data[indexPdv], currentYear=True)
         if pdv:
           SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi])
 
   def __importOtherVolume(self):
-    listSales = [objectSales for objectSales in Sales.objects.filter(currentYear=True) if not objectSales.industry.name in ["Siniat", "Prégy", "Salsi"]]
+    listSales = [objectSales for objectSales in Sales.objects.all() if not objectSales.industry.name in ["Siniat", "Prégy", "Salsi"]]
     listField = [field.name for field in SalesSave._meta.fields if field.name != "id"]
     listKwargs = [{field:self.__findValueForOtherVolume(objectSale, field) for field in listField} for objectSale in listSales]
     for kwargs in listKwargs:
