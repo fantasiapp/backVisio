@@ -436,18 +436,13 @@ class AdminUpdate:
           pdv.closedAt = now
       pdv.save()
 
-  def __createDefaultValues(self, classesSelected):
-    classesSelected.objects.all().delete()
-    tableName = classesSelected.objects.model._meta.db_table
-    with connection.cursor() as cursor:
-      cursor.execute(f"ALTER TABLE {tableName} AUTO_INCREMENT=1;")
-
 
   def __saveDataVol(self):
-    self.__createDefaultValues(SalesSave)
+    # self.__createDefaultValues(SalesSave)
+    self.__deleteSiniatVolume()
     self.__importSiniatVolume()
-    self.__importOtherVolume()
-    self.__createJson("Vol")
+    # self.__importOtherVolume()
+    # self.__createJson("Vol")
 
   def __createJson(self, kpi):
     if kpi == "Ref":
@@ -510,6 +505,10 @@ class AdminUpdate:
     return lineFormated
 
   # import Vol
+  def __deleteSiniatVolume(self):
+    for industry in ["Siniat", "Prégy", "Salsi"]:
+      industryObj = Industry.objects.get(name=industry)
+      SalesSave.objects.filter(industry=industryObj, currentYear=True).delete()
 
   def __importSiniatVolume(self):
     siniat = Industry.objects.get(name="Siniat")
@@ -533,19 +532,21 @@ class AdminUpdate:
         if data[dictData["iVol"]]:
           pdv = PdvSave.objects.filter(code=data[indexPdv], currentYear=True)
           if pdv:
-            SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]])
+            SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]], currentYear=True)
     for data in self.xlsxData["salsi"]["data"]:
       if data[indexSalsi]:
         pdv = PdvSave.objects.filter(code=data[indexPdv], currentYear=True)
         if pdv:
-          SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi])
+          SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi], currentYear=True)
 
   def __importOtherVolume(self):
-    listSales = [objectSales for objectSales in Sales.objects.all() if not objectSales.industry.name in ["Siniat", "Prégy", "Salsi"]]
+    listSales = [objectSales for objectSales in Sales.objects.all() if not objectSales.industry.name in ["Siniat", "Prégy", "Salsi"] or not objectSales.currentYear]
     listField = [field.name for field in SalesSave._meta.fields if field.name != "id"]
+    print("listField", listField)
     listKwargs = [{field:self.__findValueForOtherVolume(objectSale, field) for field in listField} for objectSale in listSales]
     for kwargs in listKwargs:
       if kwargs["pdv"]:
+        print(kwargs)
         SalesSave.objects.create(**kwargs)
 
 

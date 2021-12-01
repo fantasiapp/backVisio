@@ -657,7 +657,7 @@ class Sales(CommonModel):
 
   class Meta:
     verbose_name = "Ventes"
-    unique_together = ('pdv', 'industry', 'product')
+    unique_together = ('pdv', 'industry', 'product', "currentYear")
 
   def __str__(self) ->str:
     return str(self.pdv) + " " + str(self.industry) + " " + str(self.product)
@@ -678,7 +678,7 @@ class SalesSave(CommonModel):
 
   class Meta:
     verbose_name = "Ventes save"
-    unique_together = ('pdv', 'industry', 'product')
+    unique_together = ('pdv', 'industry', 'product', "currentYear")
 
   def __str__(self) ->str:
     return str(self.pdv) + " " + str(self.industry) + " " + str(self.product) + " save"
