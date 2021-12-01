@@ -59,6 +59,7 @@ def mainActionGet(request):
   if request.GET["action"] == "selectAgent": return adminUpdate.updateRefWithAgent(dict(request.GET))
   elif request.GET["action"] == "switchBase":
     response = adminUpdate.switchBase()
+    DataDashboard.__flagLoad = True
     dataDashboard = createDataDashBoard(request)
     return response
   elif request.GET["action"] == "visualizeTable": return adminUpdate.visualizeTable(request.GET["kpi"], request.GET["table"])
