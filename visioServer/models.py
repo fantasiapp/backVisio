@@ -619,7 +619,7 @@ class VisitSave(CommonModel):
   class Meta:
     verbose_name = "Visites Mensuelles save"
 
-  def __str__(self) ->str: return " visite Pdv" + self.pdv.code + " nb: " + str(self.nbVisit) + " save"
+  def __str__(self) ->str: return " visite Pdv" + self.pdv.code + " nb: " + s+ " save"
 
  #Modèles pour l'AD
 
@@ -990,7 +990,7 @@ class DataAdmin(models.Model):
     if lastSaved:
       if lastSaved[0].version > currentVersion:
         return lastSaved[0]
-    cls.__copyCurrentSave()
+    # cls.__copyCurrentSave()
     return cls.objects.create(version=currentVersion + 1)
 
   @classmethod
