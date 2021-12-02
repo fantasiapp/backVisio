@@ -136,8 +136,6 @@ class AdminUpdate:
       if listAgent:
         return {"warningAgent":listAgent}
       return self.updateRefWithAgent()
-      # A faire, le cas ou il n'y a pas d'agent nouveau
-      return False
 
   def __copyCurrentToSave(self):
     listTable = ["visit","sales","pdv","agentFinitions","agent","dep","drv","bassin","ville","segmentCommercial","segmentMarketing","site","sousEnsemble","ensemble","enseigne"]
@@ -150,18 +148,16 @@ class AdminUpdate:
       for table in listTable:
         tableName = "visioServer_" + table.lower()
         cursor.execute(f"SELECT * FROM `{tableName}`;")
-        tableValues = [self.joinForCopy(line) for line in cursor.fetchall()]
-        listValues = ",".join(tableValues)
+        tableValues = [line for line in cursor.fetchall()]
         cursor.execute(f'SHOW FIELDS FROM {tableName}')
         fields = [line[0] for line in cursor.fetchall()]
+        listVariable = ['%s'] * len(fields)
+        strVariable = "(" + ", ".join(listVariable) + ")"
         listFields = "`,`".join(fields)
-        query = f'INSERT INTO {tableName}save(`{listFields}`) values {listValues};'
-        cursor.execute(query)
-
-  def joinForCopy(self, line):
-    newLine = [json.dumps(item, cls=DjangoJSONEncoder) for item in line]
-    return "("+','.join(newLine)+")"
-
+        query = f'INSERT INTO {tableName}save(`{listFields}`) VALUES {strVariable};'
+        for line in tableValues:
+          cursor.execute(query, line)
+      
   def __updateFileVol(self):
     dictSheet = self.__updateLoad("Vol")
     if dictSheet:
@@ -328,6 +324,8 @@ class AdminUpdate:
   def __updatePdv(self, pdv, value, dbField, listId, foreignField, listNewAgent):
     if not dbField in ["code_old", "code", "nbVisits"]:
       newValue = self.__checkForSynonym(value, dbField)
+      if dbField == "segmentMarketing":
+        print(value, newValue)
       if dbField in foreignField:
         objectFound = self.__findObjectForPdv(dbField, newValue, listId, foreignField[dbField], listNewAgent)
         if objectFound and objectFound != getattr(pdv, dbField):
@@ -355,6 +353,8 @@ class AdminUpdate:
     classObject = objectField.remote_field.model
     listField = [field.name for field in classObject._meta.fields]
     if value in listId[dbField]:
+      if dbField == "segmentMarketing":
+        print("__findObjectForPdv", value, listId[dbField])
       return classObject.objects.get(id=listId[dbField][value])
     kwargs = {"name":value}
     if "currentYear" in listField:
@@ -588,7 +588,6 @@ class AdminUpdate:
       for table in listTable:
         tableNameFrom = "visioServer_" + table.lower() + rename["from"]
         tableNameTo = "visioServer_" + table.lower() + rename["to"]
-        print(f'RENAME TABLE `{tableNameFrom}` TO `{tableNameTo}`')
         cursor.execute(f'RENAME TABLE `{tableNameFrom}` TO `{tableNameTo}`')
 
     
