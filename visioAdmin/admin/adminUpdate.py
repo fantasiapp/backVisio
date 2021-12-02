@@ -114,9 +114,7 @@ class AdminUpdate:
       data[key] = json.load(jsonFile)
 
 # UpdateFile
-
  # import Ref
-
   def updateFile (self, fileNature):
     if fileNature == "Ref":
       return self.__updateFileRef()
@@ -283,7 +281,7 @@ class AdminUpdate:
     listId = {"pdvCode":{pdv.code:pdv.id for pdv in Pdv.objects.filter(currentYear=True)}}
     for model in [Ville, Dep, Agent, Drv, SegmentMarketing, Enseigne, Ensemble, SousEnsemble, Site, Bassin, SegmentCommercial]:
       nameM = model._meta.object_name
-      listObject = model.objects.filter(currentYear=True) if "currentYear" in model._meta.fields else model.objects.all()
+      listObject = model.objects.filter(currentYear=True) if "currentYear" in [field.name for field in model._meta.fields] else model.objects.all()
       listId[nameM[0].lower() + nameM[1:]] = {objectM.name:objectM.id for objectM in listObject}
     return listId
 
@@ -539,26 +537,6 @@ class AdminUpdate:
         if pdv:
           SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi], currentYear=True)
 
-  def __importOtherVolume(self):
-    listSales = [objectSales for objectSales in Sales.objects.all() if not objectSales.industry.name in ["Siniat", "Prégy", "Salsi"] or not objectSales.currentYear]
-    listField = [field.name for field in SalesSave._meta.fields if field.name != "id"]
-    print("listField", listField)
-    listKwargs = [{field:self.__findValueForOtherVolume(objectSale, field) for field in listField} for objectSale in listSales]
-    for kwargs in listKwargs:
-      if kwargs["pdv"]:
-        print(kwargs)
-        SalesSave.objects.create(**kwargs)
-
-
-  def __findValueForOtherVolume(self, objectSale, field):
-    if field != "pdv":
-      return getattr(objectSale, field)
-    pdvOld = getattr(objectSale, field)
-    pdvNew = PdvSave.objects.filter(code=pdvOld.code)
-    if pdvNew:
-      return pdvNew[0]
-    return False
-
   def __createVolJson(self):
     for nature in ["Current", "Saved"]:
       fileRef, dictSales = "vol.json" if nature == "Current" else "volSave.json", {}
@@ -590,7 +568,6 @@ class AdminUpdate:
       if sales.industry.name == "Salsi" and sales.product.name == "enduit": index = 11
       if index:
         dictSales[sales.pdv.code][index] = '{:,}'.format(int(sales.volume)).replace(',', ' ')
-
 
   # switch Base
 
