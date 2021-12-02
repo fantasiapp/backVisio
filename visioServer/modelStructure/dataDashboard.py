@@ -8,15 +8,16 @@ load_dotenv()
 
 class DataDashboard:
   currentYear = "currentYear"
-  __flagLoad = True
+  flagLoad = True
   
   def __init__(self, userProfile, userGeoId, userGroup, isNotOnServer):
     """engendre les données complètes (niveau national) et sauve les données dans des attributs de classe"""
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     self.__userProfile = userProfile
-    if DataDashboard.__flagLoad:
-      DataDashboard.__flagLoad = False
+    print("On passe ici", DataDashboard.flagLoad)
+    if DataDashboard.flagLoad:
+      DataDashboard.flagLoad = False
       print("loading data in RAM")
       for name, model in CommonModel.computeTableClass():
         DataDashboard.createFromModel(model, name, isNotOnServer)

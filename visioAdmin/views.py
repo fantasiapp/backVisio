@@ -8,6 +8,7 @@ from .dataModel.manageFromOldDatabase import manageFromOldDatabase
 from .admin.adminParam import AdminParam
 from .admin.adminUpdate import AdminUpdate
 import sys
+import os
 sys.path.append('..')
 from visioServer.models import UserProfile
 from visioServer.modelStructure.dataDashboard import DataDashboard
@@ -59,8 +60,7 @@ def mainActionGet(request):
   if request.GET["action"] == "selectAgent": return adminUpdate.updateRefWithAgent(dict(request.GET))
   elif request.GET["action"] == "switchBase":
     response = adminUpdate.switchBase()
-    DataDashboard.__flagLoad = True
-    dataDashboard = createDataDashBoard(request)
+    dataDashboard = createDataDashBoard(request, delJson=True)
     return response
   elif request.GET["action"] == "visualizeTable": return adminUpdate.visualizeTable(request.GET["kpi"], request.GET["table"])
   # param
@@ -82,7 +82,7 @@ def login(request):
     auth.logout(request)
   return render(request, 'visioAdmin/login.html')
 
-def createDataDashBoard(request):
+def createDataDashBoard(request, delJson=False):
   currentUser = request.user
   userGroup = currentUser.groups.values_list('name', flat=True)
   currentProfile = UserProfile.objects.filter(user=currentUser)
@@ -90,8 +90,12 @@ def createDataDashBoard(request):
       userIdGeo = currentProfile[0].idGeo if currentProfile else None
   else:
       return {"error":f"no profile defined for {currentUser.username}"}
+  if delJson:
+    DataDashboard.flagLoad = True
+    # if request.META['SERVER_PORT'] == '8000':
+    #   os.remove("./visioServer/modelStructure/pdvDict.json")
+    #   os.remove("./visioServer/modelStructure/pdvDict_ly.json")
   return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
-  # return DataDashboard(1, 0, 1, request.META['SERVER_PORT'] == '8000')
 
 
 

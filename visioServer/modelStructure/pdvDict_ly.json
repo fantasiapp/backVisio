@@ -5436,7 +5436,7 @@
    ],
    "91": [
       "685553",
-      "BOIS & MATERIAUX QUu00c9VEN",
+      "BOIS & MATERIAUX QU\u00c9VEN",
       5,
       33,
       2,
@@ -5714,7 +5714,7 @@
    ],
    "95": [
       "685568",
-      "DMO POINT P BRETAGNE QUu00c9VERT",
+      "DMO POINT P BRETAGNE QU\u00c9VERT",
       5,
       20,
       2,
@@ -7325,7 +7325,7 @@
    ],
    "119": [
       "685766",
-      "DMO POINT P BRETAGNE LOCMINu00c9",
+      "DMO POINT P BRETAGNE LOCMIN\u00c9",
       5,
       2,
       2,
@@ -13469,7 +13469,7 @@
    ],
    "227": [
       "686830",
-      "BOIS & MATERIAUX VITRu00c9",
+      "BOIS & MATERIAUX VITR\u00c9",
       5,
       30,
       2,
@@ -19680,7 +19680,7 @@
    ],
    "332": [
       "687676",
-      "BOIS & MATERIAUX CRu00c9PY",
+      "BOIS & MATERIAUX CR\u00c9PY",
       3,
       31,
       3,
@@ -28886,7 +28886,7 @@
    ],
    "489": [
       "689691",
-      "POINT P BMRA 3398 DOMu00c9RAT",
+      "POINT P BMRA 3398 DOM\u00c9RAT",
       2,
       17,
       5,
@@ -29134,7 +29134,7 @@
    ],
    "493": [
       "689702",
-      "BOIS & MATERIAUX SABLu00c9",
+      "BOIS & MATERIAUX SABL\u00c9",
       5,
       23,
       2,
@@ -29187,7 +29187,7 @@
    ],
    "494": [
       "689707",
-      "POINT P TROUILLARD SA SABLu00c9",
+      "POINT P TROUILLARD SA SABL\u00c9",
       5,
       23,
       2,
@@ -30424,7 +30424,7 @@
    ],
    "516": [
       "689992",
-      "POINT P TROUILLARD SA DOUu00c9",
+      "POINT P TROUILLARD SA DOU\u00c9",
       5,
       58,
       2,
@@ -32282,7 +32282,7 @@
    ],
    "546": [
       "690704",
-      "CDE BATIDOC ST BARTHu00c9LEMY D'ANJOU",
+      "CDE BATIDOC ST BARTH\u00c9LEMY D'ANJOU",
       5,
       2,
       2,
@@ -32365,7 +32365,7 @@
    ],
    "547": [
       "690709",
-      "VM MATERIAUX ST BARTHu00c9LEMY D'ANJOU",
+      "VM MATERIAUX ST BARTH\u00c9LEMY D'ANJOU",
       5,
       58,
       2,
@@ -36443,7 +36443,7 @@
    ],
    "618": [
       "691871",
-      "POINT P TROUILLARD SA BAUGu00c9",
+      "POINT P TROUILLARD SA BAUG\u00c9",
       5,
       58,
       2,
@@ -38030,7 +38030,7 @@
    ],
    "645": [
       "692226",
-      "BOIS & MATERIAUX BEAUCOUZu00c9",
+      "BOIS & MATERIAUX BEAUCOUZ\u00c9",
       5,
       2,
       2,
@@ -38107,7 +38107,7 @@
    ],
    "646": [
       "692227",
-      "BOIS & MATERIAUX u00c9TAMPES",
+      "BOIS & MATERIAUX \u00c9TAMPES",
       3,
       21,
       3,
@@ -38355,7 +38355,7 @@
    ],
    "651": [
       "692288",
-      "BIGOT MATERIAUX SARL u00c9TAPLES",
+      "BIGOT MATERIAUX SARL \u00c9TAPLES",
       6,
       36,
       7,
@@ -38891,7 +38891,7 @@
    ],
    "662": [
       "692423",
-      "POINT P - BMCE 3411 ST u00c9LOI",
+      "POINT P - BMCE 3411 ST \u00c9LOI",
       6,
       16,
       7,
@@ -40958,7 +40958,7 @@
    ],
    "697": [
       "692852",
-      "POINT P TROUILLARD CHEMILLu00c9",
+      "POINT P TROUILLARD CHEMILL\u00c9",
       5,
       58,
       2,
@@ -41389,7 +41389,7 @@
    ],
    "704": [
       "692953",
-      "BOIS & MATERIAUX FAGNIu00c8RES",
+      "BOIS & MATERIAUX FAGNI\u00c8RES",
       6,
       11,
       7,
@@ -52804,7 +52804,7 @@
    ],
    "902": [
       "695279",
-      "CHAVIGNY DISTRIBUTION BLu00c9Ru00c9",
+      "CHAVIGNY DISTRIBUTION BL\u00c9R\u00c9",
       5,
       23,
       2,
@@ -53287,7 +53287,7 @@
    ],
    "910": [
       "695370",
-      "POINT P - BMCE 1572 MONTAILLu00c9",
+      "POINT P - BMCE 1572 MONTAILL\u00c9",
       5,
       23,
       2,
@@ -54469,7 +54469,7 @@
    ],
    "929": [
       "695535",
-      "BOIS & MATERIAUX ST Lu00d4",
+      "BOIS & MATERIAUX ST L\u00d4",
       5,
       14,
       2,
@@ -61704,7 +61704,7 @@
    ],
    "1053": [
       "697154",
-      "LAFFORGUE JEAN - BORDERES SUR L'u00c9CH",
+      "LAFFORGUE JEAN - BORDERES SUR L'\u00c9CH",
       1,
       39,
       1,
@@ -66290,7 +66290,7 @@
    ],
    "1132": [
       "697829",
-      "POINT P BMRA BOURG-Lu00c8S-VALENCE",
+      "POINT P BMRA BOURG-L\u00c8S-VALENCE",
       2,
       17,
       5,
@@ -69055,7 +69055,7 @@
    ],
    "1181": [
       "698134",
-      "POINT P TROUILLARD SA GUu00c9RANDE",
+      "POINT P TROUILLARD SA GU\u00c9RANDE",
       5,
       33,
       2,
@@ -69108,7 +69108,7 @@
    ],
    "1182": [
       "698138",
-      "BOIS & MATERIAUX GUu00c9RANDE",
+      "BOIS & MATERIAUX GU\u00c9RANDE",
       5,
       33,
       2,
@@ -75975,7 +75975,7 @@
    ],
    "1300": [
       "699119",
-      "CHAVIGNY DISTRIBUTION NAZELLES-Nu00c9GR",
+      "CHAVIGNY DISTRIBUTION NAZELLES-N\u00c9GR",
       5,
       23,
       2,
@@ -76765,7 +76765,7 @@
    ],
    "1313": [
       "699254",
-      "SARREMEJEAN SEE SA Nu00c9RAC",
+      "SARREMEJEAN SEE SA N\u00c9RAC",
       1,
       28,
       1,
@@ -77096,7 +77096,7 @@
    ],
    "1318": [
       "699300",
-      "BOIS & MATERIAUX NEUFCHu00c2TEAU",
+      "BOIS & MATERIAUX NEUFCH\u00c2TEAU",
       6,
       27,
       7,
@@ -80145,7 +80145,7 @@
    ],
    "1370": [
       "699849",
-      "LITT DIFFUSION - LE KREMLIN BICu00caTRE",
+      "LITT DIFFUSION - LE KREMLIN BIC\u00caTRE",
       3,
       22,
       3,
@@ -82439,7 +82439,7 @@
    ],
    "1405": [
       "700089",
-      "BOIS & MATERIAUX SAULT Lu00c8S RETHEL",
+      "BOIS & MATERIAUX SAULT L\u00c8S RETHEL",
       6,
       11,
       7,
@@ -83619,7 +83619,7 @@
    ],
    "1428": [
       "700316",
-      "CHAUSSON MATX/NOu00c9",
+      "CHAUSSON MATX/NO\u00c9",
       1,
       12,
       1,
@@ -83837,7 +83837,7 @@
    ],
    "1432": [
       "700341",
-      "POINT P TROUILLARD SA CANDu00c9",
+      "POINT P TROUILLARD SA CAND\u00c9",
       5,
       58,
       2,
@@ -84611,7 +84611,7 @@
    ],
    "1445": [
       "700496",
-      "POINT P TROUILLARD SA SEGRu00c9",
+      "POINT P TROUILLARD SA SEGR\u00c9",
       5,
       58,
       2,
@@ -86202,7 +86202,7 @@
    ],
    "1472": [
       "700693",
-      "SERVANIN MATERIAUX SARL - SEPTu00c8ME",
+      "SERVANIN MATERIAUX SARL - SEPT\u00c8ME",
       2,
       17,
       5,
@@ -88047,7 +88047,7 @@
    ],
    "1499": [
       "700923",
-      "BOIS & MATERIAUX NUAILLu00c9",
+      "BOIS & MATERIAUX NUAILL\u00c9",
       5,
       58,
       2,
@@ -91593,7 +91593,7 @@
    ],
    "1562": [
       "701306",
-      "POINT P SONEN Nu00b01 SOTTEVILLE",
+      "POINT P SONEN N\u00b01 SOTTEVILLE",
       3,
       1,
       3,
@@ -91865,7 +91865,7 @@
    ],
    "1565": [
       "701328",
-      "POINT P - BMCE 3413 ORLu00c9ANS",
+      "POINT P - BMCE 3413 ORL\u00c9ANS",
       6,
       16,
       7,
@@ -98053,7 +98053,7 @@
    ],
    "1674": [
       "702842",
-      "BOIS & MATERIAUX CHu00c2TEAUBRIANT",
+      "BOIS & MATERIAUX CH\u00c2TEAUBRIANT",
       5,
       33,
       2,
@@ -98612,7 +98612,7 @@
    ],
    "1684": [
       "702904",
-      "BOIS & MATERIAUX LA FERTu00c9",
+      "BOIS & MATERIAUX LA FERT\u00c9",
       5,
       23,
       2,
@@ -110262,7 +110262,7 @@
    ],
    "1896": [
       "591464",
-      "CHAUSSON CENTRE PONT DU CHu00c2TEAU",
+      "CHAUSSON CENTRE PONT DU CH\u00c2TEAU",
       2,
       3,
       5,
@@ -115101,7 +115101,7 @@
    ],
    "1987": [
       "705900",
-      "CHAUSSON MATX/PLAGE EN Ru00c9",
+      "CHAUSSON MATX/PLAGE EN R\u00c9",
       1,
       29,
       1,
@@ -116773,7 +116773,7 @@
    ],
    "2020": [
       "706168",
-      "GERVAIS MATu00c9RIAUX - LE CRES",
+      "GERVAIS MAT\u00c9RIAUX - LE CRES",
       4,
       38,
       6,
@@ -129971,7 +129971,7 @@
    ],
    "2232": [
       "708174",
-      "DERREY SAS - u00c9TIVAL CLAIREFONTAINE",
+      "DERREY SAS - \u00c9TIVAL CLAIREFONTAINE",
       6,
       27,
       7,
@@ -131600,7 +131600,7 @@
    ],
    "2257": [
       "728267",
-      "C.D.M. BUCHu00c8RES",
+      "C.D.M. BUCH\u00c8RES",
       6,
       11,
       7,
@@ -160505,7 +160505,7 @@
    ],
    "2894": [
       "849357",
-      "M+u00a0RIA RIA SIRACH",
+      "M+\u00a0RIA RIA SIRACH",
       4,
       38,
       6,
@@ -165247,7 +165247,7 @@
    ],
    "3014": [
       "26325",
-      "RABONI IDF NOISY LE CHu00c2TELET EN BRI",
+      "RABONI IDF NOISY LE CH\u00c2TELET EN BRI",
       3,
       22,
       3,
@@ -171034,7 +171034,7 @@
    ],
    "3136": [
       "893721",
-      "QUEGUINER MATERIAUX MOu00cbLAN-SUR-MER",
+      "QUEGUINER MATERIAUX MO\u00cbLAN-SUR-MER",
       5,
       20,
       2,
@@ -173280,7 +173280,7 @@
    ],
    "3185": [
       "896930",
-      "BRICOZIK CHu00c2TEAU LANDON",
+      "BRICOZIK CH\u00c2TEAU LANDON",
       3,
       22,
       3,
@@ -174584,7 +174584,7 @@
    ],
    "3215": [
       "896991",
-      "CORCOY ETS OSSu00c9JA",
+      "CORCOY ETS OSS\u00c9JA",
       4,
       38,
       6,
@@ -181783,7 +181783,7 @@
    ],
    "3382": [
       "687129",
-      "BOIS & MATERIAUX COURRIu00c8RES",
+      "BOIS & MATERIAUX COURRI\u00c8RES",
       6,
       36,
       7,
@@ -183234,7 +183234,7 @@
    ],
    "3419": [
       "1106884",
-      "POINT P IDFAgence clients ru00e9gionaux",
+      "POINT P IDFAgence clients r\u00e9gionaux",
       3,
       4,
       3,
@@ -188105,7 +188105,7 @@
    ],
    "3538": [
       "702739",
-      "VM MATERIAUX CHu00c2TEAU-D'OLONNE",
+      "VM MATERIAUX CH\u00c2TEAU-D'OLONNE",
       5,
       2,
       2,
@@ -188445,7 +188445,7 @@
    ],
    "3549": [
       "698155",
-      "POINT P BMSO GUu00c9RET",
+      "POINT P BMSO GU\u00c9RET",
       1,
       29,
       1,
