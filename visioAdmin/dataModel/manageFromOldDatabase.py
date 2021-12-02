@@ -429,7 +429,6 @@ class ManageFromOldDatabase:
               if line[0]:
                 dateEvent = datetime.datetime.fromtimestamp(line[0], tz=tz.gettz("Europe/Paris"))
               Sales.objects.create(date=dateEvent, pdv=pdv, industry=industry, product=product, volume=float(line[4]), currentYear=cy)
-
     except db.Error as e:
       return (False, f"Error getSales {type} {repr(e)}")
     return ("Sales", False)
@@ -528,6 +527,7 @@ class ManageFromOldDatabase:
           kwargs['greenLight'] = line[6][0]
           kwargs['commentTargetP2CD'] = self.unProtect(line[7])
           kwargs['bassin'] = ""
+          print("target", kwargs)
           Target.objects.create(**kwargs)
 
     except db.Error as e:

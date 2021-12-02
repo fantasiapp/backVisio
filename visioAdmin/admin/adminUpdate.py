@@ -169,9 +169,11 @@ class AdminUpdate:
       for dictTable in protectedTable:
         listVariable = ['%s'] * len(dictTable["field"])
         strVariable = "(" + ", ".join(listVariable) + ")"
-        listFields = "`,`".join(fields)
-        query = f'INSERT INTO visioServer_target(`{listFields}`) VALUES {strVariable};'
+        listFields = "`,`".join(dictTable["field"])
+        query = f'INSERT INTO visioServer_{dictTable["name"]}(`{listFields}`) VALUES {strVariable};'
+        print(dictTable["name"], query, dictTable["field"], len(dictTable["values"]))
         for line in dictTable["values"]:
+          print("line", line)
           cursor.execute(query, line)
       
       
