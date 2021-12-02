@@ -140,12 +140,14 @@ class AdminUpdate:
   def __copyCurrentToSave(self):
     listTable = ["visit","sales","pdv","agentFinitions","agent","dep","drv","bassin","ville","segmentCommercial","segmentMarketing","site","sousEnsemble","ensemble","enseigne"]
     with connection.cursor() as cursor:
-      cursor.execute("SELECT * FROM `visioServer_target`;")
-      tableTarget = [line for line in cursor.fetchall()]
-      cursor.execute('SHOW FIELDS FROM `visioServer_target`;')
-      fieldsTarget = [line[0] for line in cursor.fetchall()]
-      cursor.execute('DELETE FROM `visioServer_target`')
-      cursor.execute("ALTER TABLE visioServer_target AUTO_INCREMENT=1;")
+      protectedTable = [{"field":None, "values":None, "name":"target"}, {"field":None, "values":None, "name":"targetlevel"}]
+      for dictTable in protectedTable:
+        cursor.execute(f"SELECT * FROM `visioServer_{dictTable['name']}`;")
+        dictTable["values"] = [line for line in cursor.fetchall()]
+        cursor.execute(f"SHOW FIELDS FROM `visioServer_{dictTable['name']}`;")
+        dictTable["field"] = [line[0] for line in cursor.fetchall()]
+        cursor.execute(f"DELETE FROM `visioServer_{dictTable['name']}`")
+        cursor.execute(f"ALTER TABLE `visioServer_{dictTable['name']}`` AUTO_INCREMENT=1;")
 
       for table in listTable:
         tableName = "visioServer_" + table.lower()
@@ -164,12 +166,13 @@ class AdminUpdate:
         query = f'INSERT INTO {tableName}save(`{listFields}`) VALUES {strVariable};'
         for line in tableValues:
           cursor.execute(query, line)
-      listVariable = ['%s'] * len(fieldsTarget)
-      strVariable = "(" + ", ".join(listVariable) + ")"
-      listFields = "`,`".join(fields)
-      query = f'INSERT INTO visioServer_target(`{listFields}`) VALUES {strVariable};'
-      for line in tableTarget:
-        cursor.execute(query, line)
+      for dictTable in protectedTable:
+        listVariable = ['%s'] * len(dictTable["field"])
+        strVariable = "(" + ", ".join(listVariable) + ")"
+        listFields = "`,`".join(fields)
+        query = f'INSERT INTO visioServer_target(`{listFields}`) VALUES {strVariable};'
+        for line in dictTable["values"]:
+          cursor.execute(query, line)
       
       
   def __updateFileVol(self):
