@@ -39,7 +39,7 @@ class ManageFromOldDatabase:
     }
 
   typeObject = {
-     "paramVisio":ParamVisio, "sales":Sales, "pdv":Pdv, "targetLevel":TargetLevel, "agent":Agent, "agentFinitions":AgentFinitions,
+     "synonyms":Synonyms, "dataAdmin":DataAdmin, "paramVisio":ParamVisio, "sales":Sales, "pdv":Pdv, "targetLevel":TargetLevel, "agent":Agent, "agentFinitions":AgentFinitions,
      "dep":Dep, "drv":Drv, "bassin":Bassin, "ville":Ville, "segCo":SegmentCommercial,
     "segment":SegmentMarketing, "unused1":Site, "unused2":SousEnsemble, "unused3":Ensemble, "holding":Enseigne,"product":Product,
     "industry":Industry, "user":UserProfile, "treeNavigation":TreeNavigation, "dashBoard":Dashboard, "layout":Layout, "widgetParams":WidgetParams,
@@ -96,7 +96,7 @@ class ManageFromOldDatabase:
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.dictPopulate = [
-        ("PdvOld",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
+        ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
         ("Object", ["industry"]), ("Object", ["product"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
         ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
         ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []), ("Users", []),
@@ -112,6 +112,16 @@ class ManageFromOldDatabase:
     ManageFromOldDatabase.connection.close()
     return {'query':method, 'message':"<b>La base de données a été remplie</b>", 'end':True, 'errors':[]}
 
+  def getSynonymAdmin(self):
+    with open("./visioAdmin/dataFile/Json/SynParam.json") as jsonFile:
+      data = json.load(jsonFile)
+    classDict = {"Synonyms":Synonyms, "dataAdmin":DataAdmin}
+    for key, kwargslist in data.items():
+      for kwargs in kwargslist:
+        classDict[key].objects.create(**kwargs)
+    return ("Synonyms", False)
+
+  
   def getPdvOld(self):
     if not self.listPdv:
       self.listPdv = {"lastYear":[], "currentYear":[]}
@@ -535,7 +545,7 @@ class ManageFromOldDatabase:
     return ("Target", False)
 
   def getTargetLevel(self):
-    volP2CD, dnP2CD, volFinition, dnFinition = 1000.0, 50, 150, 30
+    volP2CD, dnP2CD, volFinition = 1000.0, 50, 150
     now = timezone.now()
     for currentYear in [True, False]:
       dictAgent = {}
@@ -612,13 +622,22 @@ class ManageFromOldDatabase:
     return string
 
   def test(self):
-    listModel = [TreeNavigation, Dashboard, WidgetParams, WidgetCompute, Widget, Layout, AxisForGraph, LabelForGraph]
-    for model in listModel:
-      model.objects.all().delete()
+    # listModel = [TreeNavigation, Dashboard, WidgetParams, WidgetCompute, Widget, Layout, AxisForGraph, LabelForGraph]
+    # for model in listModel:
+    #   model.objects.all().delete()
     print("start")
     # TargetLevel.objects.all().delete()
     # self.getTargetLevel()
-    manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
+    dictSyn = [{"id":obj.id, "field":obj.field, "originalName":obj.originalName, "synonym":obj.synonym} for obj in Synonyms.objects.all()]
+    dictAdmin = [{"id":obj.id, "dateRef":obj.dateRef.__str__() if obj.dateRef else None, "currentBase":obj.currentBase, "fileNameRef":obj.fileNameRef, "version":obj.version, "dateVol":obj.dateVol.__str__() if obj.dateVol else None, "fileNameVol":obj.fileNameVol} for obj in DataAdmin.objects.all()]
+    with open("./visioAdmin/dataFile/Json/SynParam.json", 'w') as jsonFile:
+      json.dump({"Synonyms":dictSyn, "dataAdmin":dictAdmin}, jsonFile, indent = 3)
+    with open("./visioAdmin/dataFile/Json/SynParam.json") as jsonFile:
+      data = json.load(jsonFile)
+    for kwargs in data["dataAdmin"]:
+      del kwargs["id"]
+      DataAdmin.objects.create(**kwargs)
     print("end")
     return {"test":False}
 
