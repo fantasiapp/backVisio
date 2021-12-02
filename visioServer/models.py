@@ -995,11 +995,11 @@ class DataAdmin(models.Model):
 
   @classmethod
   def getSavedParam(cls, currentBase):
-    lastSaved = cls.objects.order_by('dateRef').reverse() if currentBase == "vol" else cls.objects.order_by('dateRef').reverse().filter(currentBase=currentBase)
+    lastSaved = cls.objects.order_by('dateRef').reverse().filter(currentBase=False) if currentBase == "vol" else cls.objects.order_by('dateRef').reverse().filter(currentBase=currentBase)
     if lastSaved:
       lastSaved = lastSaved[0]
       if currentBase == "vol":
-        dictMonth = {1:"Janvier", 2:"Février", 3:"Mars", 4:"Avril", 5:"Mai", 6:"Juin", 7:"Juillet", 8:"Août", 9:"Septembre", 10:"Octobre", 11:"Novembre", 12:"Décembre"}
+        dictMonth = {0:"Décembre", 1:"Janvier", 2:"Février", 3:"Mars", 4:"Avril", 5:"Mai", 6:"Juin", 7:"Juillet", 8:"Août", 9:"Septembre", 10:"Octobre", 11:"Novembre", 12:"Décembre"}
         return {"fileName":lastSaved.fileNameVol, "date":lastSaved.dateVol.strftime("%Y-%m-%d %H:%M:%S"), "month":dictMonth[lastSaved.dateVol.month - 1]}
       return {"fileName":lastSaved.fileNameRef, "date":lastSaved.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":lastSaved.getVersion}
     elif currentBase == "vol":
@@ -1014,6 +1014,18 @@ class DataAdmin(models.Model):
   @property
   def getVersion(self):
     return ".".join(str(self.version))
+
+  @property
+  def getCurrentMonth(self):
+    dictMonth = {0:"Décembre", 1:"Janvier", 2:"Février", 3:"Mars", 4:"Avril", 5:"Mai", 6:"Juin", 7:"Juillet", 8:"Août", 9:"Septembre", 10:"Octobre", 11:"Novembre", 12:"Décembre"}
+    return dictMonth[self.dateVol.month - 1]
+
+  @property
+  def getCurrentYear(self):
+    year = int(self.dateVol.strftime("%Y-%m-%d %H:%M:%S")[:4])
+    if self.getCurrentMonth == "Décembre":
+      return year - 1
+    return year
 
 class Synonyms(models.Model):
   field = models.CharField("Nom de la table concerné", max_length=64, unique=False, null=True, default=None)

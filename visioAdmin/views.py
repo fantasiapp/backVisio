@@ -59,9 +59,9 @@ def mainActionGet(request):
   # update Ref
   if request.GET["action"] == "selectAgent": return adminUpdate.updateRefWithAgent(dict(request.GET))
   elif request.GET["action"] == "switchBase":
-    response = adminUpdate.switchBase()
+    adminUpdate.switchBase()
     dataDashboard = createDataDashBoard(request, delJson=True)
-    return response
+    return principale.loadInit()
   elif request.GET["action"] == "visualizeTable": return adminUpdate.visualizeTable(request.GET["kpi"], request.GET["table"])
   # param
   elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()

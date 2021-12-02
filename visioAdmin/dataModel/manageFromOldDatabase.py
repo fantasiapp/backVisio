@@ -628,8 +628,8 @@ class ManageFromOldDatabase:
     # TargetLevel.objects.all().delete()
     # self.getTargetLevel()
     # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
-    dictSyn = [{"id":obj.id, "field":obj.field, "originalName":obj.originalName, "synonym":obj.synonym} for obj in Synonyms.objects.all()]
-    dictAdmin = [{"id":obj.id, "dateRef":obj.dateRef.__str__() if obj.dateRef else None, "currentBase":obj.currentBase, "fileNameRef":obj.fileNameRef, "version":obj.version, "dateVol":obj.dateVol.__str__() if obj.dateVol else None, "fileNameVol":obj.fileNameVol} for obj in DataAdmin.objects.all()]
+    dictSyn = [{"field":obj.field, "originalName":obj.originalName, "synonym":obj.synonym} for obj in Synonyms.objects.all()]
+    dictAdmin = [{"dateRef":obj.dateRef.__str__() if obj.dateRef else None, "currentBase":obj.currentBase, "fileNameRef":obj.fileNameRef, "version":obj.version, "dateVol":obj.dateVol.__str__() if obj.dateVol else None, "fileNameVol":obj.fileNameVol} for obj in DataAdmin.objects.all()]
     with open("./visioAdmin/dataFile/Json/SynParam.json", 'w') as jsonFile:
       json.dump({"Synonyms":dictSyn, "dataAdmin":dictAdmin}, jsonFile, indent = 3)
     with open("./visioAdmin/dataFile/Json/SynParam.json") as jsonFile:

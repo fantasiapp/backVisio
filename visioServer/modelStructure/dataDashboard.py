@@ -15,7 +15,6 @@ class DataDashboard:
     self.__userGeoId = userGeoId
     self.__userGroup = userGroup
     self.__userProfile = userProfile
-    print("On passe ici", DataDashboard.flagLoad)
     if DataDashboard.flagLoad:
       DataDashboard.flagLoad = False
       print("loading data in RAM")

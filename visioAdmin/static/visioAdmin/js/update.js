@@ -47,13 +47,14 @@ function loadInitRefEvent () {
 
 function loadInitRef (dictValue) {
   dictBox = dictValue["updateRef"]
+  console.log("updateRef", dictBox["version"])
   $("#updateRefMbSave p.title").text("Base de sauvegarde : " + dictBox["version"])
   $("#updateRefMbSave p.date").text("Mis à jour le : " + dictBox["date"])
   $("#updateRefMbSave p.file").text("Fichier xlsx : " + dictBox["fileName"])
   dictBox = dictValue["currentRef"]
   $("#updateSwitch p.title").text("Base en ligne : " + dictBox["version"])
   $("#updateSwitch p.date").text("Mis à jour le : " + dictBox["date"])
-  $("#updateRSwitch p.file").text("Fichier xlsx : " + dictBox["fileName"])
+  $("#updateSwitch p.file").text("Fichier xlsx : " + dictBox["fileName"])
   dictBox = dictValue["updateVol"]
   $("#updateVol p.title").text("Dernier mois : " + dictBox["month"])
   $("#updateVol p.date").text("Mis à jour le : " + dictBox["date"])
@@ -174,6 +175,26 @@ function displayWarnigAgent(arrayAgent) {
     line.append(checkbox)
     checkbox.on('click', function(event) {selectStatusAgent(value['newName'])})
     $('#agentContent').append(line)
+  })
+}
+// Switch Base
+function switchBase() {
+  $("#wheel").css({display:'block'})
+  $('#switchBase').addClass("inhibit")
+  $('#protect').css('display', "block")
+  $.ajax({
+    url : "/visioAdmin/principale/",
+    type : 'get',
+    data : {"action":"switchBase", "csrfmiddlewaretoken":token},
+    success : function(response) {
+      console.log("success switchBase", response)
+      loadInitRef(response)
+      closeBox()
+    },
+    error : function(response) {
+      console.log("error switchBase", response)
+      closeBox()
+    }
   })
 }
 

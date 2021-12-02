@@ -2,6 +2,7 @@ from typing import Dict
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import fields
 from visioAdmin.admin.adminParam import AdminParam
+from visioAdmin.dataModel.principale import loadInit
 from visioServer.models import *
 from visioServer.modelStructure.dataDashboard import DataDashboard
 import json
@@ -187,7 +188,7 @@ class AdminUpdate:
     return False
 
   def __updateLoad(self, fileNature):
-    fileName = DataAdmin.getLastSavedObject().fileNameRef if fileNature == "Ref" else DataAdmin.getLastSavedObject().fileNameVol
+    fileName = DataAdmin.objects.get(currentBase=False).fileNameRef if fileNature == "Ref" else DataAdmin.objects.get(currentBase=False).fileNameVol
     path = self.pathRef if fileNature == "Ref" else self.pathVol
     pathFile = Path.cwd() / f"{path}{fileName}"
     dictSheet = {}
@@ -594,7 +595,19 @@ class AdminUpdate:
       ]
     for rename in listRename:
       self.__renameTable(listTable, rename)
-    return {"switchBase": "work in progress"}
+    dataAdmin = DataAdmin.objects.get(currentBase=False)
+    dataAdminCurrent = DataAdmin.objects.get(currentBase=True)
+    dataAdmin.currentBase = True
+    dataAdminCurrent.currentBase = False
+    dataAdmin.save()
+    dataAdminCurrent.save()
+    print("version", dataAdmin.getVersion)
+    print("currentMonth", dataAdmin.getCurrentMonth)
+    print("currentYEAR", dataAdmin.getCurrentYear)
+    ParamVisio.setValue("referentielVersion", dataAdmin.getVersion)
+    ParamVisio.setValue("currentMonth", dataAdmin.getCurrentMonth)
+    ParamVisio.setValue("currentYear", dataAdmin.getCurrentYear)
+    
 
   def __renameTable(self, listTable, rename):
     with connection.cursor() as cursor:
