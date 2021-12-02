@@ -140,6 +140,10 @@ class AdminUpdate:
   def __copyCurrentToSave(self):
     listTable = ["visit","sales","pdv","agentFinitions","agent","dep","drv","bassin","ville","segmentCommercial","segmentMarketing","site","sousEnsemble","ensemble","enseigne"]
     with connection.cursor() as cursor:
+      cursor.execute("SELECT * FROM `visioServer_target`;")
+      tableTarget = [line for line in cursor.fetchall()]
+      cursor.execute(f'SHOW FIELDS FROM `visioServer_target`;')
+      fieldsTarget = [line[0] for line in cursor.fetchall()]
       for table in listTable:
         tableName = "visioServer_" + table.lower()
         cursor.execute(f'DELETE FROM `{tableName}save`')
@@ -157,6 +161,13 @@ class AdminUpdate:
         query = f'INSERT INTO {tableName}save(`{listFields}`) VALUES {strVariable};'
         for line in tableValues:
           cursor.execute(query, line)
+      listVariable = ['%s'] * len(fieldsTarget)
+      strVariable = "(" + ", ".join(listVariable) + ")"
+      listFields = "`,`".join(fields)
+      query = f'INSERT INTO visioServer_target(`{listFields}`) VALUES {strVariable};'
+      for line in tableTarget:
+        cursor.execute(query, line)
+      
       
   def __updateFileVol(self):
     dictSheet = self.__updateLoad("Vol")
