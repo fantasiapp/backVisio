@@ -147,7 +147,7 @@ class AdminUpdate:
         cursor.execute(f"SHOW FIELDS FROM `visioServer_{dictTable['name']}`;")
         dictTable["field"] = [line[0] for line in cursor.fetchall()]
         cursor.execute(f"DELETE FROM `visioServer_{dictTable['name']}`")
-        cursor.execute(f"ALTER TABLE `visioServer_{dictTable['name']}`` AUTO_INCREMENT=1;")
+        cursor.execute(f"ALTER TABLE `visioServer_{dictTable['name']}` AUTO_INCREMENT=1;")
 
       for table in listTable:
         tableName = "visioServer_" + table.lower()
