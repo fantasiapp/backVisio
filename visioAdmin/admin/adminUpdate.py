@@ -324,8 +324,6 @@ class AdminUpdate:
   def __updatePdv(self, pdv, value, dbField, listId, foreignField, listNewAgent):
     if not dbField in ["code_old", "code", "nbVisits"]:
       newValue = self.__checkForSynonym(value, dbField)
-      if dbField == "segmentMarketing":
-        print(value, newValue)
       if dbField in foreignField:
         objectFound = self.__findObjectForPdv(dbField, newValue, listId, foreignField[dbField], listNewAgent)
         if objectFound and objectFound != getattr(pdv, dbField):
@@ -353,8 +351,6 @@ class AdminUpdate:
     classObject = objectField.remote_field.model
     listField = [field.name for field in classObject._meta.fields]
     if value in listId[dbField]:
-      if dbField == "segmentMarketing":
-        print("__findObjectForPdv", value, listId[dbField])
       return classObject.objects.get(id=listId[dbField][value])
     kwargs = {"name":value}
     if "currentYear" in listField:
