@@ -537,7 +537,6 @@ class ManageFromOldDatabase:
           kwargs['greenLight'] = line[6][0]
           kwargs['commentTargetP2CD'] = self.unProtect(line[7])
           kwargs['bassin'] = ""
-          print("target", kwargs)
           Target.objects.create(**kwargs)
 
     except db.Error as e:
