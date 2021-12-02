@@ -142,8 +142,11 @@ class AdminUpdate:
     with connection.cursor() as cursor:
       cursor.execute("SELECT * FROM `visioServer_target`;")
       tableTarget = [line for line in cursor.fetchall()]
-      cursor.execute(f'SHOW FIELDS FROM `visioServer_target`;')
+      cursor.execute('SHOW FIELDS FROM `visioServer_target`;')
       fieldsTarget = [line[0] for line in cursor.fetchall()]
+      cursor.execute('DELETE FROM `visioServer_target`')
+      cursor.execute("ALTER TABLE visioServer_target AUTO_INCREMENT=1;")
+
       for table in listTable:
         tableName = "visioServer_" + table.lower()
         cursor.execute(f'DELETE FROM `{tableName}save`')
