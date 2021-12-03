@@ -8,6 +8,7 @@ from visioServer.modelStructure.dataDashboard import DataDashboard
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 import os
+import shutil
 from openpyxl import load_workbook
 from pathlib import Path
 from django.db import connection
@@ -405,6 +406,8 @@ class AdminUpdate:
   def updateRefWithAgent(self, getDict={}):
     pdvList = self.__updateRefWithAgent(getDict)
     self.__closePdv(pdvList)
+    self.__createJson("Ref")
+    shutil.copy2('./visioAdmin/dataFile/Json/vol.json', './visioAdmin/dataFile/Json/volSave.json')
     return AdminUpdate.response
 
   def __updateRefWithAgent(self, getDict):
@@ -450,11 +453,9 @@ class AdminUpdate:
 
 
   def __saveDataVol(self):
-    # self.__createDefaultValues(SalesSave)
     self.__deleteSiniatVolume()
     self.__importSiniatVolume()
-    # self.__importOtherVolume()
-    # self.__createJson("Vol")
+    self.__createJson("Vol")
 
   def __createJson(self, kpi):
     if kpi == "Ref":
@@ -601,13 +602,16 @@ class AdminUpdate:
     dataAdminCurrent.currentBase = False
     dataAdmin.save()
     dataAdminCurrent.save()
-    print("version", dataAdmin.getVersion)
-    print("currentMonth", dataAdmin.getCurrentMonth)
-    print("currentYEAR", dataAdmin.getCurrentYear)
-    ParamVisio.setValue("referentielVersion", dataAdmin.getVersion)
-    ParamVisio.setValue("currentMonth", dataAdmin.getCurrentMonth)
-    ParamVisio.setValue("currentYear", dataAdmin.getCurrentYear)
-    
+    renameActions = [
+      {"from":"ref.json", "to":"refTemp.json"},
+      {"from":"refSave.json", "to":"ref.json"},
+      {"from":"refTemp.json", "to":"refSave.json"},
+      {"from":"vol.json", "to":"volTemp.json"},
+      {"from":"volSave.json", "to":"vol.json"},
+      {"from":"volTemp.json", "to":"volSave.json"},
+      ]
+    for action in renameActions:
+      os.rename(f'./visioAdmin/dataFile/Json/{action["from"]}', f'./visioAdmin/dataFile/Json/{action["to"]}')
 
   def __renameTable(self, listTable, rename):
     with connection.cursor() as cursor:
