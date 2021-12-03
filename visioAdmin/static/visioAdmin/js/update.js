@@ -47,7 +47,6 @@ function loadInitRefEvent () {
 
 function loadInitRef (dictValue) {
   dictBox = dictValue["updateRef"]
-  console.log("updateRef", dictBox["version"])
   $("#updateRefMbSave p.title").text("Base de sauvegarde : " + dictBox["version"])
   $("#updateRefMbSave p.date").text("Mis à jour le : " + dictBox["date"])
   $("#updateRefMbSave p.file").text("Fichier xlsx : " + dictBox["fileName"])
@@ -140,7 +139,6 @@ function fillUpDataBaseWithAgent() {
 
 function uploadFileResponse(response) {
   closeBox()
-  console.log("uploadFileResponse", response)
   if ('error' in response) {
     displayWarning(response['title'], response['content'])
   } else if ('warningAgent' in response) {
@@ -187,7 +185,6 @@ function switchBase() {
     type : 'get',
     data : {"action":"switchBase", "csrfmiddlewaretoken":token},
     success : function(response) {
-      console.log("success switchBase", response)
       loadInitRef(response)
       closeBox()
     },
