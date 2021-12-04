@@ -499,6 +499,9 @@ class Pdv(CommonModel):
   currentYear = models.BooleanField("Année courante", default=True)
   readingData = {"nature":"normal", "position":0, "name":"pdvs"}
 
+  class Meta:
+    unique_together = ('code', 'currentYear')
+
   def __str__(self) ->str: return self.name + " " + self.code
 
   @classmethod
@@ -581,6 +584,9 @@ class PdvSave(CommonModel):
   closedAt = models.DateTimeField('Date de Fermeture', blank=True, null=True, default=None)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
   currentYear = models.BooleanField("Année courante", default=True)
+
+  class Meta:
+    unique_together = ('code', 'currentYear')
 
   def __str__(self) ->str: return self.name + " " + self.code + " save"
 

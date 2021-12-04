@@ -92,9 +92,9 @@ def createDataDashBoard(request, delJson=False):
       return {"error":f"no profile defined for {currentUser.username}"}
   if delJson:
     DataDashboard.flagLoad = True
-    # if request.META['SERVER_PORT'] == '8000':
-    #   os.remove("./visioServer/modelStructure/pdvDict.json")
-    #   os.remove("./visioServer/modelStructure/pdvDict_ly.json")
+    if request.META['SERVER_PORT'] == '8000':
+      os.remove("./visioServer/modelStructure/pdvDict.json")
+      os.remove("./visioServer/modelStructure/pdvDict_ly.json")
   return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
 
 

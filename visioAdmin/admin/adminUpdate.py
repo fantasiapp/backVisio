@@ -2,7 +2,7 @@ from typing import Dict
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import fields
 from visioAdmin.admin.adminParam import AdminParam
-from visioAdmin.dataModel.principale import loadInit
+from visioAdmin.dataModel import principale
 from visioServer.models import *
 from visioServer.modelStructure.dataDashboard import DataDashboard
 import json
@@ -408,7 +408,7 @@ class AdminUpdate:
     self.__closePdv(pdvList)
     self.__createJson("Ref")
     shutil.copy2('./visioAdmin/dataFile/Json/vol.json', './visioAdmin/dataFile/Json/volSave.json')
-    return AdminUpdate.response
+    return principale.loadInit()
 
   def __updateRefWithAgent(self, getDict):
     dictReplacedAgent = {oldName:value[0] for oldName, value in getDict.items() if not oldName in ["action", "csrfmiddlewaretoken"]}
@@ -465,7 +465,7 @@ class AdminUpdate:
       self.__createVolJson()
 
   def __createRefSaveJson(self):
-    pdvs = PdvSave.objects.all()
+    pdvs = PdvSave.objects.filter(currentYear=True)
     listName = PdvSave.listFields()
     fieldsObject = [name for name in listName if getattr(Pdv, name, False) and (isinstance(Pdv._meta.get_field(name), models.ForeignKey))]
     pdvsToExport = [self.__computePdvSaveJson(pdv, fieldsObject) for pdv in pdvs]

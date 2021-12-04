@@ -80,7 +80,16 @@ function httprequestUploadFile(formData) {
     contentType : false,
     processData : false,
     success : function(response) {
-      uploadFileResponse(response)
+      // uploadFileResponse(response)
+      console.log(response)
+      closeBox()
+      if ('error' in response) {
+        displayWarning(response['title'], response['content'])
+      } else if ('warningAgent' in response) {
+        displayWarnigAgent(response['warningAgent'])
+      } else {
+        loadInitRef(response)
+      }
     },
     error: function(response) {
       console.log("httprequestUploadFile", response)
@@ -126,7 +135,15 @@ function fillUpDataBaseWithAgent() {
       type: "get",
       data: data,
       success : function(response) {
-        uploadFileResponse(response)
+        // uploadFileResponse(response)
+        closeBox()
+        if ('error' in response) {
+          displayWarning(response['title'], response['content'])
+        } else if ('warningAgent' in response) {
+          displayWarnigAgent(response['warningAgent'])
+        } else {
+          loadInitRef(response)
+        }
       },
       error: function() {
         closeBox()

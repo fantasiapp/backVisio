@@ -29,8 +29,9 @@ def handleUploadedFile(fileContent, fileNature):
     dataAdmin.fileNameVol = dataAdminCurrent.fileNameVol
     dataAdmin.dateVol = dataAdminCurrent.dateVol
     dataAdmin.save()
-    return {"status":"OK", "nature":fileNature, "fileName":dataAdmin.fileNameRef, "date":dataAdmin.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":dataAdmin.getVersion}
+    return loadInit() #{"status":"OK", "nature":fileNature, "fileName":dataAdmin.fileNameRef, "date":dataAdmin.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":dataAdmin.getVersion}
   dataAdmin.fileNameVol = fileContent._get_name()
   dataAdmin.dateVol = timezone.now()
   dataAdmin.save()
-  return {"status":"OK", "nature":fileNature, "fileName":dataAdmin.fileNameVol, "date":dataAdmin.dateVol.strftime("%Y-%m-%d %H:%M:%S"), "month":dictMonth[dataAdmin.dateVol.month - 1]}
+  return loadInit()
+  # return {"status":"OK", "nature":fileNature, "fileName":dataAdmin.fileNameVol, "date":dataAdmin.dateVol.strftime("%Y-%m-%d %H:%M:%S"), "month":dictMonth[dataAdmin.dateVol.month - 1]}
