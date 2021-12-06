@@ -1046,9 +1046,18 @@ class Synonyms(models.Model):
   @classmethod
   def getDictValues(cls, prettyPrint=True):
     dictValues = {}
-    for field in cls.dictTable.keys():
+    for field, classObject in cls.dictTable.items():
       key = cls.prettyPrint[field] if prettyPrint else field
       unsorted = {syn.originalName:syn.synonym for syn in cls.objects.filter(field=field)}
+      listField = [field.name for field in classObject._meta.fields]
+      listObject = classObject.objects.filter(currentYear=True) if "currentYear" in listField else classObject.objects.all()
+      others = [obj.name for obj in listObject]
+      listSyn = list(unsorted.values())
+      if field == "enseigne":
+        print("listSyn", listSyn)
+      for objectName in others:
+        if not objectName in unsorted and not objectName in listSyn:
+          unsorted[objectName] = None
       sortedOriginalName = sorted(list(unsorted.keys()))
       dictValues[key] = {originalName:unsorted[originalName] for originalName in sortedOriginalName}
     return dictValues
@@ -1064,7 +1073,7 @@ class Synonyms(models.Model):
     synonymObject = cls.objects.filter(field=field, originalName=originalName)
     if synonymObject:
       synonymObject = synonymObject[0]
-      if synonymObject.synonym != value:
+      if synonymObject.synonym != value and value:
         synonymObject.synonym = value
         synonymObject.save()
 
