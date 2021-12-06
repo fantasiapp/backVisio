@@ -77,6 +77,7 @@ def login(request):
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
       return render(request, 'visioAdmin/login.html', context)
     auth.login(request, user)
+    print("login",user.name)
     LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=user, path=json.dumps("login"))
     return redirect('principale.html')
   if request.method == 'POST' and request.POST.get('action') == "disconnect":
