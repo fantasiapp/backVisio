@@ -63,8 +63,8 @@ def mainActionGet(request):
     dataDashboard = createDataDashBoard(request, delJson=True)
     return principale.loadInit()
   elif request.GET["action"] == "visualizeTable": return adminUpdate.visualizeTable(request.GET["kpi"], request.GET["table"])
-  # param
   elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
+  elif request.GET["action"] == "paramAccountInit": return adminParam.paramAccountInit()
   elif request.GET["action"] == "switchAdStatus": return adminParam.switchAdStatus()
   return {"info":"Not yet implemented"}
 

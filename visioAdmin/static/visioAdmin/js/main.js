@@ -20,6 +20,7 @@ function initApplication () {
 function selectNav(selection) {
   $("#articleMain").css({display:'block'})
   $('#tableArticle').css({display:'none'})
+  $('#account').css({display:'none'})
   $('#headerTable').css({display:'none'})
   $('#protect').css({display:'none'})
   $('div.box').css({display:'none'})
@@ -80,22 +81,12 @@ function closeBox() {
   $('#fileUploaded').text("")
 }
 
-// UpdateRef
-function switchBase() {
-  $("#wheel").css({display:'block'})
-  $('#switchBase').addClass("inhibit")
-  $('#protect').css('display', "block")
-  $.ajax({
-    url : "/visioAdmin/principale/",
-    type : 'get',
-    data : {"action":"switchBase", "csrfmiddlewaretoken":token},
-    success : function(response) {
-      console.log("success switchBase", response)
-      closeBox()
-    },
-    error : function(response) {
-      console.log("error switchBase", response)
-      closeBox()
-    }
+function tableClose() {
+  $.each({"#tableArticle":"none", "#account":"none", "#headerTable":"none", "#articleMain":"block"}, function(id, value ) {
+    console.log(id, value)
+    $(id).css("display", value)
+  })
+  $.each(["#tableHeader", "#tableMain", "accountHeader", "accountMain"], function(_, value ) {
+    $(value).empty()
   })
 }

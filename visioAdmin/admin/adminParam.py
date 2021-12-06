@@ -63,3 +63,8 @@ class AdminParam:
       targetFormated += [target[fieldsTarget.index(field)] for field in ["bassin", "commentTargetP2CD"]]
       return [f'<button id="Pdv:{idPdv}" class="buttonTarget">OK</button>'] + pdv + targetFormated
     return False
+
+# Account
+  def paramAccountInit(self):
+    title = {"Nom d'utilisateur":20, "Profil":15, "Secteur":10, "Dernière connexion":12, "Version du référentiel":12, "nombre de connexions":12, "Temps passé":12}
+    return {"titles":title, "values":[]}

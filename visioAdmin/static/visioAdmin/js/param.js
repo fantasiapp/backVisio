@@ -2,12 +2,11 @@ let dictSynonym = {}
 
 // Initialisation
 function loadInitParamEvent() {
+  $('#paramAccountConsult').on('click', function(event) {displayAccount()})
   $('#AdOpenButton').on('click', function(event) {switchAdStatus()})
   $('#manageSynonyms').on('click', function(event) {displayManageSynonyms()})
   $('#manageSynonymsOK').on('click', function(event) {manageSynonymsOK()})
 }
-
-
 
 function loadInitParam (response) {
   if (response["isAdOpen"]) {
@@ -20,7 +19,7 @@ function loadInitParam (response) {
 }
 
 // Actions
-
+// Status de l'AD
 function switchAdStatus() {
   $.ajax({
     url : "/visioAdmin/principale/",
@@ -31,7 +30,7 @@ function switchAdStatus() {
     }
   })
 }
-
+// Traitements des synonymes
 function displayManageSynonyms() {
   closeBox()
   $("#protect").css("display", "block")
@@ -70,7 +69,6 @@ function buildSynonymsList() {
     line.append(input)
     $("#synonymsContent").append(line)
   })
-  console.log($("#SynonymsSelect").val())
 }
 
 function manageSynonymsOK() {
@@ -87,12 +85,63 @@ function manageSynonymsOK() {
     type : 'post',
     data : formData,
     success : function(response) {
-      console.log("manageSynonymsOK", response)
       $("#synonymsMessage").text(response["fillupSynonym"])
       $("#synonymsMessage").show().delay(3000).fadeOut();
     }
   })
 }
+// Traitement des comptes
+function displayAccount() {
+  console.log("displayAccount")
+  accountSetDisplay()
+  accountSetHeader()
+  accountSetQuery()
+}
 
+function accountSetDisplay() {
+  $('#articleMain').css("display", "none")
+  $('#account').css("display", "block")
+  $('#headerTable').css("display", "block")
+  $("#headerTable").on('click', function(event) {tableClose()})
+}
+
+function accountSetHeader() {
+  title = $('<p class="tableHeaderHighLight">Gestion des comptes</p>')
+  divAction = $('<div id="actionsAccount">')
+  $("#accountHeader").append(title)
+  $("#accountHeader").append(divAction)
+  buttonModify = $('<button class="accountButton" id="accountModify">Modifier un profil</button>')
+  buttonCreate = $('<button class="accountButton" id="accountCreate">Créer un nouveau profil</button>')
+  buttonModify.append($('<img class="accountButton" src="/static/visioAdmin/images/Modifier.svg">'))
+  buttonCreate.append($('<img class="accountButton" src="/static/visioAdmin/images/Créer.svg">'))
+  divAction.append(buttonModify)
+  divAction.append(buttonCreate)
+}
+
+function accountSetQuery() {
+  $.ajax({
+    url : "/visioAdmin/principale/",
+    type : 'get',
+    data : {"action":"paramAccountInit", "csrfmiddlewaretoken":token},
+    success : function(response) {
+      console.log(response)
+      buildAccountTable(response)
+    }
+  })
+}
+
+function buildAccountTable(dictData) {
+  mainAccount = $('<div id="mainAccount">')
+  $('#accountMain').append(mainAccount)
+  lineTitle = $('<div class="accountLine">')
+  mainAccount.append(lineTitle)
+  $.each(dictData["titles"], function(label, size) {
+    title = $('<p class="cellAccount" style="font-weigth:bold; width:'+size+'%">'+label+'</p>')
+    lineTitle.append(title)
+  })
+}
+
+
+// Chargement du loader dans formatMainBox.js
 initApplication ()
 

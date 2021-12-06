@@ -60,15 +60,6 @@ function loadInitRef (dictValue) {
   $("#updateVol p.file").text("Fichier xlsx : " + dictBox["fileName"])
 }
 
-function tableClose() {
-  $.each({"#tableArticle":"none", "#headerTable":"none", "#articleMain":"block"}, function(id, value ) {
-    $(id).css("display", value)
-  })
-  $.each(["#tableHeader", "#tableMain"], function(_, value ) {
-    $(value).empty()
-  })
-}
-
 //upload files
 function httprequestUploadFile(formData) {
   $("#wheel").css({display:'block'})

@@ -1,0 +1,228 @@
+{% extends 'visioAdmin/principalStart.html' %}
+{% block content %}
+<article id="articleMain">
+  <div id="updateRefDiv"  class="pageContent">
+    <div class=updateRefLine>
+      <h3>Référentiel Visio</h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="updateRefUpdate">
+          <div class="boxTextButton">
+            <div class="mainBoxText" id="updateRefMbSave">
+              <p class="title"><b>Base de sauvegarde: 2.7.9</b></p>
+              <p class="date">Mise à jour le 01/09/2021</p>
+              <p class="file">Fichier xlsx : Référentiel.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="updateBaseRef" class="buttonHigh">Mettre à jour le référentiel</button>
+              <div style="width:50px"></div>
+              <button id="updateRefCheck" class="buttonLow">Vérifier et comparer</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Base de sauvegarde.svg' %}">
+          </div>
+        </div>
+        <div class=mainBox id="updateSwitch">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Base en ligne: 2.8.0</b></p>
+              <p class="date">Mise à jour le 03/09/2021</p>
+              <p class="file">Fichier xlsx : Référentiel Récent.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="switchBase" class="buttonHigh">Intervertir les bases</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Base en ligne.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="updateRefLine">
+      <h3>Volume Etex</h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="updateVol">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Dernier mois: Septembre</b></p>
+              <p class="date">Mise à jour le 11/09/2021</p>
+              <p class="file">Fichier xlsx : Volume Siniat.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="updateBaseVol" class="buttonHigh">Mettre à jour les volumes</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Référentiel Volume.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="uploadDiv" class="pageContent">
+    <div class=updateRefLine>
+      <h3> </h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="connectionTable">
+          <div class="boxTextButton">
+            <div class="mainBoxText" id="uploadConnection">
+              <p class="title"><b>Table de connexions</b></p>
+              <p class="file">Fichier xlsx : Table de connexions.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="connectionConsulttRef" class="buttonHigh">Consulter</button>
+              <div style="width:50px"></div>
+              <button id="connectionDownloadRef" class="buttonLow">Télécharger l'Excel</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Table de connexions.svg' %}">
+          </div>
+        </div>
+        <div class=mainBox id="uploadTarget">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Rapport de ciblage</b></p>
+              <p class="file">Fichier xlsx : Rapport de ciblage Récent.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="connectionConsultTarget" class="buttonHigh">Consulter</button>
+              <div style="width:50px"></div>
+              <button id="connectionDownloadTarget" class="buttonLow">Télécharger l'Excel</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Base en ligne.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="updateRefLine">
+      <h3> </h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="uploadActions">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Historique des actions</b></p>
+              <p class="file">Fichier xlsx : Historique des actions.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="uploadConsultAction" class="buttonHigh">Intervertir les bases</button>
+              <div style="width:50px"></div>
+              <button id="uploadDownloadAction" class="buttonLow">Télécharger l'Excel</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Historiques des actions.svg' %}">
+          </div>
+        </div>
+        <div class="mainBox" id="uploadCurrentBase">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>La base courante</b></p>
+              <p class="file">Fichier xlsx : Base courante Visio.xlsx</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="uploadCurrentBaseButton" class="buttonHigh">Intervertir les bases</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Rapport de ciblage.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="validationDiv" class="pageContent">
+    <div class=updateRefLine>
+      <h3> </h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="param">
+          <div class="boxTextButton">
+            <div class="mainBoxText" id="validationText">
+              <p class="title"><b>Demandes en cours</b></p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="validationConsult" class="buttonHigh">Consulter</button>
+              <div style="width:50px"></div>
+              <button id="validationDownload" class="buttonLow">Télécharger l'Excel</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Demandes en cours.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="paramDiv"  class="pageContent">
+    <div class=updateRefLine>
+      <h3> </h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="paramTargetBox">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Gestion des objectifs</b></p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="paramTargetConsult" class="buttonHigh">Consulter</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Gestion des objectifs.svg' %}">
+          </div>
+        </div>
+        <div class=mainBox id="paramAccountBox">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Gestion des comptes</b></p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="paramAccountConsult" class="buttonHigh">Consulter</button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Gestion des comptes.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="updateRefLine">
+      <h3> </h3>
+      <div class="updateRefContent">
+        <div class="mainBox" id="AdOpenBox">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Fermeture / Ouverture de l'AD</b></p>
+              <p class="file">Actuellement l'AD est fermé</p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="AdOpenButton" class="buttonHigh"><span>Ouvrir l'AD</span></button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Fermeture_ Ouverture de l_AD.svg' %}">
+          </div>
+        </div>
+        <div class="mainBox" id="Synonyms">
+          <div class="boxTextButton">
+            <div class="mainBoxText">
+              <p class="title"><b>Gestion des synonymes</b></p>
+              <p class="file"></p>
+            </div>
+            <div class="mainBoxButton">
+              <button id="manageSynonyms" class="buttonHigh"><span>Modifier les synonymes</span></button>
+            </div>
+          </div>
+          <div class="mainBoxImage">
+            <img class="boxImage" src="{% static 'visioAdmin/images/Fermeture_ Ouverture de l_AD.svg' %}">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+</article>
+{% endblock %}

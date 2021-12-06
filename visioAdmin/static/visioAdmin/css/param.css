@@ -1,0 +1,59 @@
+#account {
+  display: none;
+  height:100%;
+  width:100%;
+}
+#accountHeader {
+  display:flex;
+  flex-direction: column;
+  width:100%;
+  height:5%;
+}
+#accountMain {
+  width:98%;
+  height:92%;
+  padding-top:1.5%;
+}
+#actionsAccount{
+  display:flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  position:absolute;
+  right:2%;
+  width:500px;
+  height:30px;
+}
+button.accountButton {
+  position:relative;
+  border-width: 0;
+  background-color: transparent;
+  width: 240px;
+  cursor:pointer
+}
+img.accountButton {
+  position:absolute;
+  left:0;
+  top:0;
+  width:30px;
+  height:30px;
+}
+#mainAccount {
+  display:flex;
+  flex-direction: column;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow-y: auto;
+  background-color: blue;
+}
+div.accountLine {
+  display:flex;
+  flex-direction: row;
+  width:100%;
+  height:30px;
+  background-color: white;
+}
+p.cellAccount {
+  padding-left: 20px;
+} 
+

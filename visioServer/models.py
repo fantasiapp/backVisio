@@ -946,6 +946,8 @@ class LogUpdate(models.Model):
 class LogClient(CommonModel):
   jsonFields = ["path", "mapFilters"]
   date = models.DateTimeField('Date de Reception', blank=True, null=True, default=None)
+  referentielVersion = models.CharField("Référentiel", max_length=16, unique=False, blank=False, default=None)
+  softwareVersion = models.CharField("Logiciel", max_length=16, unique=False, blank=False, default=None)
   user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
   view = models.BooleanField('Geo ou Enseigne', unique=False, blank=False, default=False)
   year = models.BooleanField('Année selectionnée', unique=False, blank=False, default=False)
@@ -1037,7 +1039,7 @@ class Synonyms(models.Model):
   field = models.CharField("Nom de la table concerné", max_length=64, unique=False, null=True, default=None)
   originalName = models.CharField("Label dans le fichier Excel", max_length=128, unique=False, null=True, default=None)
   synonym = models.CharField("Label dans le fichier Excel", max_length=128, unique=False, null=True, default=None)
-  dictTable = {"enseigne":Enseigne, "segmentMarketing":SegmentMarketing, "drv":Drv, "ville":Ville}
+  dictTable = {"enseigne":EnseigneSave, "segmentMarketing":SegmentMarketingSave, "drv":DrvSave, "ville":VilleSave}
   prettyPrint = {"enseigne":"Enseigne", "segmentMarketing":"Segment Marketing", "drv":"Drv", "ville":"Ville"}
 
   class Meta:
