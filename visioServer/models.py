@@ -964,8 +964,9 @@ class LogClient(CommonModel):
   def createFromList(cls, data, user, now):
     kwargs, data = {"referentielVersion":ParamVisio.getValue("referentielVersion"), "softwareVersion":ParamVisio.getValue("softwareVersion")}, [False, False] + data
     listFields = cls.listFields()
-    del listFields["referentielVersion"]
-    del listFields["softwareVersion"]
+    print(listFields)
+    # del listFields["referentielVersion"]
+    # del listFields["softwareVersion"]
     for index in range(len(listFields)):
       field = listFields[index]
       if field == "date":
