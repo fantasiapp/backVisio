@@ -10,7 +10,7 @@ from .admin.adminUpdate import AdminUpdate
 import sys
 import os
 sys.path.append('..')
-from visioServer.models import UserProfile
+from visioServer.models import *
 from visioServer.modelStructure.dataDashboard import DataDashboard
 from .dataModel import principale
 
@@ -77,6 +77,7 @@ def login(request):
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
       return render(request, 'visioAdmin/login.html', context)
     auth.login(request, user)
+    LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=user, path=json.dumps("login"))
     return redirect('principale.html')
   if request.method == 'POST' and request.POST.get('action') == "disconnect":
     auth.logout(request)
