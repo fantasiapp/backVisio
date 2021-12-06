@@ -965,8 +965,8 @@ class LogClient(CommonModel):
     kwargs, data = {"referentielVersion":ParamVisio.getValue("referentielVersion"), "softwareVersion":ParamVisio.getValue("softwareVersion")}, [False, False] + data
     listFields = cls.listFields()
     print(listFields)
-    # del listFields["referentielVersion"]
-    # del listFields["softwareVersion"]
+    del listFields[2]
+    del listFields[1]
     for index in range(len(listFields)):
       field = listFields[index]
       if field == "date":
