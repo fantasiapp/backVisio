@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .modelStructure.dataDashboard import DataDashboard
-from visioServer.models import UserProfile
+from visioServer.models import UserProfile, ParamVisio, LogClient
+from django.utils import timezone
 import json
 
 class DefaultView(APIView):
@@ -41,6 +42,8 @@ class Data(DefaultView):
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
         print(currentProfile[0].user)
+        print("login",currentUser.name)
+        LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=currentUser, path=json.dumps("login"))
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         else:
