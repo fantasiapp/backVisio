@@ -964,7 +964,6 @@ class LogClient(CommonModel):
   def createFromList(cls, data, user, now):
     kwargs, data = {"referentielVersion":ParamVisio.getValue("referentielVersion"), "softwareVersion":ParamVisio.getValue("softwareVersion")}, [False, False] + data
     listFields = cls.listFields()
-    print(listFields)
     del listFields[2]
     del listFields[1]
     for index in range(len(listFields)):
@@ -1058,8 +1057,6 @@ class Synonyms(models.Model):
       listObject = classObject.objects.filter(currentYear=True) if "currentYear" in listField else classObject.objects.all()
       others = [obj.name for obj in listObject]
       listSyn = list(unsorted.values())
-      if field == "enseigne":
-        print("listSyn", listSyn)
       for objectName in others:
         if not objectName in unsorted and not objectName in listSyn:
           unsorted[objectName] = None
