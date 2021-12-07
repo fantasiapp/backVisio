@@ -27,6 +27,8 @@ class Data(DefaultView):
                 return Response({"warning":"inititialisation in progress"})
             action = request.GET["action"]
             if action == "dashboard":
+                print("login",currentUser.name)
+                LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=currentUser, path=json.dumps("login"))
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
                 print(f"get {currentUser} {action}", request.GET["nature"])
@@ -42,8 +44,6 @@ class Data(DefaultView):
         userGroup = request.user.groups.values_list('name', flat=True)
         currentProfile = UserProfile.objects.filter(user=currentUser)
         print(currentProfile[0].user)
-        print("login",currentUser.name)
-        LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=currentUser, path=json.dumps("login"))
         if userGroup:
             userIdGeo = currentProfile[0].idGeo if currentProfile else None
         else:
