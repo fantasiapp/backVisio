@@ -28,7 +28,7 @@ class Data(DefaultView):
             action = request.GET["action"]
             if action == "dashboard":
                 print("login",currentUser.username)
-                LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=currentUser, path=json.dumps("login"))
+                LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=currentUser, path=json.dumps("login"), mapFilters=json.dumps("login"))
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
                 print(f"get {currentUser} {action}", request.GET["nature"])
