@@ -1,10 +1,7 @@
 from visioServer.models import *
-# from visioServer.modelStructure.dataDashboard import DataDashboard
 from datetime import datetime, timedelta
-# from dotenv import load_dotenv
 import json
 import os
-# from visioAdmin.dataModel.readXlsx import ReadXlsxRef
 
 class AdminParam:
   fieldNamePdv = False
@@ -18,7 +15,7 @@ class AdminParam:
   # Targets
   def buildTarget(self):
     finition = {agentF.id:{"agentFName":agentF.name, "target":agentF.TargetedNbVisit, "ratio":agentF.ratioTargetedVisit} for agentF in AgentFinitions.objects.filter(currentYear=True)}
-    params = {"Coefficiant feu tricolore":ParamVisio.getValue("coeffGreenLight"), "Ratio Plaque Enduit":ParamVisio.getValue("ratioPlaqueFinition")}
+    params = {"Coefficient feu tricolore":ParamVisio.getValue("coeffGreenLight"), "Ratio Plaque Enduit":ParamVisio.getValue("ratioPlaqueFinition")}
     return {"Finitions":finition, "Params":params}
 
   def modifyTarget(self, dictJson):
@@ -37,7 +34,7 @@ class AdminParam:
         pass
     for id, value in dictData["params"].items():
       param = ParamVisio.objects.get(prettyPrint=id)
-      if param.field == "Coefficiant feu tricolore" and value.isdigit():
+      if param.field == "Coefficient feu tricolore" and value.isdigit():
         ParamVisio.setValue(param.field, int(value))
       else:
         try:
@@ -105,7 +102,7 @@ class AdminParam:
 
   def removeAccount(self, id):
     print("removeAccount", id)
-    profile = UserProfile.objects.get(id=id)
+    profile = UserProfile.objects.get(id=int(id))
     user = profile.user
     if profile == self.dataDashboard.userProfile:
       return {"error":"Vous ne pouvez vous supprimer!"}
@@ -114,17 +111,20 @@ class AdminParam:
     return {"accountRemoved":id}
 
   def modifyAccount(self, id, name):
-    user = User.objects.get(id=int(id))
+    print("modifyAccount", id)
+    profile = UserProfile.objects.get(id=int(id))
+    user = profile.user
     user.username = name
     user.save()
     return {"accountModified":"OK"}
 
   def modifyAgent(self, id, name):
-    user = User.objects.get(id=int(id))
+    print("modifyAgent", id)
+    profile = UserProfile.objects.get(id=int(id))
+    user = profile.user
     group = user.groups.values_list('name', flat=True)[0]
     if group != "agent":
       return {"error":"Il n'est pas possible de renommer un autre niveau géographique que celui d'un agent."}
-    profile = UserProfile.objects.get(user=user)
     idAgent = profile.idGeo
     agent = Agent.objects.get(id=idAgent)
     agent.name = name

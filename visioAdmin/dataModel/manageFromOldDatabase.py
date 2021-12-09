@@ -598,7 +598,7 @@ class ManageFromOldDatabase:
       }
     ParamVisio.objects.create(field="referentielVersion", prettyPrint="Référentiel Version", fvalue="1.0.0", typeValue="str")
     ParamVisio.objects.create(field="softwareVersion", prettyPrint="Logiciel Version", fvalue="4.0.0", typeValue="str")
-    ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficiant feu tricolore", fvalue="2", typeValue="float")
+    ParamVisio.objects.create(field="coeffGreenLight", prettyPrint="Coefficient feu tricolore", fvalue="2", typeValue="float")
     ParamVisio.objects.create(field="ratioPlaqueFinition", prettyPrint="Ratio Plaque Enduit", fvalue="0.370", typeValue="float")
     ParamVisio.objects.create(field="ratioCustomerProspect", prettyPrint="Ratio Client Prospect", fvalue="0.1", typeValue="float")
     ParamVisio.objects.create(field="currentMonth", prettyPrint="Mois Courant", fvalue="novembre", typeValue="str")
