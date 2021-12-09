@@ -30,6 +30,10 @@ class DataDashboard:
     else:
       # happen when initialisation is not finished and someone send a query
       print("initialisation is not Finished")
+    
+  @property
+  def userProfile(self):
+    return self.__userProfile
 
   @classmethod
   def createFromModel(cls, model, name, isNotOnServer):

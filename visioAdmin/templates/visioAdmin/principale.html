@@ -247,6 +247,28 @@
         </div>
       </div>
     </article>
+    <article id="tableArticle">
+      <div id="tableHeader"></div>
+      <div id="tableMain"></div>
+    </article>
+
+    <article id="account">
+      <div id="accountHeader"></div>
+      <div id="accountMain"></div>
+    </article>
+
+    <article id="target">
+      <div id="targetHeader"></div>
+      <div id="targetMain">
+        <div id="targetAction">
+          <p id=titleTarget>Gestion des objectifs en termes de visites par DRV</p>
+          <div id="regionTarget"></div>
+          <div id="ratioTarget"></div>
+          <div id="footerTarget"></div>
+        </div>
+      </div>
+    </article>
+
     <div id="protect"></div>
     <div id="boxUpload" class="box upload" data="referentiel">
       <img id="boxUploadClose" class="boxClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
@@ -264,13 +286,16 @@
       <img class="boxLogo" src="{% static 'visioAdmin/images/warning.jpeg' %}">
       <p class="warningTitle">Attention</p>
       <p id="warningContent">Ceci est le message du warning</p>
+      <button id="boxWarningOK" class="buttonHigh boxWarningOK">Valider</button>
     </div>
+
     <div id="boxWarningAgent" class="box warning">
       <img class="boxLogo" src="{% static 'visioAdmin/images/warning.jpeg' %}">
       <p class="warningTitle">Agent(s) remplacé(s)</p>
       <div id="agentContent" class="boxContent"></div>
       <button id="agentOK" class="buttonHigh validate" data="activate">Valider</button>
     </div>
+
     <div id="synonyms" class="box warning">
       <img id="boxSynonymsClose" class="boxClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
       <p class="warningTitle" style="top:10%">Gestion des synonymes</p>
@@ -281,14 +306,47 @@
       <p id="synonymsMessage">Les valeurs ont bien été enregistrées</p>
       <button id="manageSynonymsOK" class="buttonHigh validate">Valider</button>
     </div>
-    <article id="tableArticle">
-      <div id="tableHeader"></div>
-      <div id="tableMain"></div>
-    </article>
-    <article id="account">
-      <div id="accountHeader"></div>
-      <div id="accountMain"></div>
-    </article>
+
+    <div id="boxWarningRename" class="box warning">
+      <img id="boxWarningClose" class="boxClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
+      <img class="boxLogo" src="{% static 'visioAdmin/images/warning.jpeg' %}">
+      <p class="warningTitle">Renommer un agent</p>
+      <p class="warningContent">Ceci est le message du warning</p>
+      <div id="boxInputRename">
+        <p class="subTitleRename">Nouvelle valeur : </p>
+        <input type="text" id="renameText">
+      </div>
+      <button id="boxButtonRename" class="buttonHigh boxWarningOK">Valider</button>
+    </div>
+
+    <div id="boxWarningCreate" class="box warning">
+      <img id="boxWarningClose" class="boxClose" src="{% static 'visioAdmin/images/x icon.svg' %}">
+      <p class="warningCreate">Créer un nouveau compte</p>
+      <div id="contentCreate">
+        <div class="lineCreate">
+          <p class="elementCreate">Pseudo : </p>
+          <input type="text" id="pseudoCreate" class="elementCreate">
+        </div>
+        <div class="lineCreate">
+          <p class="elementCreate">Mot de passe : </p>
+          <input type="password" id="pwdCreate" class="elementCreate">
+        </div>
+        <div class="lineCreate">
+          <p class="elementCreate">Confirmation du mot de passe : </p>
+          <input type="password" id="confirmPwdCreate" class="elementCreate">
+        </div>
+        <div class="lineCreate">
+          <p class="elementCreate">Profil : </p>
+          <select name="profilCreate" class="elementCreate" id="profilCreate"></select>
+        </div>
+        <div class="lineCreate">
+          <p class="elementCreate">Secteur : </p>
+          <select name="geoCreate" id="geoCreate" class="elementCreate"></select>
+        </div>
+        <p id="createMessage">L'utilisateur a bien été créé</p>
+      </div>
+      <button id="boxButtonCreate" class="buttonHigh boxWarningOK">Valider</button>
+    </div>
   </section>
 </main>
 {% endblock %}

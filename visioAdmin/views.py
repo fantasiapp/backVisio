@@ -30,9 +30,10 @@ def main(request):
   return redirect('/visioAdmin/login/')
 
 def mainActionPost(request):
+  dataDashboard = createDataDashBoard(request)
+  adminParam = AdminParam(dataDashboard)
   if request.POST.get('uploadFile'):
     response = principale.handleUploadedFile(request.FILES['file'], request.POST.get('uploadFile'))
-    dataDashboard = createDataDashBoard(request)
     adminUpdate = AdminUpdate(dataDashboard) 
     if response:
       AdminUpdate.response = response
@@ -43,12 +44,9 @@ def mainActionPost(request):
         return JsonResponse(updateResponse)
       return JsonResponse(response)
     return JsonResponse({"error":True, "title":"Erreur", "content":"Le fichier n'a pas été chargé."})
-  if request.POST.get('defineSynonym'):
-    dataDashboard = createDataDashBoard(request)
-    adminParam = AdminParam(dataDashboard)
-    return JsonResponse(adminParam.fillupSynonym(request.POST.get('dictSynonym')))
-
-
+  elif request.POST.get('defineSynonym'): return JsonResponse(adminParam.fillupSynonym(request.POST.get('dictSynonym')))
+  elif request.POST.get('activateCreationAccount'): return JsonResponse(adminParam.activateCreationAccount(request.POST.get('dictCreate')))
+  elif request.POST.get('modifyTarget'): return JsonResponse(adminParam.modifyTarget(request.POST.get('dictTarget')))
 
 def mainActionGet(request):
   print("mainActionGet", request.GET["action"])
@@ -63,9 +61,15 @@ def mainActionGet(request):
     dataDashboard = createDataDashBoard(request, delJson=True)
     return principale.loadInit()
   elif request.GET["action"] == "visualizeTable": return adminUpdate.visualizeTable(request.GET["kpi"], request.GET["table"])
+  #param
   elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
-  elif request.GET["action"] == "paramAccountInit": return adminParam.paramAccountInit()
   elif request.GET["action"] == "switchAdStatus": return adminParam.switchAdStatus()
+  elif request.GET["action"] == "paramAccountInit": return adminParam.paramAccountInit()
+  elif request.GET["action"] == "setupCreateAccount": return adminParam.setupCreateAccount()
+  elif request.GET["action"] == "removeAccount": return adminParam.removeAccount(int(request.GET["id"]))
+  elif request.GET["action"] == "modifyAccount": return adminParam.modifyAccount(int(request.GET["id"]), request.GET["name"])
+  elif request.GET["action"] == "modifyAgent": return adminParam.modifyAgent(int(request.GET["id"]), request.GET["name"])
+  elif request.GET["action"] == "buildTarget": return adminParam.buildTarget()
   return {"info":"Not yet implemented"}
 
 def login(request):
@@ -77,8 +81,6 @@ def login(request):
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
       return render(request, 'visioAdmin/login.html', context)
     auth.login(request, user)
-    print("login",user.name)
-    LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=user, path=json.dumps("login"))
     return redirect('principale.html')
   if request.method == 'POST' and request.POST.get('action') == "disconnect":
     auth.logout(request)
@@ -98,8 +100,6 @@ def createDataDashBoard(request, delJson=False):
       os.remove("./visioServer/modelStructure/pdvDict.json")
       os.remove("./visioServer/modelStructure/pdvDict_ly.json")
   return DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
-
-
 
 def performances(request):
   if request.method == 'GET' and 'action' in request.GET:

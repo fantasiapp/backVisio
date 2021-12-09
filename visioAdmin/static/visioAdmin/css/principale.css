@@ -276,6 +276,21 @@ p.warningTitle{
   text-align:center;
   font-size: 1em;
 }
+p.warningContent{
+  position:absolute;
+  top:40%;
+  left:10%;
+  width:80%;
+  text-align:center;
+  font-size: 1em;
+}
+button.boxWarningOK{
+  display:none;
+  width:150px;
+  position:absolute;
+  right:1%;
+  bottom:1%;
+}
 div.boxContent{
   position:absolute;
   display:flex;

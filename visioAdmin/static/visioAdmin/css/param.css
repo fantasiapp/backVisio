@@ -1,6 +1,6 @@
 #account {
   display: none;
-  height:100%;
+  height:95%;
   width:100%;
 }
 #accountHeader {
@@ -10,16 +10,17 @@
   height:5%;
 }
 #accountMain {
+  display:flex;
+  flex-direction: column;
   width:98%;
   height:92%;
-  padding-top:1.5%;
 }
 #actionsAccount{
   display:flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: right;
   position:absolute;
-  right:2%;
+  right:1%;
   width:500px;
   height:30px;
 }
@@ -37,15 +38,6 @@ img.accountButton {
   width:30px;
   height:30px;
 }
-#mainAccount {
-  display:flex;
-  flex-direction: column;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow-y: auto;
-  background-color: blue;
-}
 div.accountLine {
   display:flex;
   flex-direction: row;
@@ -55,5 +47,158 @@ div.accountLine {
 }
 p.cellAccount {
   padding-left: 20px;
-} 
+  cursor:default;
+}
+img.account {
+  width:20px;
+}
+img.account:hover{
+  content:url("/static/visioAdmin/images/SupprimerMouseHover.svg");
+  cursor:pointer;
+}
+
+#scrollAccount{
+  display:flex;
+  flex-direction: column;
+  width:100%;
+  height:95%;
+  overflow-y: scroll;
+}
+
+#boxInputRename {
+  display:flex;
+  flex-direction:row;
+  position:absolute;
+  top:50%;
+  left:20%;
+  width:60%;
+}
+p.subTitleRename{
+  padding-right: 5%;
+  line-height:22px;
+}
+#renameText{
+  width:70%;
+}
+p.warningCreate{
+  position:absolute;
+  left:5%;
+  top:3%;
+  font-size:1.5em;
+  color: var(--main-etex-color);
+}
+#contentCreate{
+  position: absolute;
+  left: 15%;
+  top: 30%;
+  display: flex;
+  flex-direction: column;
+}
+div.lineCreate {
+  display: flex;
+  flex-direction: row;
+}
+p.elementCreate {
+  width: 200px;
+  padding-right: 20px;
+  text-align: right;
+  line-height:22px;
+}
+input.elementCreate {
+  width: 250px;
+  margin-bottom: 15px;
+}
+select.elementCreate {
+  width: 250px;
+  margin-bottom: 15px;
+}
+#createMessage {
+  display:none;
+  font-size:1em;
+  color: var(--main-etex-color);
+}
+
+#target {
+  display: none;
+  height:95%;
+  width:100%;
+}
+#targetHeader {
+  display:flex;
+  flex-direction: column;
+  width:100%;
+  height:5%;
+}
+#targetMain {
+  display:block;
+  width:98%;
+  height:92%;
+}
+#targetAction{
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  margin-left: 5%;
+}
+#titleTarget{
+  margin: 2% 5% 2% 5%;
+  font-size: 1.2em;
+}
+#regionTarget{
+  display:flex;
+  flex-direction: row;
+  margin: 0 5% 0 5%;
+  width: 90%;
+  border: 2px solid black;
+  border-bottom: 1px solid grey;
+}
+#ratioTarget{
+  display:flex;
+  flex-direction: row;
+  margin: 0 5% 0 5%;
+  width: 90%;
+  border: 2px solid black;
+  border-top: 1px solid grey;
+}
+.regionTargetElement{
+  display:flex;
+  flex-direction: column;
+  background-color: white;
+  padding: 1%;
+  text-align: center;
+}
+p.subtitleTarget{
+  text-align: center;
+  width:100%;
+}
+input.inputTarget {
+  width:80%;
+  margin: 10%;
+  background-color: white;
+  
+}
+#footerTarget{
+  display:flex;
+  flex-direction: row;
+  margin: 0 5% 5% 5%;
+  background-color: rgb(240, 240, 240);
+  width: 90%;
+  border: 2px solid rgb(240, 240, 240);
+}
+div.footerTarget{
+  display: flex;
+  flex-direction: row;
+  width:25%;
+}
+p.footerTarget{
+  padding:0 1em 0 1em;
+  line-height:22px;
+}
+input.footerTarget{
+  width:20%;
+  height:22px;
+}
+
+
 

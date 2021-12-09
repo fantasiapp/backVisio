@@ -24,6 +24,7 @@ function selectNav(selection) {
   $('#headerTable').css({display:'none'})
   $('#protect').css({display:'none'})
   $('div.box').css({display:'none'})
+  tableClose()
   selectedAction = selection
   let arraySelection = ["updateRef", "upload", "validation", "param"]
   for (let element of arraySelection) {
@@ -62,11 +63,14 @@ function loadInit() {
   })
 }
 
-function displayWarning(title, content) {
+function displayWarning(title, content, confirm=false) {
   $("#protect").css("display", "block")
   $("#boxWarning").css("display", "block")
   $("#warningTitle").text(title)
   $("#warningContent").text(content)
+  if (confirm) {
+    $("#boxWarningOK").css("display", "block")
+  }
 }
 
 function closeBox() {
@@ -79,14 +83,15 @@ function closeBox() {
   $("#protect").css("display", "none")
   $("div.box").css({display:"none"})
   $('#fileUploaded').text("")
+  $("#boxWarningOK").css("display", "none")
+  $("#createMessage").css("display", "none")
 }
 
 function tableClose() {
-  $.each({"#tableArticle":"none", "#account":"none", "#headerTable":"none", "#articleMain":"block"}, function(id, value ) {
-    console.log(id, value)
+  $.each({"#tableArticle":"none", "#account":"none", "#headerTable":"none", "#articleMain":"block", "#target":"none"}, function(id, value ) {
     $(id).css("display", value)
   })
-  $.each(["#tableHeader", "#tableMain", "accountHeader", "accountMain"], function(_, value ) {
+  $.each(["#tableHeader", "#tableMain", "#accountHeader", "#accountMain", "#targetHeader"], function(_, value ) {
     $(value).empty()
   })
 }
