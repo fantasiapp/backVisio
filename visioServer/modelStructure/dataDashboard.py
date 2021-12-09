@@ -3,6 +3,7 @@ import json
 import os
 from django.utils import timezone
 import pytz
+from django.utils.timezone import make_aware
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -263,6 +264,8 @@ class DataDashboard:
               getattr(self, "__targetLevelAgentfinitions")[int(idAF)] = newValues
 
   def __updateLogClient(self, listLogs, now):
-    print("__updateLogClient", now)
+    print("__updateLogClient 1", now, now.tzinfo)
+    now = make_aware(now)
+    print("__updateLogClient 2", now, now.tzinfo)
     for log in listLogs:
       LogClient.createFromList(log, self.__userProfile, now)
