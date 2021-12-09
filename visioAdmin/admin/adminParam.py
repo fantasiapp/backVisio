@@ -15,35 +15,6 @@ class AdminParam:
     if not AdminParam.fieldNamePdv:
       AdminParam.titleTarget = json.loads(os.getenv('TITLE_TARGET'))
 
-  def paramSynonymsInit(self):
-    return Synonyms.getDictValues()
-
-  def fillupSynonym(self, dictSynonymJson):
-    inversePretty = {value:key for key, value in Synonyms.prettyPrint.items()}
-    dictSynonym = json.loads(dictSynonymJson)
-    for field, dictValue in dictSynonym.items():
-      field = inversePretty[field]
-      for originalName, value in dictValue.items():
-        Synonyms.setValue(field, originalName, value)
-    return {"fillupSynonym":"Les valeurs ont bien été enregistrées"}
-
-
-  def switchAdStatus(self):
-    isAdOpen = ParamVisio.getValue("isAdOpen")
-    ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
-    if ParamVisio.getValue("isAdOpen"):
-      pdvs = getattr(self.dataDashboard, "__pdvs")
-      indexSales = Pdv.listFields().index("sales")
-      indexDate = Sales.listFields().index("date")
-      listSales = [pdv[indexSales] for pdv in pdvs.values()]
-      for sales in listSales:
-        for sale in sales:
-          sale[indexDate] = None
-      for sale in Sales.objects.filter(date__isnull=False):
-        sale.date = None
-        sale.save()
-    return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
-
   # Targets
   def buildTarget(self):
     finition = {agentF.id:{"agentFName":agentF.name, "target":agentF.TargetedNbVisit, "ratio":agentF.ratioTargetedVisit} for agentF in AgentFinitions.objects.filter(currentYear=True)}
@@ -182,6 +153,37 @@ class AdminParam:
     user.groups.add(userGroup)
     print("activateCreationAccount", dictData)
     return {"activateCreationAccount":"L'utilisateur a bien été créé"}
+
+# Synonyms
+
+  def paramSynonymsInit(self):
+      return Synonyms.getDictValues()
+
+  def fillupSynonym(self, dictSynonymJson):
+    inversePretty = {value:key for key, value in Synonyms.prettyPrint.items()}
+    dictSynonym = json.loads(dictSynonymJson)
+    for field, dictValue in dictSynonym.items():
+      field = inversePretty[field]
+      for originalName, value in dictValue.items():
+        Synonyms.setValue(field, originalName, value)
+    return {"fillupSynonym":"Les valeurs ont bien été enregistrées"}
+
+# Ad Status Open or Closed
+def switchAdStatus(self):
+    isAdOpen = ParamVisio.getValue("isAdOpen")
+    ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
+    if ParamVisio.getValue("isAdOpen"):
+      pdvs = getattr(self.dataDashboard, "__pdvs")
+      indexSales = Pdv.listFields().index("sales")
+      indexDate = Sales.listFields().index("date")
+      listSales = [pdv[indexSales] for pdv in pdvs.values()]
+      for sales in listSales:
+        for sale in sales:
+          sale[indexDate] = None
+      for sale in Sales.objects.filter(date__isnull=False):
+        sale.date = None
+        sale.save()
+    return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
     
   
 

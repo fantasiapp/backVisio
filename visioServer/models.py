@@ -1078,6 +1078,8 @@ class Synonyms(models.Model):
       if synonymObject.synonym != value and value:
         synonymObject.synonym = value
         synonymObject.save()
+    elif value:
+      Synonyms.objects.create(field=field, originalName=originalName, synonym=value)
 
   @classmethod
   def getValue(cls, field, originalName):
