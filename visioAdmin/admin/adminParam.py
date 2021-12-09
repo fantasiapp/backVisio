@@ -1,6 +1,5 @@
 from visioServer.models import *
 from datetime import datetime, timedelta
-import pytz
 import json
 import os
 
@@ -88,8 +87,7 @@ class AdminParam:
     return Other
 
   def __computeTimeSpend(self, user):
-    # last_month = datetime.today() - timedelta(days=30)
-    last_month = datetime.now() - timedelta(days=30)
+    last_month = timezone.now() - timedelta(days=30)
     log = LogClient.objects.filter(user=user, date__gte=last_month).order_by("-date")
     timeSpend = False
     lastDate = False
