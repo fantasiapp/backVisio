@@ -144,9 +144,6 @@ class DataDashboard:
     data["timestamp"] = self.__userProfile.lastUpdate.timestamp()
     if self.__userGroup == "root":
       data["root"] = {0:""}
-    # if self.__userGroup in ["agent", "agentFinitions"]:
-    #   del data["drv"]
-    #   del data["drv_ly"]
 
   @classmethod
   def _buildTree(cls, idLevel, steps:list, pdvs:dict):
@@ -265,5 +262,6 @@ class DataDashboard:
               getattr(self, "__targetLevelAgentfinitions")[int(idAF)] = newValues
 
   def __updateLogClient(self, listLogs, now):
+    print("__updateLogClient", now)
     for log in listLogs:
       LogClient.createFromList(log, self.__userProfile, now)
