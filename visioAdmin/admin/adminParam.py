@@ -183,6 +183,9 @@ class AdminParam:
         for sale in Sales.objects.filter(date__isnull=False):
           sale.date = None
           sale.save()
+      param = getattr(self.dataDashboard, "__params")
+      param['isAdOpen'] = ParamVisio.getValue("isAdOpen")
+      print("swithAdStatuss", param)
       return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
 
 # Validation of targets
