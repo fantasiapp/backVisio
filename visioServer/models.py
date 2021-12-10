@@ -984,6 +984,7 @@ class LogClient(CommonModel):
         kwargs[field] = True if data[index] else False
       elif data[index] != None:
         kwargs[field] = data[index]
+    print("createFromList", kwargs)
     cls.objects.create(**kwargs)
 
 class DataAdmin(models.Model):
