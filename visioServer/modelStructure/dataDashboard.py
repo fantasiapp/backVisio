@@ -188,7 +188,8 @@ class DataDashboard:
       return {"error":f"wrong nature received : {nature}"}
 
   def __getUpdateRequest(self,lastUpdate, listIdPdv):
-    version = ParamVisio.getValue("referentielVersion")
+    # version = ParamVisio.getValue("referentielVersion")
+    version = getattr(ParamVisio, "__params")["referentielVersion"]
     listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
     if not listData: return {"message":"nothing to Update", "referentielVersion":version}
     listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
