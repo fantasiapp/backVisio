@@ -178,19 +178,19 @@ class DataDashboard:
     listIdPdv = list(self.dictLocalPdv["currentYear"].keys()) if self.__userGroup != "root" else False
     lastUpdate = self.__userProfile.lastUpdate
     now = timezone.now()
-    version = ParamVisio.getValue("referentielVersion")
     if nature == "request":
       return self.__getUpdateRequest(lastUpdate, listIdPdv)
     elif nature == "acknowledge":
         self.__userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
         self.__userProfile.save()
-        return {"message":"getUpdate acknowledge received", "timestamp":self.__userProfile.lastUpdate.timestamp(), "referentielVersion":version}
+        return {"message":"getUpdate acknowledge received", "timestamp":self.__userProfile.lastUpdate.timestamp()}
     else:
       return {"error":f"wrong nature received : {nature}"}
 
   def __getUpdateRequest(self,lastUpdate, listIdPdv):
+    version = ParamVisio.getValue("referentielVersion")
     listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
-    if not listData: return {"message":"nothing to Update"}
+    if not listData: return {"message":"nothing to Update", "referentielVersion":version}
     listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
     jsonToSend = {key:{} for key in listUpdate[0].keys()}
     for dictUpdate in listUpdate:
@@ -201,6 +201,7 @@ class DataDashboard:
               jsonToSend["pdvs"][id] = listObject
           else:
             jsonToSend[nature][id] = listObject
+    jsonToSend["referentielVersion"] = version
     print("update request", jsonToSend)
     return jsonToSend
 
