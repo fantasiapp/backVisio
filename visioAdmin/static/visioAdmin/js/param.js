@@ -26,7 +26,6 @@ function loadInitParam (response) {
 // Actions
 // Traitement des objectifs
 function displayTarget() {
-  $("#wheel").css({display:'none'})
   targetSetDisplay()
   title = $('<p class="tableHeaderHighLight">Gestion des objectifs</p>')
   $("#targetHeader").append(title)
@@ -34,7 +33,8 @@ function displayTarget() {
 }
 
 function targetSetDisplay() {
-  $('#articleMain').css("display", "block")
+  $("#wheel").css({display:'none'})
+  $('#articleMain').css("display", "none")
   $('#target').css("display", "block")
   $('#headerTable').css("display", "block")
   $("#headerTable").on('click', function(event) {tableClose()})
@@ -89,7 +89,6 @@ function targetBuildDisplay () {
         $('#footerTarget').append($('<button id="modifyTarget" class="buttonHigh" style="width:150px;">Valider</button>'))
         $('#modifyTarget').on('click', function(event) {modifyTargetAction()})
       }
-      $("#wheel").css({display:'none'})
     }
   })
 }
