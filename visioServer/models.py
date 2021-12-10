@@ -969,6 +969,7 @@ class LogClient(CommonModel):
     del listFields[1]
     for index in range(len(listFields)):
       field = listFields[index]
+      print("createFromList", field)
       if field == "date":
         kwargs[field] = now
       elif field == "user":
@@ -980,6 +981,7 @@ class LogClient(CommonModel):
           model = cls._meta.get_field(field).remote_field.model
           objectField = model.objects.get(id=data[index])
           kwargs[field] = objectField
+          print("createFromList", field, objectField)
       elif isinstance(cls._meta.get_field(field), models.BooleanField):
         kwargs[field] = True if data[index] else False
       elif data[index] != None:
