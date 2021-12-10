@@ -612,6 +612,7 @@ class AdminUpdate:
       ]
     for action in renameActions:
       os.rename(f'./visioAdmin/dataFile/Json/{action["from"]}', f'./visioAdmin/dataFile/Json/{action["to"]}')
+    ParamVisio.setValue("referentielVersion", dataAdmin.getVersion)
 
   def __renameTable(self, listTable, rename):
     with connection.cursor() as cursor:
