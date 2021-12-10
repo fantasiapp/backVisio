@@ -962,7 +962,6 @@ class LogClient(CommonModel):
 
   @classmethod
   def createFromList(cls, data, user, now):
-    print("createFromList", data)
     kwargs, data = {"referentielVersion":ParamVisio.getValue("referentielVersion"), "softwareVersion":ParamVisio.getValue("softwareVersion")}, [False, False] + data
     listFields = cls.listFields()
     del listFields[2]
@@ -981,13 +980,12 @@ class LogClient(CommonModel):
           objectField = model.objects.filter(id=data[index])
           if objectField:
             kwargs[field] = objectField[0]
-            print("foreign", field, objectField, model)
+          else:
+            return
       elif isinstance(cls._meta.get_field(field), models.BooleanField):
         kwargs[field] = True if data[index] else False
       elif data[index] != None:
-        print("elif", field, data[index])
         kwargs[field] = data[index]
-    print("createFromList", kwargs)
     cls.objects.create(**kwargs)
 
 class DataAdmin(models.Model):

@@ -142,7 +142,7 @@ class AdminUpdate:
   def __copyCurrentToSave(self):
     listTable = ["visit","sales","pdv","agentFinitions","agent","dep","drv","bassin","ville","segmentCommercial","segmentMarketing","site","sousEnsemble","ensemble","enseigne"]
     with connection.cursor() as cursor:
-      protectedTable = [{"field":None, "values":None, "name":"target"}, {"field":None, "values":None, "name":"targetlevel"}]
+      protectedTable = [{"field":None, "values":None, "name":"target"}, {"field":None, "values":None, "name":"targetlevel"}, {"field":None, "values":None, "name":"logclient"}]
       for dictTable in protectedTable:
         cursor.execute(f"SELECT * FROM `visioServer_{dictTable['name']}`;")
         dictTable["values"] = [line for line in cursor.fetchall()]
