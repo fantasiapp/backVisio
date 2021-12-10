@@ -95,13 +95,12 @@ class AdminParam:
       for dateConnect in [line.date for line in log]:
         if lastDate:
           diff = lastDate-dateConnect
-          if diff < timedelta(seconds=5):
+          if diff < timedelta(seconds=120):
             timeSpend = timeSpend+diff if timeSpend else diff
         lastDate = dateConnect
     return str(timeSpend).split('.', 2)[0] if timeSpend else "_"
 
   def removeAccount(self, id):
-    print("removeAccount", id)
     profile = UserProfile.objects.get(id=int(id))
     user = profile.user
     if profile == self.dataDashboard.userProfile:
@@ -111,7 +110,6 @@ class AdminParam:
     return {"accountRemoved":id}
 
   def modifyAccount(self, id, name):
-    print("modifyAccount", id)
     profile = UserProfile.objects.get(id=int(id))
     user = profile.user
     user.username = name
@@ -119,14 +117,13 @@ class AdminParam:
     return {"accountModified":"OK"}
 
   def modifyAgent(self, id, name):
-    print("modifyAgent", id)
     profile = UserProfile.objects.get(id=int(id))
     user = profile.user
     group = user.groups.values_list('name', flat=True)[0]
     if group != "agent":
       return {"error":"Il n'est pas possible de renommer un autre niveau géographique que celui d'un agent."}
     idAgent = profile.idGeo
-    agent = Agent.objects.get(id=idAgent)
+    agent = AgentSave.objects.get(id=idAgent)
     agent.name = name
     agent.save()
     return {"agentModified":"OK"}
@@ -151,7 +148,6 @@ class AdminParam:
     user = User.objects.create_user(username=dictData["pseudo"], password=dictData["pwd"])
     UserProfile.objects.create(user=user, idGeo=dictData["idGeo"])
     user.groups.add(userGroup)
-    print("activateCreationAccount", dictData)
     return {"activateCreationAccount":"L'utilisateur a bien été créé"}
 
 # Synonyms
@@ -185,14 +181,13 @@ class AdminParam:
           sale.save()
       param = getattr(self.dataDashboard, "__params")
       param['isAdOpen'] = ParamVisio.getValue("isAdOpen")
-      print("swithAdStatuss", param)
       return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
 
 # Validation of targets
   def buildValidate(self):
     titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Ancienne valeur":12, "Nouvelle valeur":12}
     rawData = {target.pdv:self.__buildValidateLine(target) for target in Target.objects.all() if self.__testValidateLine(target.pdv)}
-    dictValue = {"Point de vente redistribué":{}, "Point de vente redistribué finition":{}, "Ne vend pas de plaque":{}, "Bassin":{}}
+    dictValue = {"Point de vente redistribué":{}, "Ne vend pas de plaque":{}, "Bassin":{}}
     for pdv, value in rawData.items():
       newValue = value[:5]
       if value[9]:
@@ -223,11 +218,9 @@ class AdminParam:
 
   def updateValidate(self, dictValidate):
     listData = json.loads(dictValidate)
-    print("updateValidate", listData)
     for dictPdv in listData["modify"]:
       pdv = PdvSave.objects.get(id=dictPdv["pdvId"])
       if dictPdv["action"] == "Point de vente redistribué":
-        print("updateValidate", dictPdv)
         pdv.redistributed = dictPdv["value"]
       elif dictPdv["action"] == "Point de vente redistribué finition":
         pdv.redistributedFinitions = dictPdv["value"]

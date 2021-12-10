@@ -340,6 +340,7 @@ function displayCreateAccountQuery () {
       data: {"action":"setupCreateAccount", "csrfmiddlewaretoken":token},
       success : function(response) {
         dictCreateAccount = response
+        console.log(dictCreateAccount)
         fillupCreateAccount()
       }
     })
@@ -351,7 +352,9 @@ function displayCreateAccountQuery () {
 function fillupCreateAccount () {
   $('#profilCreate').empty()
   $.each(dictCreateAccount["profile"], function(key, prettyPrint) {
-    $('#profilCreate').append($('<option value="'+key+'">'+prettyPrint+'</option>'))
+    option = $('<option value="'+key+'">'+prettyPrint+'</option>')
+    $('#profilCreate').append(option)
+    $('#profilCreate').change(function () {changeProfileAccount()})
   })
   changeProfileAccount()
 }
@@ -359,6 +362,7 @@ function fillupCreateAccount () {
 function changeProfileAccount() {
   $('#geoCreate').empty()
   selected = $( "#profilCreate option:selected" ).val()
+  console.log("changeProfileAccount", selected)
   if (!$.isEmptyObject(dictCreateAccount[selected])) {
     $.each(dictCreateAccount[selected], function(key, name) {
       $('#geoCreate').append($('<option value="'+key+'">'+name+'</option>'))
@@ -444,6 +448,7 @@ function buildSynonymsList() {
 }
 
 function manageSynonymsOK() {
+  $("#wheel").css({display:'block'})
   selection = $("#SynonymsSelect").val()
   dictValue = dictSynonym[selection]
   $.each($("#synonymsContent input"), function(_, input) {
@@ -459,6 +464,7 @@ function manageSynonymsOK() {
     success : function(response) {
       $("#synonymsMessage").text(response["fillupSynonym"])
       $("#synonymsMessage").show().delay(3000).fadeOut();
+      $("#wheel").css({display:'none'})
     }
   })
 }

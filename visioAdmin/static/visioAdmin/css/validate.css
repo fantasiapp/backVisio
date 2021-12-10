@@ -20,7 +20,9 @@
 #validateTitle {
   display:Flex;
   flex-direction: row;
-  padding:1em 0 1em 0
+  padding:1em 0 1em 0;
+  margin-left: 3%;
+  width:94%
 }
 p.validateTitle {
   font-weight: bold;
@@ -44,13 +46,12 @@ div.validationSelectAll{
   justify-content:space-around;
   align-items: center;
   background-color: white;
-  /* opacity: 0.5; */
   height: 100%;
   width: 18%;
   right: 0;
 }
 div.validateSection{
-  height:22%;
+  height:34%;
   overflow-y: scroll;
 }
 div.validateLine{
@@ -63,6 +64,5 @@ p.validateCell{
 }
 img.validateCell{
   cursor:pointer;
-  /* padding-top:0.8em; */
   height:10px;
 }

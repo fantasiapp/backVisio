@@ -27,9 +27,11 @@ function validateBuildDisplay() {
     data: {"action":"buildValidate", "csrfmiddlewaretoken":token},
     success : function(response) {
       if (flagBuildValidate) {
+        buildStructureTitleValidate(response)
         updateStructureValidate(response)
       } else {
         flagBuildValidate = true
+        buildStructureTitleValidate(response)
         buildStructureValidate(response)
       }
       $("#wheel").css({display:'none'})
@@ -49,14 +51,16 @@ function updateStructureValidate(response) {
   })
 }
 
-function buildStructureValidate(response) {
+function buildStructureTitleValidate(response) {
   $('#validateHeader').append($('<div id="validateTitle">'))
   $.each(response["titles"], function(label, size) {
     $('#validateTitle').append($('<p class="validateTitle" style="width:'+size+'%">'+label+'</p>'))
   })
   $('#validateTitle').append($('<p class="validateTitle" style="width:10%">Confirmer</p>'))
   $('#validateTitle').append($('<p class="validateTitle" style="width:10%">Supprimer</p>'))
+}
 
+function buildStructureValidate(response) {
   $.each(response["values"], function(rowTitle, listLines) {
     let title = $('<div class="validateRowTitle"><p class="validateRowTitle">'+rowTitle+'</p>')
     $('#validateMain').append(title)
