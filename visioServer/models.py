@@ -978,12 +978,14 @@ class LogClient(CommonModel):
       elif isinstance(cls._meta.get_field(field), models.ForeignKey):
         if data[index]:
           model = cls._meta.get_field(field).remote_field.model
-          objectField = model.objects.get(id=data[index])
-          kwargs[field] = objectField
-          print("createFromList", field, objectField, model)
+          objectField = model.objects.filter(id=data[index])
+          if objectField:
+            kwargs[field] = objectField[0]
+            print("foreign", field, objectField, model)
       elif isinstance(cls._meta.get_field(field), models.BooleanField):
         kwargs[field] = True if data[index] else False
       elif data[index] != None:
+        print("elif", field, data[index])
         kwargs[field] = data[index]
     print("createFromList", kwargs)
     cls.objects.create(**kwargs)
