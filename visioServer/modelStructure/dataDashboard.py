@@ -190,7 +190,7 @@ class DataDashboard:
   def __getUpdateRequest(self,lastUpdate, listIdPdv):
     # version = ParamVisio.getValue("referentielVersion")
     if getattr(DataDashboard, "__params", False):
-      version = getattr(ParamVisio, "__params")["referentielVersion"]
+      version = getattr(DataDashboard, "__params")["referentielVersion"]
       listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
       if not listData: return {"message":"nothing to Update", "referentielVersion":version}
       listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
