@@ -49,6 +49,7 @@ function formatMainBox() {
 function loadInit() {
   loadInitRefEvent ()
   loadInitParamEvent ()
+  loadInitValidateEvent ()
   $.ajax({
     url : "/visioAdmin/principale/",
     type: "get",
@@ -88,10 +89,10 @@ function closeBox() {
 }
 
 function tableClose() {
-  $.each({"#tableArticle":"none", "#account":"none", "#headerTable":"none", "#articleMain":"block", "#target":"none"}, function(id, value ) {
+  $.each({"#tableArticle":"none", "#account":"none", "#headerTable":"none", "#articleMain":"block", "#target":"none", "#validate":"none"}, function(id, value ) {
     $(id).css("display", value)
   })
-  $.each(["#tableHeader", "#tableMain", "#accountHeader", "#accountMain", "#targetHeader"], function(_, value ) {
+  $.each(["#tableHeader", "#tableMain", "#accountHeader", "#accountMain", "#targetHeader", "#validateHeader"], function(_, value ) {
     $(value).empty()
   })
 }

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+  <defs>
+    <filter id="Path_45480" x="0" y="0" width="19" height="19" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feFlood flood-opacity="0.184" result="color"/>
+      <feComposite operator="out" in="SourceGraphic" in2="blur"/>
+      <feComposite operator="in" in="color"/>
+      <feComposite operator="in" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="Group_18026" data-name="Group 18026" transform="translate(-1810 -258)">
+    <g data-type="innerShadowGroup">
+      <path id="Path_45480-2" data-name="Path 45480" d="M2,0H17a2,2,0,0,1,2,2V17a2,2,0,0,1-2,2H2a2,2,0,0,1-2-2V2A2,2,0,0,1,2,0Z" transform="translate(1810 258)" fill="#f06d0c"/>
+      <g transform="matrix(1, 0, 0, 1, 1810, 258)" filter="url(#Path_45480)">
+        <path id="Path_45480-3" data-name="Path 45480" d="M2,0H17a2,2,0,0,1,2,2V17a2,2,0,0,1-2,2H2a2,2,0,0,1-2-2V2A2,2,0,0,1,2,0Z" fill="#fff"/>
+      </g>
+    </g>
+    <path id="noun-confirmation-3652550" d="M151.835,140.261a.735.735,0,0,1,1.184.867l-.055.075-7.352,8.821a.735.735,0,0,1-1.016.11l-.068-.06-4.412-4.411a.735.735,0,0,1,.97-1.1l.069.061L145,148.463Z" transform="translate(1673.1 122.004)" fill="#fff"/>
+  </g>
+</svg>

@@ -169,21 +169,79 @@ class AdminParam:
     return {"fillupSynonym":"Les valeurs ont bien été enregistrées"}
 
 # Ad Status Open or Closed
-def switchAdStatus(self):
-    isAdOpen = ParamVisio.getValue("isAdOpen")
-    ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
-    if ParamVisio.getValue("isAdOpen"):
-      pdvs = getattr(self.dataDashboard, "__pdvs")
-      indexSales = Pdv.listFields().index("sales")
-      indexDate = Sales.listFields().index("date")
-      listSales = [pdv[indexSales] for pdv in pdvs.values()]
-      for sales in listSales:
-        for sale in sales:
-          sale[indexDate] = None
-      for sale in Sales.objects.filter(date__isnull=False):
-        sale.date = None
-        sale.save()
-    return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
+  def switchAdStatus(self):
+      isAdOpen = ParamVisio.getValue("isAdOpen")
+      ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
+      if ParamVisio.getValue("isAdOpen"):
+        pdvs = getattr(self.dataDashboard, "__pdvs")
+        indexSales = Pdv.listFields().index("sales")
+        indexDate = Sales.listFields().index("date")
+        listSales = [pdv[indexSales] for pdv in pdvs.values()]
+        for sales in listSales:
+          for sale in sales:
+            sale[indexDate] = None
+        for sale in Sales.objects.filter(date__isnull=False):
+          sale.date = None
+          sale.save()
+      return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
+
+# Validation of targets
+  def buildValidate(self):
+    titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Ancienne valeur":12, "Nouvelle valeur":12}
+    rawData = {target.pdv:self.__buildValidateLine(target) for target in Target.objects.all() if self.__testValidateLine(target.pdv)}
+    dictValue = {"Point de vente redistribué":{}, "Point de vente redistribué finition":{}, "Ne vend pas de plaque":{}, "Bassin":{}}
+    for pdv, value in rawData.items():
+      newValue = value[:5]
+      if value[9]:
+        newValue.append("Oui" if value[6] else "Non")
+        newValue.append("Non" if value[6] else "Oui")
+        dictValue["Point de vente redistribué"][pdv.id] = newValue
+      if value[10]:
+        newValue.append("Oui" if value[7] else "Non")
+        newValue.append("Non" if value[7] else "Oui")
+        dictValue["Point de vente redistribué finition"][pdv.id] = newValue
+      if value[8]:
+        newValue.append("Oui" if value[5] else "Non")
+        newValue.append("Non" if value[5] else "Oui")
+        dictValue["Ne vend pas de plaque"][pdv.id] = newValue
+      if value[11] and value[11] != pdv.bassin.name:
+        newValue += [pdv.bassin.name.replace("Négoce_", ""), value[11]]
+        dictValue["Bassin"][pdv.id] = newValue
+    return {"titles":titles, "values":dictValue}
+
+  def __buildValidateLine(self, target):
+    pdvId = target.pdv.id
+    pdv = PdvSave.objects.get(id=pdvId)
+    return [pdv.drv.name, pdv.agent.name, pdv.code, target.date.strftime('%Y-%m-%d'), pdv.name, target.sale, target.redistributed, target.redistributedFinitions, target.sale != pdv.sale, target.redistributed != pdv.redistributed, target.redistributedFinitions != pdv.redistributedFinitions, target.bassin]
+
+  def __testValidateLine(self, pdv):
+    return pdv.available and pdv.sale and pdv.redistributed and pdv.currentYear
+
+
+  def updateValidate(self, dictValidate):
+    listData = json.loads(dictValidate)
+    print("updateValidate", listData)
+    for dictPdv in listData["modify"]:
+      pdv = PdvSave.objects.get(id=dictPdv["pdvId"])
+      if dictPdv["action"] == "Point de vente redistribué":
+        print("updateValidate", dictPdv)
+        pdv.redistributed = dictPdv["value"]
+      elif dictPdv["action"] == "Point de vente redistribué finition":
+        pdv.redistributedFinitions = dictPdv["value"]
+      elif dictPdv["action"] == "Ne vend pas de plaque":
+        pdv.sale = dictPdv["value"]
+      pdv.save()
+    for dictPdv in listData["delete"]:
+      pdv = Pdv.objects.get(id=dictPdv["pdvId"])
+      target = Target.objects.get(pdv=pdv)
+      if dictPdv["action"] == "Point de vente redistribué":
+        target.redistributed = dictPdv["value"]
+      elif dictPdv["action"] == "Point de vente redistribué finition":
+        target.redistributedFinitions = dictPdv["value"]
+      elif dictPdv["action"] == "Ne vend pas de plaque":
+        target.sale = dictPdv["value"]
+      target.save()
+    return self.buildValidate()
     
   
 

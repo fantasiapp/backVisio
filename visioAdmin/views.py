@@ -47,6 +47,7 @@ def mainActionPost(request):
   elif request.POST.get('defineSynonym'): return JsonResponse(adminParam.fillupSynonym(request.POST.get('dictSynonym')))
   elif request.POST.get('activateCreationAccount'): return JsonResponse(adminParam.activateCreationAccount(request.POST.get('dictCreate')))
   elif request.POST.get('modifyTarget'): return JsonResponse(adminParam.modifyTarget(request.POST.get('dictTarget')))
+  elif request.POST.get('updateValidate'): return JsonResponse(adminParam.updateValidate(request.POST.get('dictValidate')))
 
 def mainActionGet(request):
   print("mainActionGet", request.GET["action"])
@@ -70,6 +71,7 @@ def mainActionGet(request):
   elif request.GET["action"] == "modifyAccount": return adminParam.modifyAccount(int(request.GET["id"]), request.GET["name"])
   elif request.GET["action"] == "modifyAgent": return adminParam.modifyAgent(int(request.GET["id"]), request.GET["name"])
   elif request.GET["action"] == "buildTarget": return adminParam.buildTarget()
+  elif request.GET["action"] == "buildValidate": return adminParam.buildValidate()
   return {"info":"Not yet implemented"}
 
 def login(request):

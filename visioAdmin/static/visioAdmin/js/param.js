@@ -2,6 +2,7 @@ let dictSynonym = {}
 let dictCreateAccount = {}
 let dictSetupAccount = {}
 let flagBuildTarget = false
+let flagReady = true
 
 // Initialisation
 function loadInitParamEvent() {
@@ -25,6 +26,7 @@ function loadInitParam (response) {
 // Actions
 // Traitement des objectifs
 function displayTarget() {
+  $("#wheel").css({display:'none'})
   targetSetDisplay()
   title = $('<p class="tableHeaderHighLight">Gestion des objectifs</p>')
   $("#targetHeader").append(title)
@@ -32,7 +34,7 @@ function displayTarget() {
 }
 
 function targetSetDisplay() {
-  $('#articleMain').css("display", "none")
+  $('#articleMain').css("display", "block")
   $('#target').css("display", "block")
   $('#headerTable').css("display", "block")
   $("#headerTable").on('click', function(event) {tableClose()})
@@ -87,6 +89,7 @@ function targetBuildDisplay () {
         $('#footerTarget').append($('<button id="modifyTarget" class="buttonHigh" style="width:150px;">Valider</button>'))
         $('#modifyTarget').on('click', function(event) {modifyTargetAction()})
       }
+      $("#wheel").css({display:'none'})
     }
   })
 }
@@ -194,10 +197,10 @@ function buildAccountTableValues() {
           function () {$( this ).css({color:etexColor})},
           function () {$( this ).css({color:"black"})})
         if (index == 0) {
-          title.on('click', function(event) {displayModifyAccount(event, id)})
+          title.on('click', function(event) {displayModifyAccount(event)})
           title.addClass("modifyAccount")
         } else {
-          title.on('click', function(event) {displayModifySector(event, id)})
+          title.on('click', function(event) {displayModifySector(event)})
           title.addClass("modifyAgent")
         }
       }
@@ -205,7 +208,7 @@ function buildAccountTableValues() {
     })
     img = $('<img class="account" data="'+id+'" src="/static/visioAdmin/images/Supprimer.svg">')
     lineTitle.append(img)
-    img.on('click', function(event) {displayRemoveAccount(event, id)})
+    img.on('click', function(event) {displayRemoveAccount(event)})
     img.hover(
       function () {$("div.accountLine[data=" + id + "]").css({color:etexColor})},
       function () {$("div.accountLine[data=" + id + "]").css({color:"black"})})
@@ -213,8 +216,9 @@ function buildAccountTableValues() {
   })
 }
 
-function displayRemoveAccount(event, id) {
+function displayRemoveAccount(event) {
   siblings = $(event.target).siblings()
+  id = $(siblings[0]).attr("data")
   name = $(siblings[0]).text()
   profil = $(siblings[1]).text()
   sector = $(siblings[2]).text()
@@ -224,22 +228,27 @@ function displayRemoveAccount(event, id) {
 }
 
 function removeAccountQuery(id) {
-  closeBox()
-  $.ajax({
-    url : "/visioAdmin/principale/",
-    type: "get",
-    data: {"action":"removeAccount", "csrfmiddlewaretoken":token, "id":id},
-    success : function(response) {
-      if ("error" in response) {
-        displayWarning("Attention", response["error"])
-      } else {
-        $("div.accountLine[data=" + id + "]").remove()
+  if (flagReady) {
+    flagReady = false
+    closeBox()
+    $.ajax({
+      url : "/visioAdmin/principale/",
+      type: "get",
+      data: {"action":"removeAccount", "csrfmiddlewaretoken":token, "id":id},
+      success : function(response) {
+        if ("error" in response) {
+          displayWarning("Attention", response["error"])
+        } else {
+          $("div.accountLine[data=" + id + "]").remove()
+        }
+        flagReady = true
       }
-    }
-  })
+    })
+  }
 }
 
-function displayModifyAccount(event, id) {
+function displayModifyAccount(event) {
+  id = $(event.target).attr("data")
   content = "Modification du speudo, ancienne valeur : " + $(event.target).text()
   $("#protect").css("display", "block")
   $("#boxWarningRename").css("display", "block")
@@ -252,26 +261,31 @@ function displayModifyAccount(event, id) {
 
 function modifyAccountQuery(id) {
   closeBox()
-  newName = $('#renameText').val()
-  if (newName) {
-    $.ajax({
-      url : "/visioAdmin/principale/",
-      type: "get",
-      data: {"action":"modifyAccount", "csrfmiddlewaretoken":token, "id":id, "name":newName},
-      success : function(response) {
-        if ("error" in response) {
-          displayWarning("Attention", response["error"])
-        } else {
-          $("p.modifyAccount[data=" + id + "]").text(newName)
+  if (flagReady) {
+    flagReady = false
+    newName = $('#renameText').val()
+    if (newName) {
+      $.ajax({
+        url : "/visioAdmin/principale/",
+        type: "get",
+        data: {"action":"modifyAccount", "csrfmiddlewaretoken":token, "id":id, "name":newName},
+        success : function(response) {
+          if ("error" in response) {
+            displayWarning("Attention", response["error"])
+          } else {
+            $("p.modifyAccount[data=" + id + "]").text(newName)
+          }
+          flagReady = true
         }
-      }
-    })
-  } else {
-    displayWarning("Attention", "Il n'est pas possible d'enregistrer un nom vide.")
+      })
+    } else {
+      displayWarning("Attention", "Il n'est pas possible d'enregistrer un nom vide.")
+    }
   }
 }
 
-function displayModifySector(event, id) {
+function displayModifySector(event) {
+  id = $(event.target).attr("data")
   siblings = $(event.target).siblings()
   profil = $(siblings[1]).text()
   if (profil == "Secteur") {
@@ -290,22 +304,26 @@ function displayModifySector(event, id) {
 
 function modifySectorQuery(id) {
   closeBox()
-  newName = $('#renameText').val()
-  if (newName) {
-    $.ajax({
-      url : "/visioAdmin/principale/",
-      type: "get",
-      data: {"action":"modifyAgent", "csrfmiddlewaretoken":token, "id":id, "name":newName},
-      success : function(response) {
-        if ("error" in response) {
-          displayWarning("Attention", response["error"])
-        } else {
-          $("p.modifyAgent[data=" + id + "]").text(newName)
+  if (flagReady) {
+    flagReady = false
+    newName = $('#renameText').val()
+    if (newName) {
+      $.ajax({
+        url : "/visioAdmin/principale/",
+        type: "get",
+        data: {"action":"modifyAgent", "csrfmiddlewaretoken":token, "id":id, "name":newName},
+        success : function(response) {
+          if ("error" in response) {
+            displayWarning("Attention", response["error"])
+          } else {
+            $("p.modifyAgent[data=" + id + "]").text(newName)
+          }
+          flagReady = true
         }
-      }
-    })
-  } else {
-    displayWarning("Attention", "Il n'est pas possible d'enregistrer un nom vide.")
+      })
+    } else {
+      displayWarning("Attention", "Il n'est pas possible d'enregistrer un nom vide.")
+    }
   }
 }
 
