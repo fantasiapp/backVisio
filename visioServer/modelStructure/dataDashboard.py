@@ -189,22 +189,24 @@ class DataDashboard:
 
   def __getUpdateRequest(self,lastUpdate, listIdPdv):
     # version = ParamVisio.getValue("referentielVersion")
-    version = getattr(ParamVisio, "__params")["referentielVersion"]
-    listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
-    if not listData: return {"message":"nothing to Update", "referentielVersion":version}
-    listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
-    jsonToSend = {key:{} for key in listUpdate[0].keys()}
-    for dictUpdate in listUpdate:
-      for nature, dictNature in dictUpdate.items():
-        for id, listObject in dictNature.items():
-          if nature == "pdvs":
-            if not listIdPdv or int(id) in listIdPdv:
-              jsonToSend["pdvs"][id] = listObject
-          else:
-            jsonToSend[nature][id] = listObject
-    jsonToSend["referentielVersion"] = version
-    print("update request", jsonToSend)
-    return jsonToSend
+    if getattr(ParamVisio, "__params", False):
+      version = getattr(ParamVisio, "__params")["referentielVersion"]
+      listData = LogUpdate.objects.filter(date__gte=lastUpdate) if lastUpdate else LogUpdate.objects.all()
+      if not listData: return {"message":"nothing to Update", "referentielVersion":version}
+      listUpdate = [json.loads(logUpdate.data) for logUpdate in listData]
+      jsonToSend = {key:{} for key in listUpdate[0].keys()}
+      for dictUpdate in listUpdate:
+        for nature, dictNature in dictUpdate.items():
+          for id, listObject in dictNature.items():
+            if nature == "pdvs":
+              if not listIdPdv or int(id) in listIdPdv:
+                jsonToSend["pdvs"][id] = listObject
+            else:
+              jsonToSend[nature][id] = listObject
+      jsonToSend["referentielVersion"] = version
+      print("update request", jsonToSend)
+      return jsonToSend
+    return {"message":"change version in process"}
 
   def postUpdate(self, userName, jsonString):
     print("post update", userName, jsonString)
