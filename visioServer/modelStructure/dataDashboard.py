@@ -23,7 +23,7 @@ class DataDashboard:
       DataDashboard.__geoTreeStructure = json.loads(os.getenv('GEO_TREE_STRUCTURE'))
       DataDashboard.__tradeTreeStructure = json.loads(os.getenv('TRADE_TREE_STRUCTURE'))
       self._computeTargetLevel()
-    params = getattr(self, "__params")
+    params = getattr(self, "__params", False)
     params["pseudo"] = userProfile.user.username
     if getattr(self, "__pdvs", False) and getattr(self, "__pdvs_ly", False):
       self.dictLocalPdv = self.__computeListPdv()
