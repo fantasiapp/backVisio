@@ -178,12 +178,13 @@ class DataDashboard:
     listIdPdv = list(self.dictLocalPdv["currentYear"].keys()) if self.__userGroup != "root" else False
     lastUpdate = self.__userProfile.lastUpdate
     now = timezone.now()
+    version = ParamVisio.getValue("referentielVersion")
     if nature == "request":
       return self.__getUpdateRequest(lastUpdate, listIdPdv)
     elif nature == "acknowledge":
         self.__userProfile.lastUpdate = now - timezone.timedelta(seconds=5)
         self.__userProfile.save()
-        return {"message":"getUpdate acknowledge received", "timestamp":self.__userProfile.lastUpdate.timestamp()}
+        return {"message":"getUpdate acknowledge received", "timestamp":self.__userProfile.lastUpdate.timestamp(), "referentielVersion":version}
     else:
       return {"error":f"wrong nature received : {nature}"}
 
