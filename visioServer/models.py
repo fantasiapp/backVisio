@@ -962,6 +962,7 @@ class LogClient(CommonModel):
 
   @classmethod
   def createFromList(cls, data, user, now):
+    print("createFromList", data)
     kwargs, data = {"referentielVersion":ParamVisio.getValue("referentielVersion"), "softwareVersion":ParamVisio.getValue("softwareVersion")}, [False, False] + data
     listFields = cls.listFields()
     del listFields[2]
