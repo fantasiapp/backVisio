@@ -146,7 +146,8 @@ class AdminParam:
       return {"error":"Les deux mots de passe diffèrent."}
     userGroup = Group.objects.get(name=dictData["profile"])
     user = User.objects.create_user(username=dictData["pseudo"], password=dictData["pwd"])
-    UserProfile.objects.create(user=user, idGeo=dictData["idGeo"])
+    idGeo = dictData["idGeo"] if "idGeo" in dictData else 0
+    UserProfile.objects.create(user=user, idGeo=idGeo)
     user.groups.add(userGroup)
     return {"activateCreationAccount":"L'utilisateur a bien été créé"}
 

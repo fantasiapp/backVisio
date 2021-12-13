@@ -131,12 +131,11 @@ class AdminUpdate:
       if not title: return False
       data = self.__findValuesRef(list(title.values()), title[self.keyFieldRef])
       self.__copyCurrentToSave()
-      AdminUpdate.replacedAgent = self.__updateBaseSave(title, data)
-      listAgent = self.__createQueryNewAgent()
-      AdminUpdate.replacedAgent = listAgent
+      listAgent = self.__updateBaseSave(title, data)
+      AdminUpdate.replacedAgent = self.__createQueryNewAgent(listAgent)
       AdminUpdate.xlsxData = {"title":list(title.keys()), "data":data}
-      if listAgent:
-        return {"warningAgent":listAgent}
+      if AdminUpdate.replacedAgent:
+        return {"warningAgent":AdminUpdate.replacedAgent}
       return self.updateRefWithAgent()
 
   def __copyCurrentToSave(self):
@@ -391,15 +390,16 @@ class AdminUpdate:
     listNewAgent["new"][value] = []
     return False
 
-  def __createQueryNewAgent(self):
+  def __createQueryNewAgent(self, listNewAgent):
+    """listReplaced give the dict with key the new name of the agent replaced and value the list of replaced names"""
     listAgent = []
-    listReplaced = {key:[pdv.agent.name for pdv in value] for key, value in AdminUpdate.replacedAgent["new"].items()}
+    listReplaced = {key:[pdv.agent.name for pdv in value] for key, value in listNewAgent["new"].items()}
     for NewName, listOldName in listReplaced.items():
       setOldName, oldNameFrequency = set(listOldName), {}
       for oldName in setOldName:
         oldNameFrequency[oldName] = listOldName.count(oldName)
         oldNameFrequencySorted = [oldName for oldName, _ in sorted(oldNameFrequency.items(), key=lambda item: -item[1])]
-      if oldNameFrequencySorted[0] not in AdminUpdate.replacedAgent["existing"]:
+      if oldNameFrequencySorted[0] not in listNewAgent["existing"]:
         listAgent.append({"newName":NewName, "oldName":oldNameFrequencySorted[0]})
     return listAgent
 
@@ -411,7 +411,8 @@ class AdminUpdate:
     return principale.loadInit()
 
   def __updateRefWithAgent(self, getDict):
-    dictReplacedAgent = {oldName:value[0] for oldName, value in getDict.items() if not oldName in ["action", "csrfmiddlewaretoken"]}
+    """getDict is a dictionary with key the newName and value a list of one item 'replaced' or 'noReplace'."""
+    dictReplacedAgent = {newName:value[0] for newName, value in getDict.items() if not newName in ["action", "csrfmiddlewaretoken"]}
     pdvList = {pdv.code:pdv for pdv in PdvSave.objects.filter(currentYear=True)}
     agentListReplace = [agentReplacing for agentReplacing, status in dictReplacedAgent.items() if status == "replace"]
     agentList = {agent["newName"]:AgentSave.objects.get(name=agent["oldName"], currentYear=True) for agent in AdminUpdate.replacedAgent if agent["newName"] in agentListReplace}
@@ -437,11 +438,12 @@ class AdminUpdate:
     return pdvList
 
   def __closePdv(self, pdvList):
+    """pdvList is a dict of pdv.code and pdv in the table PdvSave"""
     now = timezone.now()
     indexCode = AdminUpdate.xlsxData["title"].index("Code SAP Final")
     listCode = [line[indexCode] for line in AdminUpdate.xlsxData["data"]]
     for code, pdv in pdvList.items():
-      if code in listCode:
+      if int(code) in listCode:
         pdv.closedAt = None
         pdv.avaliable = True
       else:

@@ -123,7 +123,7 @@
       "12222",
       "POINT P LA MERIDIONALE AGDE",
       "SUD-EST",
-      "TERKI KARIM",
+      "ROUX PHILIPPE",
       "ROUX",
       "34",
       "AGDE / SETE",
@@ -181,7 +181,7 @@
    ],
    [
       "55269",
-      "UNION MATERIAUX AIGUES MORTES",
+      "GERVAIS MATERIAUX AIGUES MORTES",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -194,8 +194,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -357,7 +357,7 @@
       "BIGMAT FRANCE",
       "APPRIN NEGOCE",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "684815",
@@ -661,7 +661,7 @@
    ],
    [
       "684977",
-      "UNION MATERIAUX ALES",
+      "GERVAIS MATERIAUX ALES",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -674,8 +674,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -1437,7 +1437,7 @@
       "SECTEUR SOMME - AISNE",
       "SITE SOMME - AISNE",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "685340",
@@ -2510,7 +2510,7 @@
       "Condom",
       43.96206,
       0.37089,
-      "non segment\u00e9",
+      "P1",
       "G\u00e9n\u00e9ralistes",
       "CMEM",
       "TOUT FAIRE",
@@ -3561,7 +3561,7 @@
    ],
    [
       "55273",
-      "UNION MATERIAUX VILLEVIEILLE",
+      "GERVAIS MATERIAUX VILLEVIEILLE",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -3574,8 +3574,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -5523,7 +5523,7 @@
       "687190",
       "POINT P G.E",
       "ILE DE France",
-      "FISCHER ALEXANDRE",
+      "TEIXEIRA SANDRINE",
       "GOFFIN",
       "92",
       "HAUT DE SEINE",
@@ -6161,7 +6161,7 @@
    ],
    [
       "10275",
-      "UNION MATERIAUX ARLES",
+      "GERVAIS MATERIAUX ARLES",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -6174,8 +6174,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -6817,7 +6817,7 @@
       "TOUT FAIRE",
       "BAZARD",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "687812",
@@ -8217,7 +8217,7 @@
       "SAS TANGUY MATX DISTRIBUTION",
       "SAS TANGUY MATX DISTRIBUTION",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "688531",
@@ -8477,7 +8477,7 @@
       "DORAS",
       "REGION DORAS NORD EST",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "688793",
@@ -8570,7 +8570,7 @@
       "Auch",
       43.65144,
       0.59442,
-      "P1",
+      "C3",
       "G\u00e9n\u00e9ralistes",
       "POINT P",
       "POINT P OCCITANIE",
@@ -8590,7 +8590,7 @@
       "Auch",
       43.66026,
       0.62033,
-      "non segment\u00e9",
+      "B3",
       "Multi Sp\u00e9cialistes",
       "Chausson",
       "CHAUSSON MATERIAUX",
@@ -10261,7 +10261,7 @@
    ],
    [
       "10261",
-      "UNION MATERIAUX MARSEILLE",
+      "GERVAIS MATERIAUX MARSEILLE",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -10274,8 +10274,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -11008,8 +11008,8 @@
       "43",
       "LE PUY",
       "Duni\u00e8res",
-      45.21099,
-      4.34967,
+      0.0,
+      0.0,
       "P2",
       "G\u00e9n\u00e9ralistes",
       "POINT P",
@@ -11137,7 +11137,7 @@
       "SAS TANGUY MATX DISTRIBUTION",
       "SAS TANGUY MATX DISTRIBUTION",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "690828",
@@ -11210,7 +11210,7 @@
       "Eauze",
       43.86084,
       0.10919,
-      "P2",
+      "C3",
       "G\u00e9n\u00e9ralistes",
       "POINT P",
       "POINT P OCCITANIE",
@@ -11667,7 +11667,7 @@
       "BARTOLO",
       "05",
       "BRIANCON",
-      "BARATIER",
+      "Embrun",
       44.56548,
       6.49602,
       "C2",
@@ -12770,7 +12770,7 @@
       "Masseube",
       43.4325,
       0.57946,
-      "C2",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "N\u00e9g Mtx Cons",
       "NEGOCES MATX DE CONSTRUCTION",
@@ -13510,7 +13510,7 @@
       "Mauvezin",
       43.72771,
       0.87756,
-      "B3",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "CMEM",
       "TOUT FAIRE",
@@ -14657,7 +14657,7 @@
       "TOUT FAIRE",
       "GAZIELLO",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "693161",
@@ -15397,7 +15397,7 @@
       "STARMAT",
       "DUMONT MATERIAUX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "693575",
@@ -19201,7 +19201,7 @@
    ],
    [
       "695867",
-      "UNION MATERIAUX BOLLENE",
+      "GERVAIS MATX - BOLLENE",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -19214,8 +19214,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -20457,7 +20457,7 @@
       "FRANCE MATERIAUX",
       "GIGNAC MATERIAUX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "696626",
@@ -20757,7 +20757,7 @@
       "RABONI NORMANDIE",
       "RABONI - SECTEUR HAUTE NORMANDIE",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "697080",
@@ -22217,7 +22217,7 @@
       "SAS TANGUY MATX DISTRIBUTION",
       "SAS TANGUY MATX DISTRIBUTION",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "697636",
@@ -22661,7 +22661,7 @@
    ],
    [
       "697846",
-      "POINT P BMRA 3563 BOURG ST MAURICE",
+      "POINT P BMRA 3563 BOUR ST MAURICE",
       "RHONE ALPES",
       "COTTERLAZ-RANNARD A.",
       "GUERIN",
@@ -23017,7 +23017,7 @@
       "CIFFREO BONA",
       "CIFFREO BONA",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "697951",
@@ -23437,7 +23437,7 @@
       "SIMC",
       "REGION SIMC SUD",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "698083",
@@ -23881,15 +23881,15 @@
    ],
    [
       "698227",
-      "PILLAUD MATERIAUX CHATEAU-THIERRY",
+      "PILLAUD MATERIAUX CHATEAU THIERRY",
       "NORD-EST",
       "DANJOU SEVERINE",
       "GARRAUT",
       "02",
       "CHATEAUTHIERRY",
       "Brasles",
-      49.0452,
-      3.41987,
+      49.04522,
+      3.4199,
       "P3",
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
@@ -24521,7 +24521,7 @@
    ],
    [
       "223765",
-      "COPAB ST THOIS",
+      "COPAB",
       "OUEST",
       "GOUESSAN GUILLAUME",
       "RIBIERE",
@@ -28241,7 +28241,7 @@
    ],
    [
       "547452",
-      "UNION MATERIAUX NIMES GROS \u0152UVRE",
+      "GERVAIS MATERIAUX NIMES GROS OEUVRE",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -28254,8 +28254,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -29697,7 +29697,7 @@
       "SYLVALLIANCE",
       "ALFAJE (BAUDRY)",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "700832",
@@ -31021,7 +31021,7 @@
    ],
    [
       "701244",
-      "UNION MATERIAUX ORANGE",
+      "GERVAIS MATX - ORANGE",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -31034,8 +31034,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -31637,7 +31637,7 @@
       "CDE",
       "CDE SIEGE ADMINISTRATIF",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "280077",
@@ -32357,7 +32357,7 @@
       "DMBP",
       "DMBP",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "702029",
@@ -32657,7 +32657,7 @@
       "STARMAT",
       "COPITET",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "702332",
@@ -32697,7 +32697,7 @@
       "FRANCE MATERIAUX",
       "SOUILHAT ET FILS",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "702363",
@@ -33357,7 +33357,7 @@
       "TOUT FAIRE",
       "MDM CHAT",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "702806",
@@ -35157,7 +35157,7 @@
       "POINT P RHONE-ALPES",
       "SECTEUR CHRISTOPHE JEANNOT",
       "Oui",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "703946",
@@ -36810,7 +36810,7 @@
       "PLAISANCE DU GERS",
       43.60639,
       0.04835,
-      "non segment\u00e9",
+      "C2",
       "G\u00e9n\u00e9ralistes",
       "G\u00e9dimat",
       "GEDIMAT SUD OUEST",
@@ -36877,7 +36877,7 @@
       "SAMSE",
       "REGION RHONE - LOIRE",
       "Non",
-      "12/10/2021"
+      ""
    ],
    [
       "704929",
@@ -37537,7 +37537,7 @@
       "EX-CMEM",
       "PROSPECTS AD EX-CMEM",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "705108",
@@ -38321,7 +38321,7 @@
    ],
    [
       "10271",
-      "UNION MATERIAUX TARASCON",
+      "GERVAIS MATERIAUX TARASCON",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -38334,8 +38334,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -38677,7 +38677,7 @@
       "FIPB",
       "FIPB",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "705586",
@@ -39441,7 +39441,7 @@
    ],
    [
       "10265",
-      "UNION MATERIAUX PORT DE BOUC",
+      "GERVAIS MATERIAUX PORT DE BOUC",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -39454,8 +39454,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -40237,7 +40237,7 @@
       "CHAUSSON RHONE-ALPES",
       "CHAUSSON - CHRISTOPHE RABAIX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "706072",
@@ -40381,7 +40381,7 @@
    ],
    [
       "706168",
-      "UNION MATERIAUX LE CRES",
+      "GERVAIS MAT\u00c9RIAUX - LE CRES",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -40394,8 +40394,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -42081,15 +42081,15 @@
    ],
    [
       "707260",
-      "SAMSE - PONT DE BEAUVOISIN 151",
+      "SAMSE - PONT DE BEAUVO. 151",
       "RHONE ALPES",
       "MONTES QUENTIN",
       "GUERIN",
       "73",
       "CHAMBERY",
       "Le Pont-de-Beauvoisin",
-      45.53619,
-      5.67308,
+      45.54113,
+      5.68299,
       "non segment\u00e9",
       "Multi Sp\u00e9cialistes",
       "MCD",
@@ -42101,7 +42101,7 @@
    ],
    [
       "707272",
-      "UNION MATERIAUX LE PONTET",
+      "GERVAIS MATX - LE PONTET",
       "SUD-EST",
       "BARTOLO DIDIER",
       "BARTOLO",
@@ -42114,8 +42114,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -44650,7 +44650,7 @@
       "Fleurance",
       43.85678,
       0.66166,
-      "P2",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "Autres",
       "BIGMAT FRANCE",
@@ -44917,7 +44917,7 @@
       "BIGMAT FRANCE",
       "MOMM 66",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "716665",
@@ -47037,7 +47037,7 @@
       "CUB SAS",
       "CUB SAS",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "810880",
@@ -47077,7 +47077,7 @@
       "SIMC",
       "REGION SIMC OUEST",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "813497",
@@ -47557,7 +47557,7 @@
       "TOUT FAIRE",
       "SN DES DOCKS DE L'OURCQ",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "828897",
@@ -47997,7 +47997,7 @@
       "BIGMAT FRANCE",
       "MOMM 66",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "848727",
@@ -49161,7 +49161,7 @@
    ],
    [
       "848797",
-      "PILLAUD MATERIAUX LISIEUX",
+      "BATAILLE MATERIAUX LISIEUX",
       "OUEST",
       "BOUMARAF CHRISTOPHE",
       "RIBIERE",
@@ -49201,7 +49201,7 @@
    ],
    [
       "848800",
-      "PILLAUD MATERIAUX ST GATIEN",
+      "BATAILLE MATERIAUX  ST GATIEN",
       "OUEST",
       "BOUMARAF CHRISTOPHE",
       "RIBIERE",
@@ -49281,7 +49281,7 @@
    ],
    [
       "848807",
-      "PILLAUD MATERIAUX DOZULE",
+      "BATAILLE MATERIAUX DOZULE",
       "OUEST",
       "BOUMARAF CHRISTOPHE",
       "RIBIERE",
@@ -49777,7 +49777,7 @@
       "GAUTIER",
       "PERIGORD",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "848834",
@@ -51741,7 +51741,7 @@
    ],
    [
       "282799",
-      "PILLAUD MATERIAUX EPAIGNES",
+      "BATAILLE MATERIAUX EPAIGNES",
       "ILE DE France",
       "CASCALES LAURENT",
       "GOFFIN",
@@ -52550,7 +52550,7 @@
       "Auch",
       43.66423,
       0.61557,
-      "non segment\u00e9",
+      "P2",
       "G\u00e9n\u00e9ralistes",
       "Autres",
       "BIGMAT FRANCE",
@@ -52570,7 +52570,7 @@
       "Auch",
       43.65724,
       0.59145,
-      "non segment\u00e9",
+      "P1",
       "G\u00e9n\u00e9ralistes",
       "CMEM",
       "TOUT FAIRE",
@@ -52630,7 +52630,7 @@
       "Nogaro",
       43.75875,
       -0.03335,
-      "non segment\u00e9",
+      "P2",
       "G\u00e9n\u00e9ralistes",
       "CMEM",
       "TOUT FAIRE",
@@ -52670,7 +52670,7 @@
       "Cazaubon",
       43.93531,
       -0.06384,
-      "C2",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "N\u00e9g Mtx Cons",
       "NEGOCES MATX DE CONSTRUCTION",
@@ -52710,7 +52710,7 @@
       "SAINT-JEAN-POUTGE",
       43.74041,
       0.38296,
-      "C3",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "G\u00e9dimat",
       "GEDIMAT SUD OUEST",
@@ -52810,7 +52810,7 @@
       "Pavie",
       43.61026,
       0.59109,
-      "C3",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "CMEM",
       "TOUT FAIRE",
@@ -54417,7 +54417,7 @@
       "SAMSE",
       "REGION RHONE - LOIRE",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "849131",
@@ -56377,7 +56377,7 @@
       "TOUT FAIRE",
       "JACOB MATERIAUX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "849252",
@@ -59197,7 +59197,7 @@
       "PROSPECTS AD SAMSE",
       "PROSPECTS AD SAMSE",
       "Non",
-      "12/10/2021"
+      ""
    ],
    [
       "849436",
@@ -59697,7 +59697,7 @@
       "SAMSE",
       "REGION HAUTE SAVOIE - AIN",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "849468",
@@ -59901,7 +59901,7 @@
    ],
    [
       "669375",
-      "PILLAUD MATERIAUX CAUDEBEC",
+      "BATAILLE MATERIAUX CAUDEBEC",
       "ILE DE France",
       "CASCALES LAURENT",
       "GOFFIN",
@@ -60277,7 +60277,7 @@
       "RABONI IDF",
       "RABONI - SECTEUR FRANCILIEN",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "335943",
@@ -61617,7 +61617,7 @@
       "PROSPECTS AD CMEM",
       "PROSPECTS AD CMEM",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "849591",
@@ -62177,7 +62177,7 @@
       "PROSPECTS AD NEGOCES MATX",
       "PROSPECTS AD NEGOCES MATX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "88291",
@@ -62590,7 +62590,7 @@
       "Marciac",
       43.52079,
       0.16652,
-      "non segment\u00e9",
+      "C2",
       "G\u00e9n\u00e9ralistes",
       "G\u00e9dimat",
       "GEDIMAT SUD OUEST",
@@ -63337,7 +63337,7 @@
       "TOUT FAIRE",
       "BOUTEAU",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "896902",
@@ -63917,7 +63917,7 @@
       "PROSPECTS AD GEDIMAT RHONE-ALPES",
       "PROSPECTS AD GEDIMAT RHONE-ALPES",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "896957",
@@ -64937,7 +64937,7 @@
       "COSTAMAGNA VAR",
       "COSTAMAGNA VAR",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "898398",
@@ -65230,7 +65230,7 @@
       "Eauze",
       43.86012,
       0.09778,
-      "P1",
+      "non segment\u00e9",
       "G\u00e9n\u00e9ralistes",
       "POINT P",
       "POINT P NORD",
@@ -65777,7 +65777,7 @@
       "LMDV MATERIAUX",
       "LMDV MATERIAUX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "915167",
@@ -66377,7 +66377,7 @@
       "RABONI IDF",
       "RABONI - SECTEUR PARIS",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "775096",
@@ -66717,7 +66717,7 @@
       "V-M PAYEUR",
       "V-M PAYEUR",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "1017495",
@@ -66961,7 +66961,7 @@
    ],
    [
       "55270",
-      "UNION MATERIAUX LUNEL OUEST",
+      "GERVAIS MATERIAUX LUNEL OUEST",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -66974,8 +66974,8 @@
       "Autres",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -67117,7 +67117,7 @@
       "BATI DECOR",
       "BATI DECOR",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "973902",
@@ -67157,7 +67157,7 @@
       "SIMC",
       "REGION SIMC OUEST",
       "Non",
-      "12/10/2021"
+      ""
    ],
    [
       "980861",
@@ -67701,7 +67701,7 @@
    ],
    [
       "1065480",
-      "RABONI IDF BEAUCHAMP",
+      "RABONI IDF PIERRELAYE",
       "ILE DE France",
       "BATOT KEVIN",
       "GOFFIN",
@@ -67757,7 +67757,7 @@
       "ACMB",
       "ACMB",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "1073779",
@@ -69097,7 +69097,7 @@
       "PROSPECTS AD NEGOCES MATX",
       "PROSPECTS AD NEGOCES MATX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "1177948",
@@ -69457,7 +69457,7 @@
       "PROSPECTS AD NEGOCES MATX",
       "PROSPECTS AD NEGOCES MATX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "1091989",
@@ -70937,7 +70937,7 @@
       "PAGOT ET SAVOIE",
       "PAGOT ET SAVOIE",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "848882",
@@ -71397,7 +71397,7 @@
       "MATNOR",
       "WILLAME",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "392276",
@@ -71421,7 +71421,7 @@
    ],
    [
       "10553",
-      "PILLAUD MATERIAUX LOUVERSEY",
+      "BATAILLE MATERIAUX LOUVERSEY",
       "ILE DE France",
       "CASCALES LAURENT",
       "GOFFIN",
@@ -71961,7 +71961,7 @@
    ],
    [
       "1291411",
-      "UNION MATERIAUX PUISSERGUIER",
+      "GERVAIS MATERIAUX PUISSERGUIER",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -71974,8 +71974,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -72057,7 +72057,7 @@
       "BIGMAT FRANCE",
       "ETABLISSEMENTS KILBURG",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "567301",
@@ -72117,7 +72117,7 @@
       "BIGMAT FRANCE",
       "LAURENT",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "193495",
@@ -72777,7 +72777,7 @@
       "BIGMAT FRANCE",
       "ZIEGLER MATERIAUX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "1312151",
@@ -72997,7 +72997,7 @@
       "FRANCE MATERIAUX",
       "FRANCE MATERIAUX",
       "Non",
-      "12/10/2021"
+      "12/13/2021"
    ],
    [
       "11929",
@@ -73348,8 +73348,8 @@
       "89",
       "SENS",
       "Sens",
-      48.2017,
-      3.32232,
+      48.19893,
+      3.2826,
       "P3",
       "G\u00e9n\u00e9ralistes",
       "CMEM",
@@ -73801,7 +73801,7 @@
    ],
    [
       "53638",
-      "UNION MATERIAUX JUVIGNAC",
+      "GERVAIS MATX JUVIGNAC",
       "SUD-EST",
       "ROUX PHILIPPE",
       "ROUX",
@@ -73814,8 +73814,8 @@
       "G\u00e9n\u00e9ralistes",
       "Alt\u00e9ral",
       "UNION MATERIAUX GROUPE",
-      "UNION MATERIAUX",
-      "UNION MATERIAUX",
+      "GERVAIS MATERIAUX",
+      "GERVAIS MATERIAUX",
       "Non",
       ""
    ],
@@ -74336,86 +74336,6 @@
       "NEGOCES MATX DE CONSTRUCTION",
       "VT MATERIAUX",
       "VT MATERIAUX",
-      "Non",
-      ""
-   ],
-   [
-      "87141",
-      "BIGMAT MVR MATERIAUX VAL DE REUIL",
-      "ILE DE France",
-      "CASCALES LAURENT",
-      "GOFFIN",
-      "27",
-      "EVREUX",
-      "VAL DE REUIL",
-      49.26729,
-      1.20369,
-      "non segment\u00e9",
-      "G\u00e9n\u00e9ralistes",
-      "Autres",
-      "BIGMAT FRANCE",
-      "NORD-NORMANDIE",
-      "MVR MATERIAUX",
-      "Non",
-      ""
-   ],
-   [
-      "1149606",
-      "DESCAMPS BETHUNE",
-      "NORD-EST",
-      "DANJOU SEVERINE",
-      "GARRAUT",
-      "62",
-      "BETHUNE",
-      "B\u00c9THUNE",
-      50.5353,
-      2.64749,
-      "non segment\u00e9",
-      "G\u00e9n\u00e9ralistes",
-      "CMEM",
-      "NEBOPAN",
-      "NEBOPAN",
-      "DESCAMPS",
-      "Non",
-      ""
-   ],
-   [
-      "802367",
-      "DORAS CIEL",
-      "RHONE ALPES",
-      "HENRY MATHIEU",
-      "GUERIN",
-      "71",
-      "CHALON/SAONE",
-      "Ciel",
-      46.89549,
-      5.0242,
-      "non segment\u00e9",
-      "G\u00e9n\u00e9ralistes",
-      "MCD",
-      "GROUPE SAMSE",
-      "PROSPECTS AD SAMSE",
-      "PROSPECTS AD SAMSE",
-      "Non",
-      ""
-   ],
-   [
-      "1388548",
-      "LG MAT",
-      "ILE DE France",
-      "DAUTHUILLE STEPHANE",
-      "GOFFIN",
-      "91",
-      "ESSONNE",
-      "MILLY-LA-FOR\u00caT",
-      48.40313,
-      2.47161,
-      "non segment\u00e9",
-      "G\u00e9n\u00e9ralistes",
-      "N\u00e9g Mtx Cons",
-      "NEGOCES MATX DE CONSTRUCTION",
-      "LG MAT",
-      "LG MAT",
       "Non",
       ""
    ]
