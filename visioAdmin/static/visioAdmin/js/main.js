@@ -48,6 +48,7 @@ function formatMainBox() {
 
 function loadInit() {
   loadInitRefEvent ()
+  loadInitConsult ()
   loadInitParamEvent ()
   loadInitValidateEvent ()
   $.ajax({

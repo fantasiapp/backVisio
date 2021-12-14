@@ -32,7 +32,6 @@ function loadInitRefEvent () {
     let files = event.originalEvent.dataTransfer.files
     let message = "Fichier en cours de sauvegarde: "
     $('#boxUploadClose').css("display", "none")
-    console.log("boxUploadDnd ", message)
     $.each(files, function(index, file) {
       message += file.name + " "
       let formData = new FormData()
@@ -71,8 +70,6 @@ function httprequestUploadFile(formData) {
     contentType : false,
     processData : false,
     success : function(response) {
-      // uploadFileResponse(response)
-      console.log(response)
       closeBox()
       if ('error' in response) {
         displayWarning(response['title'], response['content'])
@@ -152,12 +149,10 @@ function uploadFileResponse(response) {
   } else if ('warningAgent' in response) {
     displayWarnigAgent(response['warningAgent'])
   } else if (response["nature"] == "Ref") {
-    console.log("nature", response["nature"])
     $("#updateRefMbSave p.title").text("Base de sauvegarde : " + response["version"])
     $("#updateRefMbSave p.date").text("Mis à jour le : " + response["date"])
     $("#updateRefMbSave p.file").text("Fichier xlsx : " + response["fileName"])
   } else {
-    console.log("nature", response["nature"])
     $("#updateVol p.title").text("Dernier mois : " + response["month"])
     $("#updateVol p.date").text("Mis à jour le : " + response["date"])
     $("#updateVol p.file").text("Fichier xlsx : " + response["fileName"])
@@ -219,16 +214,13 @@ function tableHeaderSelect(kpi, table, tableHeader=false) {
 }
 
 function selectTableKpi (value, field) {
-  console.log("selectTableKpi start", value, field)
+  console.log("selectTableKpi", value, field, selectedTableState)
   if (selectedTableState[field] != value && value) {
     $("#tableHeader" + value +" p").addClass("tableHeaderHighLight")
     $("#tableHeader" + selectedTableState[field] +" p").removeClass("tableHeaderHighLight")
     selectedTableState[field] = value
-    console.log("selectTableKpi", field, value, selectedTableState)
-    console.log("return", true)
     return true
   }
-  console.log("return", false)
   return false
 }
 
@@ -256,7 +248,6 @@ function loadTable (columnsTitle, values, tableId, scroll, tableHeader) {
   $("#articleMain").css({display:'none'})
   $('#tableArticle').css({display:'block'})
   $('#headerTable').css({display:'block'})
-  console.log("tableHeader", tableHeader)
   if (tableHeader) {
     addTableHeader()
   }
@@ -279,7 +270,6 @@ function loadTable (columnsTitle, values, tableId, scroll, tableHeader) {
       previous: "Précédent"
     },
   }
-  console.log("tableId", tableId)
   if (scroll) {
     $('#tableMain').append('<table id="'+tableId+'" class="display" style="width:100%">')
     $('#'+tableId).DataTable({

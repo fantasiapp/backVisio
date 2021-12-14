@@ -88,32 +88,33 @@
         <div class=updateRefLine>
           <h3> </h3>
           <div class="updateRefContent">
-            <div class="mainBox" id="connectionTable">
+            <div class="mainBox" id="consultConnection">
               <div class="boxTextButton">
                 <div class="mainBoxText" id="uploadConnection">
                   <p class="title"><b>Table de connexions</b></p>
                   <p class="file">Fichier xlsx : Table de connexions.xlsx</p>
                 </div>
                 <div class="mainBoxButton">
-                  <button id="connectionConsulttRef" class="buttonHigh">Consulter</button>
+                  <button id="consultConnectionButton" class="buttonHigh">Consulter</button>
                   <div style="width:50px"></div>
-                  <button id="connectionDownloadRef" class="buttonLow">Télécharger l'Excel</button>
+                  <a id="downloadConnectionButton" class="buttonLow" value="Download">Télécharger l'Excel</a>
                 </div>
               </div>
               <div class="mainBoxImage">
                 <img class="boxImage" src="{% static 'visioAdmin/images/Table de connexions.svg' %}">
               </div>
             </div>
-            <div class=mainBox id="uploadTarget">
+            <div class=mainBox id="consultTarget">
               <div class="boxTextButton">
                 <div class="mainBoxText">
                   <p class="title"><b>Rapport de ciblage</b></p>
-                  <p class="file">Fichier xlsx : Rapport de ciblage Récent.xlsx</p>
+                  <p class="file">Fichier xlsx : Rapport de ciblage.xlsx</p>
                 </div>
                 <div class="mainBoxButton">
-                  <button id="connectionConsultTarget" class="buttonHigh">Consulter</button>
+                  <button id="consultTargetButton" class="buttonHigh">Consulter</button>
                   <div style="width:50px"></div>
-                  <button id="connectionDownloadTarget" class="buttonLow">Télécharger l'Excel</button>
+                  <!-- <button id="connectionDownloadTarget" class="buttonLow">Télécharger l'Excel</button> -->
+                  <a id="downloadTargetButton" class="buttonLow" value="Download">Télécharger l'Excel</a>
                 </div>
               </div>
               <div class="mainBoxImage">
@@ -141,16 +142,16 @@
                 <img class="boxImage" src="{% static 'visioAdmin/images/Historiques des actions.svg' %}">
               </div>
             </div>
-            <div class="mainBox" id="uploadCurrentBase">
+            <div class="mainBox" id="consultCurrentBase">
               <div class="boxTextButton">
                 <div class="mainBoxText">
                   <p class="title"><b>La base courante</b></p>
-                  <p class="file">Fichier xlsx : Base courante Visio.xlsx</p>
+                  <p class="file">Fichier xlsx : Référentiel_Courant.xlsx</p>
                 </div>
                 <div class="mainBoxButton">
-                  <button id="uploadCurrentBaseButton" class="buttonHigh">Consulter</button>
+                  <button id="consultCurrentBaseButton" class="buttonHigh">Consulter</button>
                   <div style="width:50px"></div>
-                  <button id="uploadDownloadAction" class="buttonLow">Télécharger l'Excel</button>
+                  <a id="downloadCurrentBaseButton" class="buttonLow" value="Download">Télécharger l'Excel</a>
                 </div>
               </div>
               <div class="mainBoxImage">

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from .dataModel.manageFromOldDatabase import manageFromOldDatabase
 from .admin.adminParam import AdminParam
 from .admin.adminUpdate import AdminUpdate
+from .admin.adminConsult import AdminConsult
 import sys
 import os
 sys.path.append('..')
@@ -25,7 +26,8 @@ def main(request):
     if request.method == "POST":
       return mainActionPost(request)
     if 'action' in request.GET:
-      return JsonResponse(mainActionGet(request))
+      response = mainActionGet(request)
+      return JsonResponse(response) if isinstance(response, dict) else response
     return render(request, 'visioAdmin/principale.html', {})
   return redirect('/visioAdmin/login/')
 
@@ -55,6 +57,7 @@ def mainActionGet(request):
   dataDashboard = createDataDashBoard(request)
   adminParam = AdminParam(dataDashboard)
   adminUpdate = AdminUpdate(dataDashboard)
+  adminConsult = AdminConsult(adminUpdate, adminParam)
   # update Ref
   if request.GET["action"] == "selectAgent": return adminUpdate.updateRefWithAgent(dict(request.GET))
   elif request.GET["action"] == "switchBase":
@@ -71,7 +74,9 @@ def mainActionGet(request):
   elif request.GET["action"] == "modifyAccount": return adminParam.modifyAccount(int(request.GET["id"]), request.GET["name"])
   elif request.GET["action"] == "modifyAgent": return adminParam.modifyAgent(int(request.GET["id"]), request.GET["name"])
   elif request.GET["action"] == "buildTarget": return adminParam.buildTarget()
-  elif request.GET["action"] == "buildValidate": return adminParam.buildValidate()
+  elif request.GET["action"] == "createTable": return adminConsult.buildExcelFile(request.GET["nature"])
+  #consult
+  elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
   return {"info":"Not yet implemented"}
 
 def login(request):

@@ -126,9 +126,9 @@ function TargetActionData() {
 }
 
 // Traitement des comptes
-function displayAccount() {
+function displayAccount(create=true) {
   accountSetDisplay()
-  accountSetHeader()
+  accountSetHeader(create)
   accountSetQuery()
 }
 
@@ -141,15 +141,17 @@ function accountSetDisplay() {
   $('#boxButtonCreate').on('click', function() {activateCreationAccount()})
 }
 
-function accountSetHeader() {
+function accountSetHeader(create) {
   title = $('<p class="tableHeaderHighLight">Gestion des comptes</p>')
-  divAction = $('<div id="actionsAccount">')
   $("#accountHeader").append(title)
-  $("#accountHeader").append(divAction)
-  buttonCreate = $('<button class="accountButton" id="accountCreate">Créer un nouveau profil</button>')
-  buttonCreate.append($('<img class="accountButton" src="/static/visioAdmin/images/Créer.svg">'))
-  divAction.append(buttonCreate)
-  $('#actionsAccount').on('click', function(event) {displayCreateAccount()})
+  if (create) {
+    divAction = $('<div id="actionsAccount">')
+    $("#accountHeader").append(divAction)
+    buttonCreate = $('<button class="accountButton" id="accountCreate">Créer un nouveau profil</button>')
+    buttonCreate.append($('<img class="accountButton" src="/static/visioAdmin/images/Créer.svg">'))
+    divAction.append(buttonCreate)
+    $('#actionsAccount').on('click', function(event) {displayCreateAccount()})
+  }
 }
 
 function accountSetQuery() {

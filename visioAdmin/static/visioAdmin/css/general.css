@@ -72,8 +72,29 @@ button.buttonLow {
   font-size: 1em;
   border: 2px solid var(--main-etex-color);
 }
+a.buttonLow {
+  display:flex;
+  justify-content: center;
+  align-content: center;
+  flex-direction: column;
+  height: 26px;
+  width:350px;
+  border-radius: 15px;
+  background-color: white;
+  color: var(--main-etex-color);
+  font-size: 1em;
+  border: 2px solid var(--main-etex-color);
+  text-align:center;
+  vertical-align:middle;
+  text-decoration:none;
+}
 
 button.buttonLow:hover{
+  background-color: var(--main-etex-color);
+  color: white;
+  cursor:pointer;
+}
+a.buttonLow:hover{
   background-color: var(--main-etex-color);
   color: white;
   cursor:pointer;
