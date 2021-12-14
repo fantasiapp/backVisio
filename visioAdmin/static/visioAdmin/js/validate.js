@@ -21,12 +21,14 @@ function validateSetDisplay() {
 }
 
 function validateBuildDisplay() {
+  console.log("validateBuildDisplay")
   $.ajax({
     url : "/visioAdmin/principale/",
     type: "get",
     data: {"action":"buildValidate", "csrfmiddlewaretoken":token},
     success : function(response) {
       if (flagBuildValidate) {
+        console.log(Object.keys(response))
         buildStructureTitleValidate(response)
         updateStructureValidate(response)
       } else {

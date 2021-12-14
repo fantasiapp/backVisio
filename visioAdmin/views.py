@@ -74,8 +74,10 @@ def mainActionGet(request):
   elif request.GET["action"] == "modifyAccount": return adminParam.modifyAccount(int(request.GET["id"]), request.GET["name"])
   elif request.GET["action"] == "modifyAgent": return adminParam.modifyAgent(int(request.GET["id"]), request.GET["name"])
   elif request.GET["action"] == "buildTarget": return adminParam.buildTarget()
-  elif request.GET["action"] == "createTable": return adminConsult.buildExcelFile(request.GET["nature"])
+  elif request.GET["action"] == "buildValidate": return adminParam.buildValidate()
   #consult
+  elif request.GET["action"] == "createTable": return adminConsult.buildExcelFile(request.GET["nature"])
+  
   elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
   return {"info":"Not yet implemented"}
 
