@@ -77,7 +77,8 @@ def mainActionGet(request):
   elif request.GET["action"] == "buildValidate": return adminParam.buildValidate()
   #consult
   elif request.GET["action"] == "createTable": return adminConsult.buildExcelFile(request.GET["nature"])
-  
+  elif request.GET["action"] == "visualizeTargetTable": return adminConsult.visualizeTargetTable(request.GET["table"])
+
   elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
   return {"info":"Not yet implemented"}
 

@@ -53,13 +53,15 @@ function updateStructureValidate(response) {
   })
 }
 
-function buildStructureTitleValidate(response) {
-  $('#validateHeader').append($('<div id="validateTitle">'))
+function buildStructureTitleValidate(response, header="validateHeader") {
+  $('#'+header).append($('<div id="validateTitle">'))
   $.each(response["titles"], function(label, size) {
     $('#validateTitle').append($('<p class="validateTitle" style="width:'+size+'%">'+label+'</p>'))
   })
-  $('#validateTitle').append($('<p class="validateTitle" style="width:10%">Confirmer</p>'))
-  $('#validateTitle').append($('<p class="validateTitle" style="width:10%">Supprimer</p>'))
+  if (header=="validateHeader") {
+    $('#validateTitle').append($('<p class="validateTitle" style="width:10%">Confirmer</p>'))
+    $('#validateTitle').append($('<p class="validateTitle" style="width:10%">Supprimer</p>'))
+  }
 }
 
 function buildStructureValidate(response) {

@@ -5,13 +5,14 @@ import os
 import json
 from pathlib import Path
 from django.http import HttpResponse
-from wsgiref.util import FileWrapper
+from visioServer.models import Target, PdvSave
 
 import os.path
 from os import path
 
 class AdminConsult:
   pathSave = os.getenv('PATH_FILE_SEND')
+  print()
   dictFileName =  json.loads(os.getenv('DICO_FILE_SEND'))
   extention = "xlsx"
 
@@ -23,7 +24,6 @@ class AdminConsult:
   def buildExcelFile(self, nature):
     data = self.__findData(nature)
     return self.__createExcelFile(data, nature)
-    
 
   def __findData(self, nature):
     if nature == "currentBase":
@@ -34,8 +34,14 @@ class AdminConsult:
       dataConnection = self.adminParam.paramAccountInit()
       dataConnection["titles"] = list(dataConnection["titles"].keys())
       dataConnection["values"] = list(dataConnection["values"].values())
-      print(dataConnection)
       return {"Rapport des connexions":dataConnection}
+    if nature == "target":
+      dataRef = self.visualizeTargetTable("Ref")
+      dataTarget = self.visualizeTargetTable("Target")
+      dataTarget["titles"] = list(dataRef["titles"].keys())
+      dataTarget["titles"] = list(dataRef["titles"].keys())
+      return {"Modifications demandées":dataRef, "Ciblage":dataTarget}
+
 
 
   def __createExcelFile(self, data, nature):
@@ -73,7 +79,6 @@ class AdminConsult:
         nbCol += 1
       nbRow += 1
 
-
   def __saveExcelFile(self, file, nature):
     now = timezone.now()
     name = f"{self.dictFileName[nature]}_{now.strftime('%d_%m_%y_%Hh%Mmn_%Ss')}.{self.extention}"
@@ -84,8 +89,40 @@ class AdminConsult:
       response = HttpResponse(file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
       response['Content-Length'] = os.path.getsize(fileName)
       response['Content-Disposition'] = 'inline; filename=%s' % name
-      print("__saveExcelFile", isinstance(response, dict))
       return response
 
-    # return fileName
+
+  def visualizeTargetTable(self, table):
+    if table == "Ref":
+      response = self.adminParam.buildValidate(target=True)
+      newValues = []
+      for key, dictValues in response["values"].items():
+        for line in dictValues.values():
+          line.insert(5, key)
+          newValues.append(line)
+      response["values"] = newValues
+      return response
+    return self.visualizeTargetRef()
+
+  def visualizeTargetRef(self):
+    titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Cible P2CD":12, "Cible Finition":12, "Feu": 8}
+    values = [self.__buildTargetLine(target) for target in Target.objects.all() if self.__testValidateLine(target.pdv, target)]
+    return {"titles":titles, "values":values}
+
+  def __buildTargetLine(self, target):
+    pdvId = target.pdv.id
+    pdv = PdvSave.objects.get(id=pdvId)
+    finitions = "Oui" if target.targetFinitions else "Non"
+    if target.greenLight == "g":
+      feu = "vert"
+    elif target.greenLight == "o":
+      feu = "orange"
+    elif target.greenLight == "r":
+      feu = "rouge"
+    return [pdv.drv.name, pdv.agent.name, pdv.code, target.date.strftime('%Y-%m-%d'), pdv.name, "{:.2f}".format(target.targetP2CD), finitions, feu]
+
+  def __testValidateLine(self, pdv, target):
+    return pdv.available and pdv.sale and pdv.redistributed and pdv.currentYear and (target.targetP2CD or target.targetFinitions)
+
+
 

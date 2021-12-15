@@ -185,24 +185,29 @@ class AdminParam:
       return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
 
 # Validation of targets
-  def buildValidate(self):
+  def buildValidate(self, target=False):
     titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Ancienne valeur":12, "Nouvelle valeur":12}
+    if target:
+      titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Valeur modifiée":15, "Ancienne valeur":12, "Nouvelle valeur":12}
     rawData = {target.pdv:self.__buildValidateLine(target) for target in Target.objects.all() if self.__testValidateLine(target.pdv)}
     dictValue = {"Point de vente redistribué":{}, "Ne vend pas de plaque":{}, "Bassin":{}}
     for pdv, value in rawData.items():
-      newValue = value[:5]
+      newValue = json.loads(json.dumps(value[:5]))
       if value[9]:
         newValue.append("Oui" if value[6] else "Non")
         newValue.append("Non" if value[6] else "Oui")
         dictValue["Point de vente redistribué"][pdv.id] = newValue
+        newValue = json.loads(json.dumps(value[:5]))
       if value[10]:
         newValue.append("Oui" if value[7] else "Non")
         newValue.append("Non" if value[7] else "Oui")
         dictValue["Point de vente redistribué finition"][pdv.id] = newValue
+        newValue = json.loads(json.dumps(value[:5]))
       if value[8]:
         newValue.append("Oui" if value[5] else "Non")
         newValue.append("Non" if value[5] else "Oui")
         dictValue["Ne vend pas de plaque"][pdv.id] = newValue
+        newValue = json.loads(json.dumps(value[:5]))
       if value[11] and value[11] != pdv.bassin.name:
         newValue += [pdv.bassin.name.replace("Négoce_", ""), value[11]]
         dictValue["Bassin"][pdv.id] = newValue
