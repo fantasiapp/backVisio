@@ -10,6 +10,10 @@
     <button id="upload" class="buttonNav" >Consulter / Télécharger</button>
     <button id="validation" class="buttonNav" >Valider</button>
     <button id="param" class="buttonNav" >Paramétrer</button>
+    <form class="disconnect" method=POST action="{% url 'visioAdmin:login' %}">
+      {% csrf_token %}
+      <input type="submit" class="disconnect" style="right:0" name="action" value="disconnect"/>
+    </form>
   </nav>
   <div id="borderMain"></div>
   <section id="sectionMain">
@@ -18,10 +22,6 @@
         <img id="tableClose" src="{% static '/visioAdmin/images/Fleche.svg' %}">
       </div>
       <div id="wheel"></div>
-      <form class="disconnect" method=POST action="{% url 'visioAdmin:login' %}">
-        {% csrf_token %}
-        <input type="submit" style="right:0" name="action" value="disconnect"/>
-      </form>
     </header>
     <article id="articleMain">
       <div id="updateRefDiv"  class="pageContent">
