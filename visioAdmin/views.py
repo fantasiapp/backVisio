@@ -17,13 +17,11 @@ from .dataModel import principale
 
 
 def home(request):
-  if request.user.is_authenticated:
+  if isAuthenticated(request):
     return redirect('/visioAdmin/principale/')
   return redirect('/visioAdmin/login/')
 
 def main(request):
-  print("passe par main")
-  # if request.user.is_authenticated:
   if isAuthenticated(request):
     if request.method == "POST":
       return mainActionPost(request)
@@ -38,10 +36,37 @@ def isAuthenticated(request):
     currentUser = request.user
     currentProfile = UserProfile.objects.filter(user=currentUser)
     if currentProfile:
-      return currentProfile[0].admin
+      admin = currentProfile[0].admin
+      if admin:
+        logAdmin(request, currentUser)
+        return True
   return False
 
+def logAdmin(request, currentUser):
+  date = timezone.now()
+  currentVersion = DataAdmin.objects.get(currentBase=True).getVersion
+  savedVersion = DataAdmin.objects.get(currentBase=False).getVersion
+  action , param = None, None
+  if request.method == "GET":
+    if "action" in request.GET and not request.GET["action"] in ["paramSynonymsInit", "setupCreateAccount", "buildTarget", "buildValidate", "createTable", "visualizeTargetTable", "visualizeActionTable", "paramAccountInit", "selectAgent"]:
+      action = request.GET["action"]
+  elif request.POST.get('uploadFile'):
+    action = f"upoladFile {request.POST.get('uploadFile')}"
+    param = request.FILES['file']
+  elif request.POST.get('login'): action = 'login'
+  elif request.POST.get('action') and request.POST.get('action') == 'disconnect': action = 'disconnect'
+  elif request.POST.get('defineSynonym'): action = 'defineSynonym'
+  elif request.POST.get('modifyTarget'): action = 'modifyTargetLevel'
+  elif request.POST.get('updateValidate'): action = 'updateTargetRef'
+  elif request.POST.get('activateCreationAccount'):
+    action = 'createAccount'
+    dictData = json.loads(request.POST.get('dictCreate'))
+    param = f'pseudo : {dictData["pseudo"]}, profile : {dictData["profile"]}'
+  if action:
+    LogAdmin.objects.create(user=currentUser, date=date, currentVersion=currentVersion, savedVersion=savedVersion, method=request.method, action=action, param=param)
+
 def mainActionPost(request):
+  print("mainActionPost", request.POST.get)
   dataDashboard = createDataDashBoard(request)
   adminParam = AdminParam(dataDashboard)
   if request.POST.get('uploadFile'):
@@ -60,6 +85,7 @@ def mainActionPost(request):
   elif request.POST.get('activateCreationAccount'): return JsonResponse(adminParam.activateCreationAccount(request.POST.get('dictCreate')))
   elif request.POST.get('modifyTarget'): return JsonResponse(adminParam.modifyTarget(request.POST.get('dictTarget')))
   elif request.POST.get('updateValidate'): return JsonResponse(adminParam.updateValidate(request.POST.get('dictValidate')))
+  
 
 def mainActionGet(request):
   print("mainActionGet", request.GET["action"])
@@ -88,6 +114,7 @@ def mainActionGet(request):
   #consult
   elif request.GET["action"] == "createTable": return adminConsult.buildExcelFile(request.GET["nature"])
   elif request.GET["action"] == "visualizeTargetTable": return adminConsult.visualizeTargetTable(request.GET["table"])
+  elif request.GET["action"] == "visualizeActionTable": return adminConsult.visualizeActionTable()
 
   elif request.GET["action"] == "paramSynonymsInit": return adminParam.paramSynonymsInit()
   return {"info":"Not yet implemented"}
@@ -103,6 +130,8 @@ def login(request):
     auth.login(request, user)
     return redirect('principale.html')
   if request.method == 'POST' and request.POST.get('action') == "disconnect":
+    currentUser = request.user
+    logAdmin(request, currentUser)
     auth.logout(request)
   return render(request, 'visioAdmin/login.html')
 

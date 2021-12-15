@@ -5,14 +5,13 @@ import os
 import json
 from pathlib import Path
 from django.http import HttpResponse
-from visioServer.models import Target, PdvSave
+from visioServer.models import Target, PdvSave, LogAdmin
 
 import os.path
 from os import path
 
 class AdminConsult:
   pathSave = os.getenv('PATH_FILE_SEND')
-  print()
   dictFileName =  json.loads(os.getenv('DICO_FILE_SEND'))
   extention = "xlsx"
 
@@ -41,8 +40,9 @@ class AdminConsult:
       dataTarget["titles"] = list(dataRef["titles"].keys())
       dataTarget["titles"] = list(dataRef["titles"].keys())
       return {"Modifications demandées":dataRef, "Ciblage":dataTarget}
-
-
+    if nature == "action":
+      dataRef = self.visualizeActionTable()
+      return {"Action de l'administratrice·eur":{"titles":list(dataRef["titles"].keys()), "values":dataRef["values"]}}
 
   def __createExcelFile(self, data, nature):
     file, flagStart = openpyxl.Workbook(), True
@@ -119,10 +119,18 @@ class AdminConsult:
       feu = "orange"
     elif target.greenLight == "r":
       feu = "rouge"
-    return [pdv.drv.name, pdv.agent.name, pdv.code, target.date.strftime('%Y-%m-%d'), pdv.name, "{:.2f}".format(target.targetP2CD), finitions, feu]
+    return [pdv.drv.name, pdv.agent.name, pdv.code, target.date.strftime('%Y/%m/%d'), pdv.name, "{:.2f}".format(target.targetP2CD), finitions, feu]
 
   def __testValidateLine(self, pdv, target):
     return pdv.available and pdv.sale and pdv.redistributed and pdv.currentYear and (target.targetP2CD or target.targetFinitions)
 
+
+  def visualizeActionTable(self):
+    titles = {"Administrateur":15, "Date":20, 'Version Courante':10, "Version Sauvegardée":10, "Actions":20, "Paramètres":25}
+    values = [self.__buildActionLine(log) for log in LogAdmin.objects.all().order_by('-id')[:1000]]
+    return {"titles":titles, "values":values}
+
+  def __buildActionLine(self, log):
+    return [log.user.username, log.date.strftime('%Y/%m/%d %Hh%Mmn %Ss'), log.currentVersion, log.savedVersion, log.action, log.param]
 
 

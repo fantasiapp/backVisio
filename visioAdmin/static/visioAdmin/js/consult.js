@@ -5,8 +5,54 @@ function loadInitConsult() {
   $('#downloadConnectionButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=connection&csrfmiddlewaretoken="+token)
   $("#consultTargetButton").on('click', function(event) {displayConsultTarget("Ref")})
   $('#downloadTargetButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=target&csrfmiddlewaretoken="+token)
+  $("#consultActionButton").on('click', function(event) {displayConsultAction()})
+  $('#downloadActionButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=action&csrfmiddlewaretoken="+token)
   $("#consultCurrentBaseButton").on('click', function(event) {tableHeaderSelect("Ref", "Saved", true)})
   $('#downloadCurrentBaseButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=currentBase&csrfmiddlewaretoken="+token)
+}
+
+//Actions
+function displayConsultAction() {
+  if (flagFree) {
+    flagFree = false
+    $("#wheel").css({display:'block'})
+    $("#tableMain").empty()
+    $('#tableHeader').empty()
+    visualizeActionTableQuery()
+  }
+}
+
+function visualizeActionTableQuery() {
+  $.ajax({
+    url : "/visioAdmin/principale/",
+    type : 'get',
+    data : {"action":"visualizeActionTable", "csrfmiddlewaretoken":token},
+    success : function(response) {
+      console.log(response["titles"])
+      loadActionTable (response)
+      $("#wheel").css({display:'none'})
+      flagFree = true
+    },
+    error : function(response) {
+      console.log("error visualizeActionTableQuery", response)
+      $("#wheel").css({display:'none'})
+      flagFree = true
+    }
+  })
+}
+
+function loadActionTable(response) {
+  addActionTableHeader ()
+  buildStructureTitleValidate(response, "tableMain")
+  buildStructureLineValidate(response["titles"], response["values"])
+}
+
+function addActionTableHeader () {
+  title = $('<p class="tableHeaderHighLight">Historique des actions de l\'administratrice·eur</p>')
+  $("#tableHeader").append(title)
+  $("#articleMain").css({display:'none'})
+  $('#tableArticle').css({display:'flex', 'flex-direction':'column', 'height':'80%'})
+  $('#headerTable').css({display:'block'})
 }
 
 function displayConsultTarget(table) {
@@ -88,7 +134,7 @@ function buildStructureLineValidate(titles, listLines) {
     section.append(row)
     let index = 0
     $.each(titles, function(_, size) {
-      row.append($('<p class="validateCell" style="width:'+size+'%">'+line[index]+'</p>'))
+      row.append($('<p class="validateCell" style="width:'+size+'%">'+(line[index] || "-")+'</p>'))
       index++
     })
   })

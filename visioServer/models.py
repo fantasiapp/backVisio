@@ -989,6 +989,16 @@ class LogClient(CommonModel):
         kwargs[field] = data[index]
     cls.objects.create(**kwargs)
 
+class LogAdmin(models.Model):
+  user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+  date = models.DateTimeField("date de l'action", blank=True, null=True, default=None)
+  currentVersion = models.CharField("version en ligne", max_length=9, unique=False, blank=False, default=None)
+  savedVersion = models.CharField("version sauvegardée", max_length=9, unique=False, blank=False, default=None)
+  method = models.CharField("POST ou GET", max_length=4, unique=False, blank=False, default=None)
+  action = models.CharField("action exécutée", max_length=64, unique=False, blank=False, default=None)
+  param = models.CharField("paramètres si nécessaire", max_length=1024, unique=False, blank=False, null=True, default=None)
+
+
 class DataAdmin(models.Model):
   currentBase = models.BooleanField("Nature de la base", unique=False, blank=False, default=False)
   version = models.IntegerField("Numéro de version", unique=True, null=False, default=0)

@@ -74,6 +74,8 @@ class ManageFromOldDatabase:
         self.cursorNew.execute(f"ALTER TABLE `visioServer_dashboard_widgetParams` AUTO_INCREMENT=1;")
       return {'query':'emptyDatabase', 'message':f"la table {table} a été vidée.", 'end':False, 'errors':[]}
     
+    LogAdmin.objects.all().delete()
+    self.cursorNew.execute("ALTER TABLE `visioServer_logadmin` AUTO_INCREMENT=1;")
     for user in User.objects.all():
       if not user.username in ["vivian", "jlw"]:
         user.delete()
@@ -258,25 +260,6 @@ class ManageFromOldDatabase:
       return "Error getAgentFinitions" + repr(e)
     return ("AgentFinitions", False)
 
-  def __cleanEnseigne(self, idEnseigne:int, nameEnsemble:str) ->str:
-    if nameEnsemble == "BIGMAT FRANCE": return 1 #CMEM
-    elif nameEnsemble == "PROSPECTS AD CMEM": return 1
-    elif "POINT P " in nameEnsemble: return 2 #SGBD France
-    elif "CHAUSSON MATERIAUX" in nameEnsemble: return 11 #Chausson
-    elif "GEDIMAT" in nameEnsemble: return 3 #Gédimat
-    elif "EX-" in nameEnsemble: return 9 # Nég ancien PdV
-    elif nameEnsemble == "DMBP": return 2 # SGBD France
-    elif nameEnsemble == "PROSPECTS SGBD FRANCE": return 2  #SGBD France
-    elif nameEnsemble == "RÉSEAU PRO GRAND OUEST": return 13 # Bois et matériaux
-    elif nameEnsemble == "RÉSEAU PRO IDF NORD EST": return 13 # Bois et matériaux
-    elif nameEnsemble == "LITT DIFFUSION": return 5 # Sig France
-    elif nameEnsemble == "PANOFRANCE": return 5 # Sig France
-    elif nameEnsemble == "CIFFREO BONA": return 4 # Groupement régionaux
-    elif nameEnsemble == "UNION MATERIAUX GROUPE": return 10 #Altéral
-    elif nameEnsemble == "PROSPECTS AD EX NEGOCE": return 9 # Nég ancien PdV
-    elif nameEnsemble == "GROUPE SAMSE": return 7 # MCD
-    return idEnseigne
-
   def getObjectFromPdv(self, field, classObject):
     listYear, self.__dictIdNewId, self.__dictNameNewId = ["lastYear", "currentYear"], {}, {}
     dico = [[], []]
@@ -349,7 +332,6 @@ class ManageFromOldDatabase:
         dataWithOrder.append(name)
       dictId[name] = id
     return [(dictId[dataWithOrder[index]], dataWithOrder[index]) for index in range(len(dataWithOrder))]
-  
 
 # Création des données de navigation
   def getTreeNavigation(self, geoOrTradeList:list):

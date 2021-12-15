@@ -373,27 +373,35 @@ function changeProfileAccount() {
 }
 
 function activateCreationAccount() {
-  pseudo = $("#pseudoCreate").val()
-  pwd = $("#pwdCreate").val()
-  confPwd = $("#confirmPwdCreate").val()
-  profile = $( "#profilCreate option:selected" ).val()
-  idGeo = $( "#geoCreate option:selected" ).val()
-  jsonData = {"pseudo":pseudo, "pwd":pwd, "confPwd":confPwd, "profile":profile, "idGeo":idGeo}
-  formData = {"activateCreationAccount":true, "dictCreate":JSON.stringify(jsonData), "csrfmiddlewaretoken":token}
-  $.ajax({
-    url : "/visioAdmin/principale/",
-    type : 'post',
-    data : formData,
-    success : function(response) {
-      if ("error" in response) {
-        $('#createMessage').text(response["error"])
-        $('#createMessage').css({display:"block"})
-      } else {
-        $("#createMessage").text(response["activateCreationAccount"])
-        $("#createMessage").show().delay(3000).fadeOut();
+  if (flagReady) {
+    flagReady = false
+    pseudo = $("#pseudoCreate").val()
+    pwd = $("#pwdCreate").val()
+    confPwd = $("#confirmPwdCreate").val()
+    profile = $( "#profilCreate option:selected" ).val()
+    idGeo = $( "#geoCreate option:selected" ).val()
+    jsonData = {"pseudo":pseudo, "pwd":pwd, "confPwd":confPwd, "profile":profile, "idGeo":idGeo}
+    formData = {"activateCreationAccount":true, "dictCreate":JSON.stringify(jsonData), "csrfmiddlewaretoken":token}
+    $.ajax({
+      url : "/visioAdmin/principale/",
+      type : 'post',
+      data : formData,
+      success : function(response) {
+        if ("error" in response) {
+          $('#createMessage').text(response["error"])
+          $('#createMessage').css({display:"block"})
+          flagReady = true
+        } else {
+          $("#createMessage").text(response["activateCreationAccount"])
+          $("#pseudoCreate").val("")
+          $("#pwdCreate").val("")
+          $("#confirmPwdCreate").val("")
+          $.when($("#createMessage").show().delay(3000).fadeOut()).done(function() {flagReady = true});
+        }
+        
       }
-    }
-  })
+    })
+  }
 }
 
 // Status de l'AD
