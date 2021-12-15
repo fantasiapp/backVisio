@@ -433,14 +433,14 @@ class ManageFromOldDatabase:
     Group.objects.create(name="root")
     for user in User.objects.all():
       user.groups.add(Group.objects.get(name="root"))
-      UserProfile.objects.create(user=user, idGeo=0)
+      UserProfile.objects.create(user=user, idGeo=0, admin=True)
     for username, userList in dictUser.items():
       user = User.objects.create_user(username=username, password=userList[2])
       groupName = userList[0]
       if not Group.objects.filter(name=groupName):
         Group.objects.create(name=groupName)
       user.groups.add(Group.objects.get(name=groupName))
-      UserProfile.objects.create(user=user, idGeo=int(userList[1]) if int(userList[1]) else 0)
+      UserProfile.objects.create(user=user, idGeo=int(userList[1]) if int(userList[1]) else 0, admin = (user.id == 3))
     return ("Users", False)
 
   def __computeListUser(self):
