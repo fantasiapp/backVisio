@@ -3,7 +3,7 @@ let flagFree = true
 function loadInitConsult() {
   $("#consultConnectionButton").on('click', function(event) {displayAccount(false)})
   $('#downloadConnectionButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=connection&csrfmiddlewaretoken="+token)
-  $("#downloadTargetButton").on('click', function(event) {displayConsultTarget("Ref")})
+  $("#consultTargetButton").on('click', function(event) {displayConsultTarget("Ref")})
   $('#downloadTargetButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=target&csrfmiddlewaretoken="+token)
   $("#consultCurrentBaseButton").on('click', function(event) {tableHeaderSelect("Ref", "Saved", true)})
   $('#downloadCurrentBaseButton').attr("href", "/visioAdmin/principale/?action=createTable&nature=currentBase&csrfmiddlewaretoken="+token)

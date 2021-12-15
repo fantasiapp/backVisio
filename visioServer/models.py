@@ -827,6 +827,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
     idGeo = models.IntegerField(blank=True, default=None)
     lastUpdate = models.DateTimeField('Dernière mise à jour', blank=True, null=True, default=None)
+    admin = models.BooleanField('Administrateur', unique=False, blank=False, default=False)
 
 # Information target
 

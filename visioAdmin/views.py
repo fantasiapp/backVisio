@@ -22,7 +22,9 @@ def home(request):
   return redirect('/visioAdmin/login/')
 
 def main(request):
-  if request.user.is_authenticated:
+  print("passe par main")
+  # if request.user.is_authenticated:
+  if isAuthenticated(request):
     if request.method == "POST":
       return mainActionPost(request)
     if 'action' in request.GET:
@@ -30,6 +32,14 @@ def main(request):
       return JsonResponse(response) if isinstance(response, dict) else response
     return render(request, 'visioAdmin/principale.html', {})
   return redirect('/visioAdmin/login/')
+
+def isAuthenticated(request):
+  if request.user.is_authenticated:
+    currentUser = request.user
+    currentProfile = UserProfile.objects.filter(user=currentUser)
+    if currentProfile:
+      return currentProfile[0].admin
+  return False
 
 def mainActionPost(request):
   dataDashboard = createDataDashBoard(request)
