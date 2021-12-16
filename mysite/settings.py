@@ -62,6 +62,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://*.fantasiapp.tech:3441','https://*.127.0.0.1']
+
 ROOT_URLCONF = 'mysite.urls'
 
 TEMPLATES = [
