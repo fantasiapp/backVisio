@@ -29,7 +29,6 @@
         <article id="loginArticle">
           <h1 class="title">Connexion</h1>
           <form method=post action="{% url 'visioAdmin:login' %}" accept-charset="utf-8">
-            {% csrf_token %}
             <div class="pseudoLogin">
               <label class="loginLabel">PSEUDO</label>
               <br>
@@ -42,6 +41,7 @@
               <input class="loginInput" type="password" placeholder="Saisir votre mot de passe" name="password"></input>
             </div>
             <div class="loginError" style="top:350px">{{ message }}</div>
+            {% csrf_token %}
             <input id="loginButton" type="submit" name="login" value="Se connecter"></input>
           </form>
         </article>
