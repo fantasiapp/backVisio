@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import re_path
 from . import views
 
 urlpatterns = [
-  url('^$', views.home, name='home'),
-  url(r'performances', views.performances, name='performances'),
-  url(r'principale', views.main, name='main'),
-  url(r'login', views.login, name='login'),
+  re_path('^$', views.home, name='home'),
+  re_path(r'performances', views.performances, name='performances'),
+  re_path(r'principale', views.main, name='main'),
+  re_path(r'login', views.login, name='login'),
 ]
