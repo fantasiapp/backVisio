@@ -48,7 +48,7 @@ def logAdmin(request, currentUser):
   savedVersion = DataAdmin.objects.get(currentBase=False).getVersion
   action , param = None, None
   if request.method == "GET":
-    if "action" in request.GET and not request.GET["action"] in ["paramSynonymsInit", "setupCreateAccount", "buildTarget", "buildValidate", "createTable", "visualizeTargetTable", "visualizeActionTable", "paramAccountInit", "selectAgent"]:
+    if "action" in request.GET and not request.GET["action"] in ["paramSynonymsInit", "setupCreateAccount", "buildTarget", "buildValidate", "createTable", "visualizeTargetTable", "visualizeActionTable", "paramAccountInit"]:
       action = request.GET["action"]
   elif request.POST.get('uploadFile'):
     action = f"upoladFile {request.POST.get('uploadFile')}"
@@ -66,7 +66,6 @@ def logAdmin(request, currentUser):
     LogAdmin.objects.create(user=currentUser, date=date, currentVersion=currentVersion, savedVersion=savedVersion, method=request.method, action=action, param=param)
 
 def mainActionPost(request):
-  print("mainActionPost", request.POST.get)
   dataDashboard = createDataDashBoard(request)
   adminParam = AdminParam(dataDashboard)
   if request.POST.get('uploadFile'):
@@ -120,9 +119,11 @@ def mainActionGet(request):
   return {"info":"Not yet implemented"}
 
 def login(request):
+  print("login", request.method, request.POST.get('login'))
   if request.method == 'POST' and request.POST.get('login') == "Se connecter":
     userName = request.POST.get('userName')
     password = request.POST.get('password')
+    print(request.POST.get('userName'), password)
     user = auth.authenticate(username=userName, password=password)
     if user == None:
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
