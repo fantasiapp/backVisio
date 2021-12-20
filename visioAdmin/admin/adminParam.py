@@ -167,22 +167,13 @@ class AdminParam:
 
 # Ad Status Open or Closed
   def switchAdStatus(self):
-      isAdOpen = ParamVisio.getValue("isAdOpen")
-      ParamVisio.setValue("isAdOpen", False if isAdOpen else True)
-      if ParamVisio.getValue("isAdOpen"):
-        pdvs = getattr(self.dataDashboard, "__pdvs")
-        indexSales = Pdv.listFields().index("sales")
-        indexDate = Sales.listFields().index("date")
-        listSales = [pdv[indexSales] for pdv in pdvs.values()]
-        for sales in listSales:
-          for sale in sales:
-            sale[indexDate] = None
-        for sale in Sales.objects.filter(date__isnull=False):
-          sale.date = None
-          sale.save()
-      param = getattr(self.dataDashboard, "__params")
-      param['isAdOpen'] = ParamVisio.getValue("isAdOpen")
-      return {"isAdOpen":ParamVisio.getValue("isAdOpen")}
+    isAdOpen = ParamVisio.getValue("isAdOpenSave")
+    ParamVisio.setValue("isAdOpenSave", False if isAdOpen else True)
+    if not ParamVisio.getValue("isAdOpenSave"):
+      for sale in SalesSave.objects.filter(date__isnull=False):
+        sale.date = None
+        sale.save()
+    return {"isAdOpenSave":ParamVisio.getValue("isAdOpenSave"), "isAdOpen":ParamVisio.getValue("isAdOpen")}
 
 # Validation of targets
   def buildValidate(self, target=False):

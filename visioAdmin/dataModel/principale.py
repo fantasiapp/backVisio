@@ -9,6 +9,7 @@ def loadInit():
   dictInit["currentRef"] = DataAdmin.getSavedParam(True)
   dictInit["updateVol"] = DataAdmin.getSavedParam("vol")
   dictInit["isAdOpen"] = ParamVisio.getValue("isAdOpen")
+  dictInit["isAdOpenSave"] = ParamVisio.getValue("isAdOpenSave")
   return dictInit
 
 def handleUploadedFile(fileContent, fileNature):

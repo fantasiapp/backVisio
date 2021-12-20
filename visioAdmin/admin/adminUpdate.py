@@ -615,6 +615,16 @@ class AdminUpdate:
     for action in renameActions:
       os.rename(f'./visioAdmin/dataFile/Json/{action["from"]}', f'./visioAdmin/dataFile/Json/{action["to"]}')
     ParamVisio.setValue("referentielVersion", dataAdmin.getVersion)
+    adOpen = {"current":ParamVisio.getValue("isAdOpen"), "save":ParamVisio.getValue("isAdOpenSave")}
+    if adOpen["current"] != adOpen["save"]:
+      ParamVisio.setValue("isAdOpen", adOpen["save"])
+      ParamVisio.setValue("isAdOpenSave", adOpen["save"])
+      if not adOpen["save"]:
+        for sale in SalesSave.objects.filter(date__isnull=False):
+          sale.date = None
+          sale.save()
+
+
 
   def __renameTable(self, listTable, rename):
     with connection.cursor() as cursor:

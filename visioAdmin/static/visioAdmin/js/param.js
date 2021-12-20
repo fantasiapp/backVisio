@@ -14,11 +14,19 @@ function loadInitParamEvent() {
 }
 
 function loadInitParam (response) {
-  if (response["isAdOpen"]) {
-    $("#AdOpenBox p.file").text("Actuellement l'AD est ouverte")
+  if (response["isAdOpenSave"]) {
+    if (response["isAdOpenSave"] != response["isAdOpen"]) {
+      $("#AdOpenBox p.file").text("Actuellement l'AD est ouverte dans la base de sauvegarde et fermée dans la base courante.")
+    } else {
+      $("#AdOpenBox p.file").text("Actuellement l'AD est ouverte")
+    }
     $("#AdOpenButton span").text("Fermer l'AD")
   } else {
-    $("#AdOpenBox p.file").text("Actuellement l'AD est fermée")
+    if (response["isAdOpenSave"] != response["isAdOpen"]) {
+      $("#AdOpenBox p.file").text("Actuellement l'AD est fermée dans la base de sauvegarde et ouverte dans la base courante.")
+    } else {
+      $("#AdOpenBox p.file").text("Actuellement l'AD est fermée")
+    }
     $("#AdOpenButton span").text("Ouvrir l'AD")
   }
 }
@@ -406,14 +414,20 @@ function activateCreationAccount() {
 
 // Status de l'AD
 function switchAdStatus() {
-  $.ajax({
-    url : "/visioAdmin/principale/",
-    type: "get",
-    data: {"action":"switchAdStatus", "csrfmiddlewaretoken":token},
-    success : function(response) {
-      loadInitParam (response)
-    }
-  })
+  if (flagReady) {
+    flagReady = false
+    $("#wheel").css({display:'block'})
+    $.ajax({
+      url : "/visioAdmin/principale/",
+      type: "get",
+      data: {"action":"switchAdStatus", "csrfmiddlewaretoken":token},
+      success : function(response) {
+        loadInitParam (response)
+        flagReady = true
+        $("#wheel").css({display:'none'})
+      }
+    })
+  }
 }
 
 // Traitements des synonymes

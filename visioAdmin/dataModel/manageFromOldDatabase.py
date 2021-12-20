@@ -587,6 +587,7 @@ class ManageFromOldDatabase:
     ParamVisio.objects.create(field="currentMonth", prettyPrint="Mois Courant", fvalue="novembre", typeValue="str")
     ParamVisio.objects.create(field="currentYear", prettyPrint="Année Courante", fvalue="2021", typeValue="int")
     ParamVisio.objects.create(field="isAdOpen", prettyPrint="Ouverture de l'AD", fvalue="True", typeValue="bool")
+    ParamVisio.objects.create(field="isAdOpenSave", prettyPrint="Ouverture de l'AD base Save", fvalue="True", typeValue="bool")
     ParamVisio.objects.create(field="delayBetweenUpdates", prettyPrint="Délai entre deux mise à jour", fvalue="10.0", typeValue="float")
     ParamVisio.objects.create(field="json", prettyPrint="Json", fvalue=json.dumps(jsonData), typeValue="json")
     return ("ParamVisio", False)
