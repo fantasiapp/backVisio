@@ -14,19 +14,19 @@ class AdminParam:
 
   # Targets
   def buildTarget(self):
-    finition = {agentF.id:{"agentFName":agentF.name, "target":agentF.TargetedNbVisit, "ratio":agentF.ratioTargetedVisit} for agentF in AgentFinitions.objects.filter(currentYear=True)}
+    finition = {agentF.id:{"agentFName":agentF.name, "target":agentF.TargetedNbVisit, "ratio":agentF.ratioTargetedVisit} for agentF in AgentFinitionsSave.objects.filter(currentYear=True)}
     params = {"Coefficient feu tricolore":ParamVisio.getValue("coeffGreenLight"), "Ratio Plaque Enduit":ParamVisio.getValue("ratioPlaqueFinition")}
     return {"Finitions":finition, "Params":params}
 
   def modifyTarget(self, dictJson):
     dictData = json.loads(dictJson)
     for id, value in dictData["target"].items():
-      agentF = AgentFinitions.objects.get(id=id)
+      agentF = AgentFinitionsSave.objects.get(id=id)
       if value.isdigit():
         agentF.TargetedNbVisit = int(value)
         agentF.save()
     for id, value in dictData["ratio"].items():
-      agentF = AgentFinitions.objects.get(id=id)
+      agentF = AgentFinitionsSave.objects.get(id=id)
       try:
         agentF.ratioTargetedVisit = float(value)
         agentF.save()
