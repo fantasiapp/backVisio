@@ -5,7 +5,7 @@ import json
 # from django.db.models.fields import Field
 import datetime
 from django.db.models.deletion import DO_NOTHING
-from django.db.models.lookups import IntegerFieldFloatRounding
+# from django.db.models.lookups import IntegerFieldFloatRounding
 from django.utils import timezone
 import inspect
 
@@ -237,7 +237,7 @@ class AgentSave(CommonModel):
 
 class AgentFinitions(CommonModel):
   name = models.CharField('agent_finitions', max_length=64, unique=False)
-  drv = models.ForeignKey('drv', on_delete=models.DO_NOTHING, blank=False, default=None)
+  drv = models.ForeignKey('Drv', on_delete=models.DO_NOTHING, blank=False, default=None)
   ratioTargetedVisit = models.FloatField('Ratio des visites ciblées', unique=False, blank=False, default=0.3)
   TargetedNbVisit = models.IntegerField('Ratio des visites ciblées', unique=False, blank=False, default=800)
   idF = models.IntegerField("Id pour le front", unique=False, null=True, default=True)
