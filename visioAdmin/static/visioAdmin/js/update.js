@@ -52,7 +52,8 @@ function loadInitRef (dictValue) {
   dictBox = dictValue["currentRef"]
   $("#updateSwitch p.title").text("Base en ligne : " + dictBox["version"])
   $("#updateSwitch p.date").text("Mis à jour le : " + dictBox["date"])
-  $("#updateSwitch p.file").text("Fichier xlsx : " + dictBox["fileName"])
+  $("#updateSwitch p.file").text("Fichier Référentiel : " + dictBox["fileName"])
+  $("#updateSwitch p.volume").text("Fichier Volume : " + dictBox["fileVol"])
   dictBox = dictValue["updateVol"]
   $("#updateVol p.title").text("Dernier mois : " + dictBox["month"])
   $("#updateVol p.date").text("Mis à jour le : " + dictBox["date"])

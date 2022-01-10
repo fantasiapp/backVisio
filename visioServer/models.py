@@ -1025,7 +1025,10 @@ class DataAdmin(models.Model):
       if currentBase == "vol":
         dictMonth = {0:"Décembre", 1:"Janvier", 2:"Février", 3:"Mars", 4:"Avril", 5:"Mai", 6:"Juin", 7:"Juillet", 8:"Août", 9:"Septembre", 10:"Octobre", 11:"Novembre", 12:"Décembre"}
         return {"fileName":lastSaved.fileNameVol, "date":lastSaved.dateVol.strftime("%Y-%m-%d %H:%M:%S"), "month":dictMonth[lastSaved.dateVol.month - 1]}
-      return {"fileName":lastSaved.fileNameRef, "date":lastSaved.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":lastSaved.getVersion}
+      elif currentBase:
+        return {"fileVol":lastSaved.fileNameVol, "fileName":lastSaved.fileNameRef, "date":lastSaved.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":lastSaved.getVersion}
+      else:
+        return {"fileName":lastSaved.fileNameRef, "date":lastSaved.dateRef.strftime("%Y-%m-%d %H:%M:%S"), "version":lastSaved.getVersion}
     elif currentBase == "vol":
       return {"fileName":"Aucun", "date":"jamais", "month":"aucun"}
     return {"fileName":"Aucun", "date":"Jamais", "version": "Aucune"}
