@@ -425,8 +425,6 @@ class AdminUpdate:
       code = str(line[indexCode])
       agentName = line[indexAgent]
       pdv = pdvList[code] if code in pdvList else False
-      if code == '10046':
-        print("__updateRefWithAgent pdv", pdv)
       if pdv and pdv.agent.name != agentName:
         newAgent = AgentSave.objects.filter(name=agentName, currentYear=True)
         if newAgent:
@@ -437,7 +435,6 @@ class AdminUpdate:
           newAgent.save()
         pdv.agent = newAgent
         pdv.save()
-    print("__updateRefWithAgent", code in list(pdvList.keys()))
     return pdvList
 
   def __closePdv(self, pdvList):
@@ -453,7 +450,6 @@ class AdminUpdate:
         if pdv.closedAt and pdv.closedAt.year < now.year:
           pdv.available = False
         else:
-          print("__closePdv", pdv.code)
           pdv.closedAt = now
       pdv.save()
 
