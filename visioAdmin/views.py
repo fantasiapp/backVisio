@@ -119,12 +119,13 @@ def mainActionGet(request):
   return {"info":"Not yet implemented"}
 
 def login(request):
-  print("login", request.method, request.POST.get('login'))
+  print("login start", request.method, request.POST.get('login'))
   if request.method == 'POST' and request.POST.get('login') == "Se connecter":
     userName = request.POST.get('userName')
     password = request.POST.get('password')
-    print(request.POST.get('userName'), password)
+    print("login userName, password", userName, password)
     user = auth.authenticate(username=userName, password=password)
+    print("login user", user)
     if user == None:
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
       return render(request, 'visioAdmin/login.html', context)
