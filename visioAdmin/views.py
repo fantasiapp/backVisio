@@ -124,14 +124,14 @@ def login(request):
   if request.method == 'POST' and request.POST.get('login') == "Se connecter":
     userName = request.POST.get('userName')
     password = request.POST.get('password')
-    print("login userName, password", userName, password)
+    print("login userName, password", userName, password, request)
     user = auth.authenticate(username=userName, password=password)
     print("login user", user)
     if user == None:
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
       return render(request, 'visioAdmin/login.html', context)
     auth.login(request, user)
-    print("isAuthenticated", auth.login(request, user), isAuthenticated(request.user), "user")
+    print("isAuthenticated", auth.login(request, user), isAuthenticated(request), "user", request.user)
     return redirect('principale.html')
   if request.method == 'POST' and request.POST.get('action') == "disconnect":
     currentUser = request.user
