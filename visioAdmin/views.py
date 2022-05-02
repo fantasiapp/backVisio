@@ -22,6 +22,7 @@ def home(request):
   return redirect('/visioAdmin/login/')
 
 def main(request):
+  print("view main", isAuthenticated(request))
   if isAuthenticated(request):
     if request.method == "POST":
       return mainActionPost(request)
