@@ -131,7 +131,7 @@ def login(request):
       context = {'userName':userName, 'message':"Le couple login password n'est pas conforme."}
       return render(request, 'visioAdmin/login.html', context)
     auth.login(request, user)
-    print("isAuthenticated", auth.login(request, user), isAuthenticated(request), "user", request.user.is_authenticated()
+    print("isAuthenticated", auth.login(request, user), isAuthenticated(request), "user", request.user.is_authenticated())
     return redirect('principale.html')
   if request.method == 'POST' and request.POST.get('action') == "disconnect":
     currentUser = request.user
