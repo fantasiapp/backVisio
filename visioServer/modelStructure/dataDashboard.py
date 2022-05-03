@@ -113,6 +113,7 @@ class DataDashboard:
       self.insertModel(data, name, model)
     TargetLevel.dictValuesFiltered(self, data)
     self._setupFinitions(data)
+    print("list data keys", list(data.keys()))
     return data
 
   def __computeListPdv(self):
@@ -217,7 +218,7 @@ class DataDashboard:
       del jsonData["logs"]
     now = timezone.now()
     flagSave = False
-    for key, value in jsonData.items():
+    for value in jsonData.values():
       if value:
         flagSave = True
     if flagSave:
