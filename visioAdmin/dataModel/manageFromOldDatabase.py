@@ -99,7 +99,7 @@ class ManageFromOldDatabase:
       )
     ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
     self.cursor.execute("Show tables;")
-    listTable = self.cursor.fetchall()
+    listTable = [table[0] for table in self.cursor.fetchall()]
     print("listTable", listTable)
     for table in listTable:
       if "visioServer" in table:
