@@ -116,18 +116,21 @@ class ManageFromOldDatabase:
         print("truncate table", table)
         ManageFromOldDatabase.cursorNew.execute(f"SHOW COLUMNS FROM {table};")
         fieldsRaw = ManageFromOldDatabase.cursorNew.fetchall()
-        fields = [field[0] for field in fieldsRaw]
-        print("compute fields", fields, fieldsRaw[0] if fieldsRaw else None)
+        fields = [(field[0], field[1]) for field in fieldsRaw]
+        print("compute fields", fields, fieldsRaw)
         ManageFromOldDatabase.cursor.execute(f"SELECT * FROM {table};")
         values = ManageFromOldDatabase.cursor.fetchall()
         print("compute values", values[0] if len(values) else None)
         if values:
           strQuery = f"INSERT INTO `{table}` ("
           for field in fields:
-            strQuery += f"{field}, "
+            strQuery += f"{field[0]}, "
           strQuery = strQuery.rstrip(', ') + ") VALUES ("
+          incr = 0
           for value in values[0]:
-            if value == None:
+            if "int" in fields[incr][1]:
+              strQuery += f"'{value if value else 0}', "
+            elif value == None:
               strQuery += "'', "
             elif isinstance(value, str):
               strQuery += f"'{value if value else ''}', "
