@@ -104,14 +104,25 @@ class ManageFromOldDatabase:
         database = os.getenv('DB_NAME'),
       )
       self.cursorNew = self.connectionNew.cursor()
-    ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-    self.cursor.execute("Show tables;")
-    listTable = [table[0] for table in self.cursor.fetchall()]
-    print("listTable", listTable)
-    for table in listTable:
+      ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
+      self.cursor.execute("Show tables;")
+      ManageFromOldDatabase.listTable = [table[0] for table in self.cursor.fetchall()]
+    print("listTable", ManageFromOldDatabase.listTable)
+    table = self.listTable.pop(0)
+    if ManageFromOldDatabase.listTable:
       if "visioServer" in table:
         print(f"TRUNCATE TABLE {table}")
-        self.cursorNew.execute(f"TRUNCATE TABLE {table}")
+        try:
+            self.cursorNew.execute(f"TRUNCATE TABLE {table}")
+            message = f"La table {str(table)} est encore vidée."
+        except:
+          ManageFromOldDatabase.listTable = ManageFromOldDatabase.listTable.append(table)
+          message = f"La table {str(table)} n'est pas encore vidée, elle est mise en fin de liste."
+      else:
+        message = f"La table {str(table)} n'est pas traité par cette opération."
+      return {'query':method, 'message':message, 'end':False, 'errors':[]}
+
+
 
     #   self.dictPopulate = [
     #     ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
