@@ -128,6 +128,8 @@ class ManageFromOldDatabase:
           for value in values[0]:
             if isinstance(value, str):
               strQuery += f"'{value}', "
+            elif isinstance(value, datetime):
+              strQuery += f"'{value.strptime()}', "
             else:
               print("type", table, value, type(value))
               strQuery += f"{value}, "
