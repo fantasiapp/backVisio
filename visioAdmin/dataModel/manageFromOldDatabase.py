@@ -108,7 +108,7 @@ class ManageFromOldDatabase:
       self.cursor.execute("Show tables;")
       ManageFromOldDatabase.listTable = [table[0] for table in self.cursor.fetchall()]
     print("listTable", ManageFromOldDatabase.listTable)
-    table = self.listTable.pop(0)
+    table = ManageFromOldDatabase.listTable.pop(0)
     if ManageFromOldDatabase.listTable:
       if "visioServer" in table:
         print(f"TRUNCATE TABLE {table}")
@@ -116,7 +116,7 @@ class ManageFromOldDatabase:
             self.cursorNew.execute(f"TRUNCATE TABLE {table}")
             message = f"La table {str(table)} est encore vidée."
         except:
-          ManageFromOldDatabase.listTable = ManageFromOldDatabase.listTable.append(table)
+          ManageFromOldDatabase.listTable.append(table)
           message = f"La table {str(table)} n'est pas encore vidée, elle est mise en fin de liste."
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
