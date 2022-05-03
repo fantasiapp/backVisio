@@ -133,7 +133,7 @@ class ManageFromOldDatabase:
               strQuery += f"{value}, "
           strQuery = strQuery.rstrip(', ') + ");"
           print("strQuery", strQuery) 
-          ManageFromOldDatabase.cursorNew.cursor.execute(strQuery) 
+          ManageFromOldDatabase.cursorNew.execute(strQuery) 
           message = f"La table {table} est remplie."
         else:
           message = f"La table {table} d'origine est vide."
