@@ -113,7 +113,7 @@ class DataDashboard:
       self.insertModel(data, name, model)
     TargetLevel.dictValuesFiltered(self, data)
     self._setupFinitions(data)
-    print("list data keys", list(data.keys()))
+    print("list data keys", list(data.keys(), data["params"]))
     return data
 
   def __computeListPdv(self):
