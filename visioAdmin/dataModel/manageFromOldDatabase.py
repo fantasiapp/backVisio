@@ -114,7 +114,9 @@ class ManageFromOldDatabase:
         ManageFromOldDatabase.cursorNew.execute(f"TRUNCATE TABLE {table};")
         ManageFromOldDatabase.cursorNew.execute(f"SHOW COLUMNS FROM {table};")
         fields = [field[0] for field in ManageFromOldDatabase.cursorNew.fetchall()]
-        print("fields", fields)
+        ManageFromOldDatabase.cursor.execute(f"SELECT * FROM {table};")
+        values = ManageFromOldDatabase.cursor.fetchall()
+        print("fields", fields, values[0])
         fields = ManageFromOldDatabase.cursor.execute(f"SELECT * FROM `{table}`;")
         message = f"La table {str(table)} est encore vidée."
       else:
