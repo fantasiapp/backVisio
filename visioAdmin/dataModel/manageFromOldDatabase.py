@@ -127,12 +127,12 @@ class ManageFromOldDatabase:
           strQuery = strQuery.rstrip(', ') + ") VALUES ("
           for value in values[0]:
             if isinstance(value, str):
-              strQuery += f"'{value}', "
+              strQuery += f"'{value if value else ''}', "
             elif isinstance(value, datetime.date):
-              strQuery += f"'{value.strftime('%Y-%m-%d %H:%M:%S')}', "
+              strQuery += f"'{value.strftime('%Y-%m-%d %H:%M:%S') if value else ''}', "
             else:
               print("type", table, value, type(value))
-              strQuery += f"{value}, "
+              strQuery += f"{value if value else ''}, "
           strQuery = strQuery.rstrip(', ') + ");"
           print("strQuery", strQuery) 
           ManageFromOldDatabase.cursorNew.execute(strQuery) 
