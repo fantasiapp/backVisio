@@ -126,7 +126,9 @@ class ManageFromOldDatabase:
             strQuery += f"{field}, "
           strQuery = strQuery.rstrip(', ') + ") VALUES ("
           for value in values[0]:
-            if isinstance(value, str):
+            if value == None:
+              strQuery += "'', "
+            elif isinstance(value, str):
               strQuery += f"'{value if value else ''}', "
             elif isinstance(value, datetime.date):
               strQuery += f"'{value.strftime('%Y-%m-%d %H:%M:%S') if value else ''}', "
@@ -134,7 +136,7 @@ class ManageFromOldDatabase:
               strQuery += f"'{value if value else 0}', "
             else:
               print("type", table, value, type(value))
-              strQuery += f"{value if value else ''}, "
+              strQuery += f"{value}, '"
           strQuery = strQuery.rstrip(', ') + ");"
           print("strQuery", strQuery) 
           ManageFromOldDatabase.cursorNew.execute(strQuery) 
