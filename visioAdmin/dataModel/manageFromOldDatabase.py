@@ -123,7 +123,7 @@ class ManageFromOldDatabase:
         if values:
           strQuery = f"INSERT INTO `{table}` ("
           for field in fields:
-            strQuery += f"'{field}', "
+            strQuery += f"{field}, "
           strQuery = strQuery.rstrip(', ') + ") VALUES ("
           for value in values[0]:
             if isinstance(value, str):
