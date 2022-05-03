@@ -120,6 +120,13 @@ class ManageFromOldDatabase:
         ManageFromOldDatabase.cursor.execute(f"SELECT * FROM {table};")
         values = ManageFromOldDatabase.cursor.fetchall()
         print("compute values", values[0] if len(values) else None)
+        if values:
+          strQuery = f"INSERT INTO `{table}` `("
+          for field in fields:
+            strQuery += f"'{field}', "
+          strQuery = strQuery.rstrip(', ')
+        print("strQuery", strQuery) 
+          # ManageFromOldDatabase.cursorNew.cursor.execute(f"INSERT INTO {table} (first_name,last_name) VALUES (?, ?)", 
         message = f"La table {table} est encore vidée."
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
