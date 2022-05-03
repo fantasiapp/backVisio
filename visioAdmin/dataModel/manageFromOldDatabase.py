@@ -129,7 +129,7 @@ class ManageFromOldDatabase:
             if isinstance(value, str):
               strQuery += f"'{value}', "
             elif isinstance(value, datetime.date):
-              strQuery += f"'{value.strptime('%Y-%m-%d %H:%M:%S')}', "
+              strQuery += f"'{value.strftime('%Y-%m-%d %H:%M:%S')}', "
             else:
               print("type", table, value, type(value))
               strQuery += f"{value}, "
