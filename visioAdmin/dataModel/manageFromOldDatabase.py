@@ -104,23 +104,19 @@ class ManageFromOldDatabase:
         database = os.getenv('DB_NAME'),
       )
       ManageFromOldDatabase.cursorNew = ManageFromOldDatabase.connectionNew.cursor()
-      print(self.cursorNew.execute)
       ManageFromOldDatabase.cursorNew.execute("SET FOREIGN_KEY_CHECKS=0;")
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       ManageFromOldDatabase.cursor.execute("Show tables;")
-      ManageFromOldDatabase.listTable = [table[0] for table in self.cursor.fetchall()]
-    print("listTable", ManageFromOldDatabase.listTable)
+      ManageFromOldDatabase.listTable = [table[0] for table in ManageFromOldDatabase.cursor.fetchall()]
     if ManageFromOldDatabase.listTable:
       table = ManageFromOldDatabase.listTable.pop(0)
       if "visioServer" in table:
-        print(f"TRUNCATE TABLE {table}")
-        try:
-            ManageFromOldDatabase.cursorNew.execute(f"TRUNCATE TABLE {table};")
-            message = f"La table {str(table)} est encore vidée."
-        except db.Error as error:
-          print("error", table, error)
-          ManageFromOldDatabase.listTable.append(table)
-          message = f"La table {str(table)} n'est pas encore vidée, elle est mise en fin de liste."
+          ManageFromOldDatabase.cursorNew.execute(f"SHOW COLUMNS FROM {table};")
+          fields = ManageFromOldDatabase.cursorNew.fetchall()
+          print("fields", fields)
+          ManageFromOldDatabase.cursorNew.execute(f"TRUNCATE TABLE {table};")
+          fields = ManageFromOldDatabase.cursor.execute(f"SELECT * FROM `{table}`;")
+          message = f"La table {str(table)} est encore vidée."
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
       return {'query':method, 'message':message, 'end':False, 'errors':[]}
