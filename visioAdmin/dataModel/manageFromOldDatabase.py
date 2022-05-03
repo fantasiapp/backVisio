@@ -103,10 +103,11 @@ class ManageFromOldDatabase:
         host = os.getenv('DB_HOST'),
         database = os.getenv('DB_NAME'),
       )
-      self.cursorNew = self.connectionNew.cursor()
-      self.cursorNew.execute("SET FOREIGN_KEY_CHECKS=0")
+      ManageFromOldDatabase.cursorNew = ManageFromOldDatabase.connectionNew.cursor()
+      print(self.cursorNew.execute)
+      ManageFromOldDatabase.cursorNew.execute("SET FOREIGN_KEY_CHECKS=0;")
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-      self.cursor.execute("Show tables;")
+      ManageFromOldDatabase.cursor.execute("Show tables;")
       ManageFromOldDatabase.listTable = [table[0] for table in self.cursor.fetchall()]
     print("listTable", ManageFromOldDatabase.listTable)
     if ManageFromOldDatabase.listTable:
@@ -114,7 +115,7 @@ class ManageFromOldDatabase:
       if "visioServer" in table:
         print(f"TRUNCATE TABLE {table}")
         try:
-            self.cursorNew.execute(f"TRUNCATE TABLE {table}")
+            ManageFromOldDatabase.cursorNew.execute(f"TRUNCATE TABLE {table};")
             message = f"La table {str(table)} est encore vidée."
         except db.Error as error:
           print("error", table, error)
@@ -123,7 +124,7 @@ class ManageFromOldDatabase:
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
       return {'query':method, 'message':message, 'end':False, 'errors':[]}
-    self.cursorNew.execute("SET FOREIGN_KEY_CHECKS=1")
+    ManageFromOldDatabase.cursorNew.execute("SET FOREIGN_KEY_CHECKS=1;")
     ManageFromOldDatabase.connection.close()
     ManageFromOldDatabase.connectionNew.close()
     return {'query':method, 'message':"<b>La base de données a été remplie</b>", 'end':True, 'errors':[]}
