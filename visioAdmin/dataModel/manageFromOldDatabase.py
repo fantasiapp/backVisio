@@ -115,7 +115,8 @@ class ManageFromOldDatabase:
         try:
             self.cursorNew.execute(f"TRUNCATE TABLE {table}")
             message = f"La table {str(table)} est encore vidée."
-        except:
+        except db.Error as error:
+          print("error", table, error)
           ManageFromOldDatabase.listTable.append(table)
           message = f"La table {str(table)} n'est pas encore vidée, elle est mise en fin de liste."
       else:

@@ -167,7 +167,6 @@ def performancesAction(action, get, adminParam):
   if action == "perfEmptyBase":
     return manageFromOldDatabase.emptyDatabase(get['start'] == 'true')
   elif action == "perfPopulateBase":
-    print("inside performancesAction get", get)
     if get['method'] == 'empty':
       return manageFromOldDatabase.emptyDatabase(get['start'] == 'true')
     else:
