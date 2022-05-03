@@ -547,12 +547,22 @@ class AdminUpdate:
         if data[dictData["iVol"]]:
           pdv = PdvSave.objects.filter(code=data[indexPdv], currentYear=True)
           if pdv:
-            SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]], currentYear=True)
+            sale = SalesSave.objects.filter(pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"], currentYear=True)
+            if sale:
+              sale.volume = data[dictData["iVol"]]
+              sale.save()
+            else:
+              SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]], currentYear=True)
     for data in self.xlsxData["salsi"]["data"]:
       if data[indexSalsi]:
         pdv = PdvSave.objects.filter(code=data[indexPdv], currentYear=True)
         if pdv:
-          SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi], currentYear=True)
+          sale = SalesSave.objects.filter(pdv=pdv[0], industry=salsi, product=enduit, currentYear=True)
+          if sale:
+            sale.volume = data[indexSalsi]
+            sale.save()
+          else:
+            SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi], currentYear=True)
 
   def __createVolJson(self):
     for nature in ["Current", "Saved"]:
