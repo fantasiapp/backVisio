@@ -104,7 +104,7 @@ class ManageFromOldDatabase:
     for table in listTable:
       if "visioServer" in table:
         print(table)
-        self.connectionNew.execute("TRUNCATE TABLE table_name")
+        self.cursorNew.execute("TRUNCATE TABLE table_name")
 
     #   self.dictPopulate = [
     #     ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
@@ -121,6 +121,7 @@ class ManageFromOldDatabase:
     #   message = "L'ancienne base de données est lue" if tableName == "PdvOld" else f"La table {str(table)} est remplie "
     #   return {'query':method, 'message':message, 'end':False, 'errors':error}
     ManageFromOldDatabase.connection.close()
+    ManageFromOldDatabase.connectionNew.close()
     return {'query':method, 'message':"<b>La base de données a été remplie</b>", 'end':True, 'errors':[]}
 
 # Chargement de la table des utilisateurs
