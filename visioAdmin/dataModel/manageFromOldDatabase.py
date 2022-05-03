@@ -116,7 +116,7 @@ class ManageFromOldDatabase:
         print("truncate table", table)
         ManageFromOldDatabase.cursorNew.execute(f"SHOW COLUMNS FROM {table};")
         fields = [field[0] for field in ManageFromOldDatabase.cursorNew.fetchall()]
-        print("compute fields", fields)
+        print("compute fields", fields, ManageFromOldDatabase.cursorNew.fetchall()[0] if ManageFromOldDatabase.cursorNew.fetchall() else None)
         ManageFromOldDatabase.cursor.execute(f"SELECT * FROM {table};")
         values = ManageFromOldDatabase.cursor.fetchall()
         print("compute values", values[0] if len(values) else None)
