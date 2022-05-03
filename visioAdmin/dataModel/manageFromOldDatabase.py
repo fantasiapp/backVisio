@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 from visioServer.models import *
 from django.contrib.auth.models import User, Group
+import secrets
 
 load_dotenv()
 
@@ -48,6 +49,9 @@ class ManageFromOldDatabase:
     }
   connection = None
   cursor = None
+
+  def modifyPassword(self):
+    return {'query': 'modifyPassword', 'message':"passwords changed"}
   
 
   def emptyDatabase(self, start:bool) -> dict:
@@ -340,15 +344,24 @@ class ManageFromOldDatabase:
     # TargetLevel.objects.all().delete()
     # self.getTargetLevel()
     # manageFromOldDatabase.getTreeNavigation(["geo", "trade"])
-    dictSyn = [{"field":obj.field, "originalName":obj.originalName, "synonym":obj.synonym} for obj in Synonyms.objects.all()]
-    dictAdmin = [{"dateRef":obj.dateRef.__str__() if obj.dateRef else None, "currentBase":obj.currentBase, "fileNameRef":obj.fileNameRef, "version":obj.version, "dateVol":obj.dateVol.__str__() if obj.dateVol else None, "fileNameVol":obj.fileNameVol} for obj in DataAdmin.objects.all()]
-    with open("./visioAdmin/dataFile/Json/SynParam.json", 'w') as jsonFile:
-      json.dump({"Synonyms":dictSyn, "dataAdmin":dictAdmin}, jsonFile, indent = 3)
-    with open("./visioAdmin/dataFile/Json/SynParam.json") as jsonFile:
-      data = json.load(jsonFile)
-    for kwargs in data["dataAdmin"]:
-      del kwargs["id"]
-      DataAdmin.objects.create(**kwargs)
+
+    # dictSyn = [{"field":obj.field, "originalName":obj.originalName, "synonym":obj.synonym} for obj in Synonyms.objects.all()]
+    # dictAdmin = [{"dateRef":obj.dateRef.__str__() if obj.dateRef else None, "currentBase":obj.currentBase, "fileNameRef":obj.fileNameRef, "version":obj.version, "dateVol":obj.dateVol.__str__() if obj.dateVol else None, "fileNameVol":obj.fileNameVol} for obj in DataAdmin.objects.all()]
+    # with open("./visioAdmin/dataFile/Json/SynParam.json", 'w') as jsonFile:
+    #   json.dump({"Synonyms":dictSyn, "dataAdmin":dictAdmin}, jsonFile, indent = 3)
+    # with open("./visioAdmin/dataFile/Json/SynParam.json") as jsonFile:
+    #   data = json.load(jsonFile)
+    # for kwargs in data["dataAdmin"]:
+    #   del kwargs["id"]
+    #   DataAdmin.objects.create(**kwargs)
+    listUsers = User.objects.all()
+    listUserPwd = {}
+    for user in listUsers:
+      if not user.username in ["jlw", "all", "t", "u", "y"]:
+        newPassword = secrets.token_urlsafe(10)
+        user.set_password(newPassword)
+        listUserPwd[user.username] = newPassword
+    print(json.dumps(listUserPwd, indent = 3))
     print("end")
     return {"test":False}
 
