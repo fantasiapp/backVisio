@@ -91,26 +91,30 @@ class ManageFromOldDatabase:
   def populateDatabase(self, start:bool, method:str) -> 'list(str)':
     if start:
       ManageFromOldDatabase.connection = db.connect(
-      user = os.getenv('DB_USERNAME_ORI'),
-      password = os.getenv('DB_PASSWORD_ORI'),
-      host = os.getenv('DB_HOST_ORI'),
-      database = os.getenv('DB_NAME_ORI')
+      user = os.getenv('DB_USERNAME'),
+      password = os.getenv('DB_PASSWORD'),
+      host = os.getenv('DB_HOST'),
+      database = os.getenv('DB_NAME_START')
       )
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
-      self.dictPopulate = [
-        ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
-        ("Object", ["industry"]), ("Object", ["product"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
-        ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
-        ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []), ("Users", []),
-        ("TreeNavigation", [["geo", "trade"]]),
-        ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", [])]
-    if self.dictPopulate:
-      tableName, variable = self.dictPopulate.pop(0)
-      print(tableName, variable[0] if  len(variable) > 0 else '')
-      table, error = getattr(self, "get" + tableName)(*variable)
-      error = [error] if error else []
-      message = "L'ancienne base de données est lue" if tableName == "PdvOld" else f"La table {str(table)} est remplie "
-      return {'query':method, 'message':message, 'end':False, 'errors':error}
+      self.cursor.execute("Show tables;")
+      myresult = self.cursor.fetchall()
+      for x in myresult:
+        print(x)
+    #   self.dictPopulate = [
+    #     ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
+    #     ("Object", ["industry"]), ("Object", ["product"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
+    #     ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
+    #     ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []), ("Users", []),
+    #     ("TreeNavigation", [["geo", "trade"]]),
+    #     ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", [])]
+    # if self.dictPopulate:
+    #   tableName, variable = self.dictPopulate.pop(0)
+    #   print(tableName, variable[0] if  len(variable) > 0 else '')
+    #   table, error = getattr(self, "get" + tableName)(*variable)
+    #   error = [error] if error else []
+    #   message = "L'ancienne base de données est lue" if tableName == "PdvOld" else f"La table {str(table)} est remplie "
+    #   return {'query':method, 'message':message, 'end':False, 'errors':error}
     ManageFromOldDatabase.connection.close()
     return {'query':method, 'message':"<b>La base de données a été remplie</b>", 'end':True, 'errors':[]}
 
