@@ -104,7 +104,7 @@ class ManageFromOldDatabase:
     for table in listTable:
       if "visioServer" in table:
         print(table)
-        self.cursorNew.execute("TRUNCATE TABLE table_name")
+        self.cursorNew.execute(f"TRUNCATE TABLE {table}")
 
     #   self.dictPopulate = [
     #     ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
