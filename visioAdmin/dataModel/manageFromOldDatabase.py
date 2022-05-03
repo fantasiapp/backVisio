@@ -103,6 +103,7 @@ class ManageFromOldDatabase:
         host = os.getenv('DB_HOST'),
         database = os.getenv('DB_NAME'),
       )
+      self.cursorNew.execute("SET FOREIGN_KEY_CHECKS=0")
       self.cursorNew = self.connectionNew.cursor()
       ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
       self.cursor.execute("Show tables;")
@@ -122,6 +123,7 @@ class ManageFromOldDatabase:
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
       return {'query':method, 'message':message, 'end':False, 'errors':[]}
+    self.cursorNew.execute("SET FOREIGN_KEY_CHECKS=1")
     ManageFromOldDatabase.connection.close()
     ManageFromOldDatabase.connectionNew.close()
     return {'query':method, 'message':"<b>La base de données a été remplie</b>", 'end':True, 'errors':[]}
