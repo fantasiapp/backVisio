@@ -111,6 +111,7 @@ class ManageFromOldDatabase:
     if ManageFromOldDatabase.listTable:
       table = ManageFromOldDatabase.listTable.pop(0)
       if "visioServer" in table:
+        print("treat", table)
         ManageFromOldDatabase.cursorNew.execute(f"TRUNCATE TABLE {table};")
         ManageFromOldDatabase.cursorNew.execute(f"SHOW COLUMNS FROM {table};")
         fields = [field[0] for field in ManageFromOldDatabase.cursorNew.fetchall()]
@@ -118,7 +119,7 @@ class ManageFromOldDatabase:
         values = ManageFromOldDatabase.cursor.fetchall()
         print("fields", fields, values[0])
         fields = ManageFromOldDatabase.cursor.execute(f"SELECT * FROM `{table}`;")
-        message = f"La table {str(table)} est encore vidée."
+        message = f"La table {table} est encore vidée."
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
       return {'query':method, 'message':message, 'end':False, 'errors':[]}
