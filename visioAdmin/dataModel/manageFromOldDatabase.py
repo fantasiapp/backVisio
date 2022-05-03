@@ -97,6 +97,13 @@ class ManageFromOldDatabase:
       host = os.getenv('DB_HOST'),
       database = os.getenv('DB_NAME_START')
       )
+      self.connectionNew = db.connect(
+        user = os.getenv('DB_USERNAME'),
+        password = os.getenv('DB_PASSWORD'),
+        host = os.getenv('DB_HOST'),
+        database = os.getenv('DB_NAME'),
+      )
+      self.cursorNew = self.connectionNew.cursor()
     ManageFromOldDatabase.cursor = ManageFromOldDatabase.connection.cursor()
     self.cursor.execute("Show tables;")
     listTable = [table[0] for table in self.cursor.fetchall()]
