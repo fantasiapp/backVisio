@@ -360,6 +360,7 @@ class ManageFromOldDatabase:
       if not user.username in ["jlw", "all", "t", "u", "y"]:
         newPassword = secrets.token_urlsafe(10)
         user.set_password(newPassword)
+        user.save()
         listUserPwd[user.username] = newPassword
     print(json.dumps(listUserPwd, indent = 3))
     print("end")
