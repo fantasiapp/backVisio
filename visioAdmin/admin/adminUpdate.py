@@ -549,8 +549,8 @@ class AdminUpdate:
           if pdv:
             sale = SalesSave.objects.filter(pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"], currentYear=True)
             if sale:
-              sale.volume = data[dictData["iVol"]]
-              sale.save()
+              sale[0].volume = data[dictData["iVol"]]
+              sale[0].save()
             else:
               SalesSave.objects.create(date=None, pdv=pdv[0], industry=dictData["ind"], product=dictData["prod"],volume=data[dictData["iVol"]], currentYear=True)
     for data in self.xlsxData["salsi"]["data"]:
@@ -559,8 +559,8 @@ class AdminUpdate:
         if pdv:
           sale = SalesSave.objects.filter(pdv=pdv[0], industry=salsi, product=enduit, currentYear=True)
           if sale:
-            sale.volume = data[indexSalsi]
-            sale.save()
+            sale[0].volume = data[indexSalsi]
+            sale[0].save()
           else:
             SalesSave.objects.create(date=None, pdv=pdv[0], industry=salsi, product=enduit,volume=data[indexSalsi], currentYear=True)
 
