@@ -131,11 +131,12 @@ class ManageFromOldDatabase:
             else:
               print("type", table, value, type(value))
               strQuery += f"{value}, "
-          strQuery = strQuery.rstrip(', ') + ")"
-
+          strQuery = strQuery.rstrip(', ') + ");"
           print("strQuery", strQuery) 
-          # ManageFromOldDatabase.cursorNew.cursor.execute(f"INSERT INTO {table} (first_name,last_name) VALUES (?, ?)", 
-        message = f"La table {table} est encore vidée."
+          ManageFromOldDatabase.cursorNew.cursor.execute(strQuery) 
+          message = f"La table {table} est remplie."
+        else:
+          message = f"La table {table} d'origine est vide."
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
       return {'query':method, 'message':message, 'end':False, 'errors':[]}
