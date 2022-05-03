@@ -108,8 +108,8 @@ class ManageFromOldDatabase:
       self.cursor.execute("Show tables;")
       ManageFromOldDatabase.listTable = [table[0] for table in self.cursor.fetchall()]
     print("listTable", ManageFromOldDatabase.listTable)
-    table = ManageFromOldDatabase.listTable.pop(0)
     if ManageFromOldDatabase.listTable:
+      table = ManageFromOldDatabase.listTable.pop(0)
       if "visioServer" in table:
         print(f"TRUNCATE TABLE {table}")
         try:
@@ -121,23 +121,6 @@ class ManageFromOldDatabase:
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
       return {'query':method, 'message':message, 'end':False, 'errors':[]}
-
-
-
-    #   self.dictPopulate = [
-    #     ("PdvOld",[]), ("SynonymAdmin",[]), ("ParamVisio", []), ("Object", ["drv"]), ("Agent", []), ("Object", ["dep"]), ("Object", ["bassin"]),
-    #     ("Object", ["industry"]), ("Object", ["product"]), ("Object", ["holding"]), ("ObjectFromPdv", ["ensemble", Ensemble]),
-    #     ("ObjectFromPdv", ["sous-ensemble", SousEnsemble]), ("ObjectFromPdv", ["site", Site]),
-    #     ("Object", ["ville"]), ("Object", ["segCo"]), ("Object", ["segment"]), ("AgentFinitions", []), ("PdvNew", []), ("Users", []),
-    #     ("TreeNavigation", [["geo", "trade"]]),
-    #     ("Target", []), ("TargetLevel", []), ("Visit", []), ("Sales", [])]
-    # if self.dictPopulate:
-    #   tableName, variable = self.dictPopulate.pop(0)
-    #   print(tableName, variable[0] if  len(variable) > 0 else '')
-    #   table, error = getattr(self, "get" + tableName)(*variable)
-    #   error = [error] if error else []
-    #   message = "L'ancienne base de données est lue" if tableName == "PdvOld" else f"La table {str(table)} est remplie "
-    #   return {'query':method, 'message':message, 'end':False, 'errors':error}
     ManageFromOldDatabase.connection.close()
     ManageFromOldDatabase.connectionNew.close()
     return {'query':method, 'message':"<b>La base de données a été remplie</b>", 'end':True, 'errors':[]}
