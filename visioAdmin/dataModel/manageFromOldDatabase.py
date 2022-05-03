@@ -113,12 +113,13 @@ class ManageFromOldDatabase:
       if "visioServer" in table:
         print("treat", table)
         ManageFromOldDatabase.cursorNew.execute(f"TRUNCATE TABLE {table};")
+        print("truncate table", table)
         ManageFromOldDatabase.cursorNew.execute(f"SHOW COLUMNS FROM {table};")
         fields = [field[0] for field in ManageFromOldDatabase.cursorNew.fetchall()]
+        print("compute fields", fields)
         ManageFromOldDatabase.cursor.execute(f"SELECT * FROM {table};")
         values = ManageFromOldDatabase.cursor.fetchall()
-        print("fields", fields, values[0])
-        fields = ManageFromOldDatabase.cursor.execute(f"SELECT * FROM `{table}`;")
+        print("compute values", values[0] if len(values) else None)
         message = f"La table {table} est encore vidée."
       else:
         message = f"La table {str(table)} n'est pas traité par cette opération."
