@@ -58,7 +58,7 @@ class ApiTokenAuthGoogle(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        return ({"error":"Not yet implemented"})
+        return Response({"error":"Not yet implemented"})
 
     def get(self, request):
-        return ({"error":"Not yet implemented"})
+        return Response({"error":"Not yet implemented"})
