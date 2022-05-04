@@ -64,4 +64,4 @@ class ApiTokenAuthGoogle(APIView):
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
-        return Response({"error":"Not yet implemented"})
+        return Response({"error":"GET query is not allowed"})
