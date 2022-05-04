@@ -59,3 +59,6 @@ class ApiTokenAuthGoogle(APIView):
 
     def post(self, request):
         return ({"error":"Not yet implemented"})
+
+    def get(self, request):
+        return ({"error":"Not yet implemented"})
