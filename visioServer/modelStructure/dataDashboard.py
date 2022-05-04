@@ -113,7 +113,6 @@ class DataDashboard:
       self.insertModel(data, name, model)
     TargetLevel.dictValuesFiltered(self, data)
     self._setupFinitions(data)
-    print("list data keys", list(data.keys()), data["params"] if "param" in data else None)
     return data
 
   def __computeListPdv(self):
@@ -205,7 +204,6 @@ class DataDashboard:
             else:
               jsonToSend[nature][id] = listObject
       jsonToSend["referentielVersion"] = version
-      print("update request", jsonToSend)
       return jsonToSend
     return {"message":"change version in process"}
 

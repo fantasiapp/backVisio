@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
@@ -11,7 +11,6 @@ class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
 
 class Data(DefaultView):
-
     def get(self, request):
         currentUser = request.user
         userGroup = request.user.groups.values_list('name', flat=True)
@@ -29,6 +28,7 @@ class Data(DefaultView):
             if action == "dashboard":
                 print("login",currentUser.username)
                 LogClient.objects.create(date=timezone.now(), referentielVersion=ParamVisio.getValue("referentielVersion"), softwareVersion=ParamVisio.getValue("softwareVersion"), user=currentUser, path=json.dumps("login"), mapFilters=json.dumps("login"))
+                
                 return Response(dataDashBoard.dataQuery)
             elif action == "update":
                 print(f"get {currentUser} {action}", request.GET["nature"])
@@ -50,6 +50,12 @@ class Data(DefaultView):
         if jsonString:
             dataDashBoard = DataDashboard(currentProfile[0], userIdGeo, userGroup[0], request.META['SERVER_PORT'] == '8000')
             if not getattr(dataDashBoard, "__pdvs", False) or not getattr(dataDashBoard, "__pdvs_ly", False):
-                return Response({"error":"inititialisation in progress"})
+                return Response({"error":"initiialisation in progress"})
             return Response(dataDashBoard.postUpdate(currentUser, jsonString))
         return Response({"error":"empty body"})
+
+class ApiTokenAuthGoogle(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        return ({"error":"Not yet implemented"})
