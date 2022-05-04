@@ -37,6 +37,7 @@ print("ALLOWED_HOSTS", ALLOWED_HOSTS)
 
 INSTALLED_APPS = [
     'visioServer.apps.VisioConfig',
+    'social.apps.django_app.default',
     'visioAdmin.apps.VisioadminConfig',
     'django.contrib.admin',
     'django.contrib.auth',

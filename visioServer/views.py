@@ -57,7 +57,7 @@ class Data(DefaultView):
 
 class ApiTokenAuthGoogle(APIView):
     permission_classes = (AllowAny,)
-    googleUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo"
+    googleUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo/"
 
     def post(self, request):
         jsonBin = request.body
