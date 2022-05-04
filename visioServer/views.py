@@ -6,6 +6,7 @@ from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
 import json
+import requests
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -56,11 +57,14 @@ class Data(DefaultView):
 
 class ApiTokenAuthGoogle(APIView):
     permission_classes = (AllowAny,)
+    googleUrl = "https://www.googleapis.com/oauth2/v1"
 
     def post(self, request):
         jsonBin = request.body
         jsonString = jsonBin.decode("utf8")
         print("post ApiTokenAuthGoogle", jsonString)
+        response = requests.get(self.googleUrl, headers={}, params={'access_token':jsonString["authToken"]})
+        print("google response: ", response.text)
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
