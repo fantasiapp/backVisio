@@ -58,6 +58,9 @@ class ApiTokenAuthGoogle(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        jsonBin = request.body
+        jsonString = jsonBin.decode("utf8")
+        print("post ApiTokenAuthGoogle", jsonString)
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
