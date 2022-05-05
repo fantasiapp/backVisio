@@ -77,6 +77,8 @@ class ApiTokenAuthGoogle(APIView):
         if responseDict["email"] == userResponse["username"]:
             print("same email")
             user = User.objects.get(email = responseDict["email"])
+            print("auth hash:", user.get_session_auth_hash())
+
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
