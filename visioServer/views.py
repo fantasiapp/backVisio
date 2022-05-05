@@ -8,6 +8,7 @@ from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
 import json
 import requests
+from django.contrib.auth.models import User
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -72,7 +73,7 @@ class ApiTokenAuthGoogle(APIView):
             return Response({"error":responseDict["error"]})   
         if responseDict["email"] == userResponse["username"]:
             print("same email")
-            user = UserProfile.objects.get(email = responseDict["email"])
+            user = User.objects.get(email = responseDict["email"])
             print("user", user)
             user = UserProfile({"email": responseDict["email"]})
             print("user2", user)
