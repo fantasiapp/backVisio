@@ -78,7 +78,7 @@ class ApiTokenAuthGoogle(APIView):
             print("same email")
             user = User.objects.get(email = responseDict["email"])
             token, created = Token.objects.get_or_create(user=user)
-            return Response({"authToken": token.key})
+            return Response({"authToken": token.key, "username": user.username})
         return Response({"":"Not yet implemented"})
 
     def get(self, request):
