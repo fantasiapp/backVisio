@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.getenv('URL'), '127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = [os.getenv('URL'), '127.0.0.1', '.pythonanywhere.com', 'fantasiapp.tech']
 print("ALLOWED_HOSTS", ALLOWED_HOSTS)
 
 
