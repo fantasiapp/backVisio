@@ -69,6 +69,7 @@ class ApiTokenAuthGoogle(APIView):
         responseDict = response.json()
         print("responseDict", responseDict)
         print(responseDict["email"])
+        print(responseDict["error"])
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
