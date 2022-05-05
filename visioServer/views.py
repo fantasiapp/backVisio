@@ -4,6 +4,7 @@ from mysite import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.authtoken.models import Token
 from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
@@ -76,12 +77,9 @@ class ApiTokenAuthGoogle(APIView):
         if responseDict["email"] == userResponse["username"]:
             print("same email")
             user = User.objects.get(email = responseDict["email"])
-            #set user token to google token
-            user.social_auth.get(provider='google-oauth2').extra_data['access_token'] = userResponse["authToken"]
-            print(user.social_auth)
-            print(user.social_auth.get(provider='google-oauth2').extra_data)
-
-        return Response({"error":"Not yet implemented"})
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({"authToken": token.key})
+        return Response({"":"Not yet implemented"})
 
     def get(self, request):
         return Response({"error":"GET query is not allowed"})
