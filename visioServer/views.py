@@ -78,7 +78,10 @@ class ApiTokenAuthGoogle(APIView):
         if responseDict["email"] == userResponse["username"]:
             print("same email")
             user = User.objects.get(email = responseDict["email"])
-            result = auth.views.login(request, user)
+            print(user.backend)
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            print(user.backend)
+            result = auth.login(request, user)
             print(result)
             token, created = Token.objects.get_or_create(user=user)
             return Response({"authToken": token.key, "username": user.username})
