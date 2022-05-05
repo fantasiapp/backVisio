@@ -72,7 +72,7 @@ class ApiTokenAuthGoogle(APIView):
             return Response({"error":responseDict["error"]})   
         if responseDict["email"] == userResponse["username"]:
             print("same email")
-            user = UserProfile(email = responseDict["email"])
+            user = UserProfile({"email": responseDict["email"]})
             print("user", user)
             user = UserProfile.get(email = responseDict["email"])
             print("user2", user)
