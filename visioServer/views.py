@@ -75,6 +75,7 @@ class ApiTokenAuthGoogle(APIView):
             print("same email")
             user = User.objects.get(email = responseDict["email"])
             print("user", user)
+            print(type(user))
             user = UserProfile({"email": responseDict["email"]})
             print("user2", user)
         return Response({"error":"Not yet implemented"})
