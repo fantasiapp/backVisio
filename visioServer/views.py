@@ -69,7 +69,7 @@ class ApiTokenAuthGoogle(APIView):
         responseDict = response.json()
         if "error" in responseDict:
             return Response({"error":responseDict["error"]})   
-        if responseDict["email"] == userResponse["email"]:
+        if responseDict["email"] == userResponse["username"]:
             print("same email")
         return Response({"error":"Not yet implemented"})
 
