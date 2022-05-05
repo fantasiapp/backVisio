@@ -105,6 +105,7 @@ class AdminParam:
     user = profile.user
     if profile == self.dataDashboard.userProfile:
       return {"error":"Vous ne pouvez vous supprimer!"}
+    LogClient.objects.filter(user=user).delete()
     profile.delete()
     user.delete()
     return {"accountRemoved":id}
