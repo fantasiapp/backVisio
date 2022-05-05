@@ -67,21 +67,15 @@ class ApiTokenAuthGoogle(APIView):
         jsonBin = request.body
         jsonString = jsonBin.decode("utf8")
         userResponse = json.loads(jsonString)
-        print("post ApiTokenAuthGoogle", jsonString)
         response = requests.get(self.googleUrl, headers={}, params={'access_token':userResponse["authToken"]})
-        print("google response: ", response.text)
         responseDict = response.json()
         if "error" in responseDict:
             return Response({"error": responseDict["error"]})  
         if responseDict["audience"] != settings.GOOGLE_OAUTH2_CLIENT_ID:
             return Response({"error": "Bad client ID"})
         if responseDict["email"] == userResponse["username"]:
-            print("same email")
             user = User.objects.get(email = responseDict["email"])
             user.backend = 'django.contrib.auth.backends.ModelBackend'
-            print(user.backend)
-            result = auth.login(request, user)
-            print(result)
             token, created = Token.objects.get_or_create(user=user)
             return Response({"token": token.key, "username": user.username})
         return Response({"":"Not yet implemented"})
