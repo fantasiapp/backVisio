@@ -26,6 +26,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
+GOOGLE_OAUTH2_CLIENT_ID = "519402531364-t2ohmkrspjel0d2iv6a5n9i4ga2u6bvh.apps.googleusercontent.com"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 

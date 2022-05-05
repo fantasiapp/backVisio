@@ -1,5 +1,6 @@
 import email
 from django.contrib.auth.models import User
+from mysite import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -70,15 +71,12 @@ class ApiTokenAuthGoogle(APIView):
         print("google response: ", response.text)
         responseDict = response.json()
         if "error" in responseDict:
-            return Response({"error":responseDict["error"]})   
+            return Response({"error": responseDict["error"]})  
+        if responseDict["audience"] != settings.GOOGLE_OAUTH2_CLIENT_ID:
+            return Response({"error": "Bad client ID"})
         if responseDict["email"] == userResponse["username"]:
             print("same email")
             user = User.objects.get(email = responseDict["email"])
-            print("user", user)
-            print(type(user))
-            print("user email", user.email)
-            user = UserProfile({"email": responseDict["email"]})
-            print("user2", user)
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
