@@ -9,7 +9,6 @@ from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
 import json
 import requests
-from django.contrib.auth.models import User
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -77,7 +76,10 @@ class ApiTokenAuthGoogle(APIView):
         if responseDict["email"] == userResponse["username"]:
             print("same email")
             user = User.objects.get(email = responseDict["email"])
-            print("auth hash:", user.get_session_auth_hash())
+            #set user token to google token
+            user.social_auth.get(provider='google-oauth2').extra_data['access_token'] = userResponse["authToken"]
+            print(user.social_auth)
+            print(user.social_auth.get(provider='google-oauth2').extra_data)
 
         return Response({"error":"Not yet implemented"})
 
