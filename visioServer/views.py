@@ -1,5 +1,6 @@
 import email
 from django.contrib.auth.models import User
+from django.contrib import auth
 from mysite import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -77,6 +78,7 @@ class ApiTokenAuthGoogle(APIView):
         if responseDict["email"] == userResponse["username"]:
             print("same email")
             user = User.objects.get(email = responseDict["email"])
+            auth.login(request, user)
             token, created = Token.objects.get_or_create(user=user)
             return Response({"authToken": token.key, "username": user.username})
         return Response({"":"Not yet implemented"})
