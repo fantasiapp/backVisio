@@ -67,7 +67,7 @@ class ApiTokenAuthGoogle(APIView):
         response = requests.get(self.googleUrl, headers={}, params={'access_token':userResponse["authToken"]})
         print("google response: ", response.text)
         print(type(response.text))
-        print(response.text.email)
+        print(dict(response.text).email)
         return Response({"error":"Not yet implemented"})
 
     def get(self, request):
