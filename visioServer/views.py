@@ -74,9 +74,12 @@ class ApiTokenAuthGoogle(APIView):
         if responseDict["audience"] != settings.GOOGLE_OAUTH2_CLIENT_ID:
             return Response({"error": "Bad client ID"})
         if responseDict["email"] == userResponse["username"]:
-            user = User.objects.get(email = responseDict["email"])
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-            token, created = Token.objects.get_or_create(user=user)
+            try:
+                user = User.objects.get(email = responseDict["email"])
+                user.backend = 'django.contrib.auth.backends.ModelBackend'
+                token, created = Token.objects.get_or_create(user=user)
+            except User.DoesNotExist:
+                return Response({"error": "User not found"})
             return Response({"token": token.key, "username": user.username})
         return Response({"":"Not yet implemented"})
 
