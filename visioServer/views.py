@@ -111,6 +111,8 @@ class ApiTokenAuthAzure(APIView):
         jsonBin = request.body
         jsonString = jsonBin.decode("utf8")
         userResponse = json.loads(jsonString)
+        print("userResponse type", type(userResponse))
+        print("userResponse", userResponse)
         if not validateToken(userResponse["authToken"]):
             return Response({"error": "Bad token"})
         return Response({"token": "token", "username": "username"})
