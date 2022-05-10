@@ -104,7 +104,7 @@ class ApiTokenAuthAzure(APIView):
             publicKey = '''-----BEGIN PUBLIC KEY-----
             spvQcXWqYrMcvcqQmfSMYnbUC8U03YctnXyLIBe148OzhBrgdAOmPfMfJi_tUW8L9svVGpk5qG6dN0n669cRHKqU52GnG0tlyYXmzFC1hzHVgQz9ehve4tlJ7uw936XIUOAOxx3X20zdpx7gm4zHx4j2ZBlXskAj6U3adpHQNuwUE6kmngJWR-deWlEigMpRsvUVQ2O5h0-RSq8Wr_x7ud3K6GTtrzARamz9uk2IXatKYdnj5Jrk2jLY6nWt-GtxlA_l9XwIrOl6Sqa_pOGIpS01JKdxKvpBC9VdS8oXB-7P5qLksmv7tq-SbbiOec0cvU7WP7vURv104V4FiI_qoQ
             -----END PUBLIC KEY-----'''
-            decodedToken = jwt.decode(encodedJWT,verify = False, algorithms=['RS256'])
+            decodedToken = jwt.decode(encodedJWT, options={"verify_signature": False})
             print("decodedToken", decodedToken)
             return False
         
