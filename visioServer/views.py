@@ -98,7 +98,7 @@ class ApiTokenAuthAzure(APIView):
             print("token :", token)
             print("publicKey :",publicKey)
             # decodedToken = jwt.decode(token, publicKey ,algorithms=["RS256"])
-            decodedToken = jwt.decode(token, verify=False)
+            decodedToken = jwt.decode(token, verify=False, algorithms="RS256")
             print("decodedToken", decodedToken)
             return False
         
