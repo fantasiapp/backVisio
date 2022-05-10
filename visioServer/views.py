@@ -95,6 +95,7 @@ class ApiTokenAuthAzure(APIView):
         def validateToken(token):
             tokenHeader = jwt.get_unverified_header(token)
             publicKey = tokenHeader["kid"]
+            print(publicKey)
             decodedToken = jwt.decode(token, publicKey ,algorithms=["RS256"])
             print(decodedToken)
             return False
