@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
+import jwt
 from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
@@ -92,12 +93,13 @@ class ApiTokenAuthAzure(APIView):
 
     def post(self, request):
         def validateToken(token):
-            return True
+            decodedToken = jwt.decode(token, verify=False)
+            print(decodedToken)
+            return False
         
         jsonBin = request.body
         jsonString = jsonBin.decode("utf8")
         userResponse = json.loads(jsonString)
-        response = validateToken(userResponse["authToken"])
-        if response:
+        if not validateToken(userResponse["authToken"]):
             return Response({"error": "Bad token"})
         return Response({"token": "token", "username": "username"})
