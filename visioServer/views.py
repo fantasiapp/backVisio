@@ -93,7 +93,7 @@ class ApiTokenAuthAzure(APIView):
 
     def post(self, request):
         def validateToken(token):
-            decodedToken = jwt.decode(token, verify=False)
+            decodedToken = jwt.decode(token, algorithms=["RS256"])
             print(decodedToken)
             return False
         
