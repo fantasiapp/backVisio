@@ -91,7 +91,13 @@ class ApiTokenAuthAzure(APIView):
     azureUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
 
     def post(self, request):
+        def validateToken(token):
+            return True
+        
         jsonBin = request.body
         jsonString = jsonBin.decode("utf8")
         userResponse = json.loads(jsonString)
-        response = requests.post(self.azureUrl, headers={}, params={'grant_type':'client_credentials', 'client_id':settings.AZURE_OAUTH2_CLIENT_ID, 'scope':'https://graph.microsoft.com/.default'})
+        response = validateToken(userResponse["authToken"])
+        if response:
+            return Response({"error": "Bad token"})
+        return Response({"token": "token", "username": "username"})
