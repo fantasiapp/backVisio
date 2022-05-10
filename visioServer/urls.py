@@ -7,4 +7,5 @@ urlpatterns = [
   re_path('api-token-auth/', obtain_auth_token, name='api_token_auth'),
   re_path('data/', views.Data.as_view(), name='data'),
   re_path('api-token-auth-google/', views.ApiTokenAuthGoogle.as_view(), name='data'),
+  re_path('api-token-auth-azure', views.ApiTokenAuthAzure.as_view(), name='data'),
 ]

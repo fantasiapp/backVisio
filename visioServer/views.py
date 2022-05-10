@@ -85,3 +85,13 @@ class ApiTokenAuthGoogle(APIView):
 
     def get(self, request):
         return Response({"error":"GET query is not allowed"})
+
+class ApiTokenAuthAzure(APIView):
+    permission_classes = (AllowAny,)
+    azureUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+
+    def post(self, request):
+        jsonBin = request.body
+        jsonString = jsonBin.decode("utf8")
+        userResponse = json.loads(jsonString)
+        response = requests.post(self.azureUrl, headers={}, params={'grant_type':'client_credentials', 'client_id':settings.AZURE_OAUTH2_CLIENT_ID, 'scope':'https://graph.microsoft.com/.default'})
