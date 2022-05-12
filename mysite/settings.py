@@ -28,6 +28,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 GOOGLE_OAUTH2_CLIENT_ID = "519402531364-t2ohmkrspjel0d2iv6a5n9i4ga2u6bvh.apps.googleusercontent.com"
 
+AZURE_OAUTH2_CLIENT_ID = "378b4a2c-9020-4c3a-bd80-b966e04deaf9"
+AZURE_OAUTH2_TENANT_ID = "ee3e4eee-84df-4195-9ab1-43b8623603ff"
+AZURE_OAUTH2_PUBLIC_KEYS_URL = "https://visiofantasiapp.b2clogin.com/visiofantasiapp.onmicrosoft.com/b2c_1_signin/discovery/v2.0/keys"
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -65,7 +69,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CSRF_TRUSTED_ORIGINS = ['https://*.fantasiapp.tech:3441','https://*.fantasiapp.tech:3440','https://*.fantasiapp.tech:3439','https://*.fantasiapp.tech:3438','https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.fantasiapp.tech:3441','https://*.fantasiapp.tech:3440','https://*.fantasiapp.tech:3439','https://*.fantasiapp.tech:3438','http://*.127.0.0.1']
 
 ROOT_URLCONF = 'mysite.urls'
 

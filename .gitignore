@@ -64,3 +64,8 @@ docs/_build/
 
 # PyBuilder
 target/
+venv/
+ENV_DIR/
+
+.vscode/
+

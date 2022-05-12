@@ -12,6 +12,11 @@ from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
 import json
 import requests
+import base64
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import serialization
+
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -90,18 +95,53 @@ class ApiTokenAuthGoogle(APIView):
 class ApiTokenAuthAzure(APIView):
     permission_classes = (AllowAny,)
     azureUrl = "https://login.microsoftonline.com/common/oauth2/v2.0/token"
-
+    
     def post(self, request):
+        def getPublicKey(token):
+            kid = jwt.get_unverified_header(token)["kid"]
+            publicKeysUrl = settings.AZURE_OAUTH2_PUBLIC_KEYS_URL
+            response = requests.get(publicKeysUrl)
+            responseDict = response.json()
+            for key in responseDict["keys"]:
+                if key["kid"] == kid:
+                    break
+            
+    
+            # return jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
+
+            n = int.from_bytes(base64.urlsafe_b64decode(key["n"].encode('utf-8') + b"=="), "big")
+            e = int.from_bytes(base64.urlsafe_b64decode(key["e"].encode('utf-8') + b"=="), "big")
+            return RSAPublicNumbers(n = n, e = e).public_key(default_backend()).public_bytes(
+                encoding = serialization.Encoding.PEM,
+                format = serialization.PublicFormat.SubjectPublicKeyInfo
+            )
+
         def validateToken(token):
             tokenHeader = jwt.get_unverified_header(token)
-            publicKey = tokenHeader["kid"]
+            kid = tokenHeader["kid"]
             # print("token :", token)
             # print("token type:", type(token))
             # print("publicKey :",publicKey)
             # decodedToken = jwt.decode(token, publicKey ,algorithms=["RS256"])
+            
+            
+            publicKey = getPublicKey(token)
+            options = {
+            'verify_signature': True,
+            'verify_exp': True,  
+            'verify_nbf': False,
+            'verify_iat': False,
+            'verify_aud': False  
+            }
 
-            decodedToken = jwt.decode(token, options={"verify_signature": True}, algorithms = ["RS256"])
+            decodedToken = jwt.decode(token, 
+                                    publicKey,
+                                    algorithms=["RS256"],
+                                    options = options)
+
             print("decodedToken", decodedToken)
+            if decodedToken:
+                return True
             return False
         
         jsonBin = request.body
@@ -111,4 +151,10 @@ class ApiTokenAuthAzure(APIView):
         print("userResponse", userResponse)
         if not validateToken(userResponse["authToken"]):
             return Response({"error": "Bad token"})
-        return Response({"token": "token", "username": "username"})
+        try:
+            user = User.objects.get(email = userResponse["username"])
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+            token, created = Token.objects.get_or_create(user=user)
+        except User.DoesNotExist:
+            return Response({"error": "User not found"})
+        return Response({"token": token.key, "username": user.username})
