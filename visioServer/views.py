@@ -16,7 +16,7 @@ import base64
 from cryptography.hazmat.primitives.asymmetric.rsa import RSAPublicNumbers
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
-
+from pprint import pprint
 
 class DefaultView(APIView):
     permission_classes = (IsAuthenticated,)
@@ -105,7 +105,12 @@ class ApiTokenAuthAzure(APIView):
             for key in responseDict["keys"]:
                 if key["kid"] == kid:
                     break
-            
+            print("key id")
+            pprint(kid)
+            print()
+            print("publid key")
+            pprint(key)
+            print()
     
             # return jwt.algorithms.RSAAlgorithm.from_jwk(json.dumps(key))
 
@@ -127,8 +132,10 @@ class ApiTokenAuthAzure(APIView):
             
             publicKey = getPublicKey(token)
 
-            print("publicKey :",publicKey)
-            
+            print("publicKey :")
+            pprint(publicKey)
+            print() 
+
             options = {
             'verify_signature': True,
             'verify_exp': True,  
@@ -142,7 +149,10 @@ class ApiTokenAuthAzure(APIView):
                                     algorithms=["RS256"],
                                     options = options)
 
-            print("decodedToken", decodedToken)
+            print("decodedToken")
+            pprint(decodedToken)
+            print()
+            
             if decodedToken:
                 return True
             return False
@@ -151,7 +161,9 @@ class ApiTokenAuthAzure(APIView):
         jsonString = jsonBin.decode("utf8")
         userResponse = json.loads(jsonString)
         print("userResponse type", type(userResponse))
-        print("userResponse", userResponse)
+        print("userResponse")
+        pprint(userResponse)
+        print()
         if not validateToken(userResponse["authToken"]):
             return Response({"error": "Bad token"})
         try:
