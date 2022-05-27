@@ -126,6 +126,9 @@ class ApiTokenAuthAzure(APIView):
             
             
             publicKey = getPublicKey(token)
+
+            print("publicKey :",publicKey)
+            
             options = {
             'verify_signature': True,
             'verify_exp': True,  
