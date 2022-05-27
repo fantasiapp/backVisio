@@ -103,6 +103,7 @@ class ApiTokenAuthAzure(APIView):
             response = requests.get(publicKeysUrl)
             responseDict = response.json()
             
+            print(settings.AZURE_OAUTH2_PUBLIC_KEYS_URL)
             print("public keys response dict")
             pprint(responseDict)
             print()
