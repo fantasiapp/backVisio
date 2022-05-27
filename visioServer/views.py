@@ -102,6 +102,10 @@ class ApiTokenAuthAzure(APIView):
             publicKeysUrl = settings.AZURE_OAUTH2_PUBLIC_KEYS_URL
             response = requests.get(publicKeysUrl)
             responseDict = response.json()
+            
+            print("public keys response dict")
+            pprint(responseDict)
+            print()
             for key in responseDict["keys"]:
                 if key["kid"] == kid:
                     break
@@ -152,7 +156,7 @@ class ApiTokenAuthAzure(APIView):
             print("decodedToken")
             pprint(decodedToken)
             print()
-            
+
             if decodedToken:
                 return True
             return False
