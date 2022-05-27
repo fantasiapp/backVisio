@@ -31,7 +31,6 @@ GOOGLE_OAUTH2_CLIENT_ID = "519402531364-t2ohmkrspjel0d2iv6a5n9i4ga2u6bvh.apps.go
 AZURE_OAUTH2_CLIENT_ID = "84e47d7f-0f91-4943-95b9-83af279d5045"
 AZURE_OAUTH2_TENANT_ID = "e23c7299-f64d-4de4-a6a1-b40d3145528c"
 AZURE_OAUTH2_PUBLIC_KEYS_URL = "https://login.microsoftonline.com/e23c7299-f64d-4de4-a6a1-b40d3145528c/discovery/v2.0/keys"
-AZURE_SECRET_KEY = "OY38Q~D06wgkhltEBv.lq6gtzgk3TA7ykVsA2bES"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
