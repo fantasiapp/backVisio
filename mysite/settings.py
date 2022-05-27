@@ -28,9 +28,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 GOOGLE_OAUTH2_CLIENT_ID = "519402531364-t2ohmkrspjel0d2iv6a5n9i4ga2u6bvh.apps.googleusercontent.com"
 
-AZURE_OAUTH2_CLIENT_ID = "378b4a2c-9020-4c3a-bd80-b966e04deaf9"
-AZURE_OAUTH2_TENANT_ID = "ee3e4eee-84df-4195-9ab1-43b8623603ff"
-AZURE_OAUTH2_PUBLIC_KEYS_URL = "https://visiofantasiapp.b2clogin.com/visiofantasiapp.onmicrosoft.com/b2c_1_signin/discovery/v2.0/keys"
+AZURE_OAUTH2_CLIENT_ID = "84e47d7f-0f91-4943-95b9-83af279d5045"
+AZURE_OAUTH2_TENANT_ID = "e23c7299-f64d-4de4-a6a1-b40d3145528c"
+AZURE_OAUTH2_PUBLIC_KEYS_URL = "https://login.microsoftonline.com/e23c7299-f64d-4de4-a6a1-b40d3145528c/discovery/v2.0/keys"
+AZURE_SECRET_KEY = "OY38Q~D06wgkhltEBv.lq6gtzgk3TA7ykVsA2bES"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
