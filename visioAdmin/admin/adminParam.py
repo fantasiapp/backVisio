@@ -156,8 +156,8 @@ class AdminParam:
 
   def paramSynonymsInit(self):
     pdvList = Pdv.objects.filter(sale=True, redistributed=True, currentYear=False)
-    for pdv in pdvList:
-      print(pdv.name, pdv.code)
+    for pdv in pdvList and Pdv.object.filter(code=pdv.code, currentYear=True)
+      print(f"{pdv.name}; {pdv.code}; {'Oui' if pdv.redistributed else 'Non'}; {'Oui' if pdv.sale else 'Non'}")
     return Synonyms.getDictValues()
 
   def fillupSynonym(self, dictSynonymJson):
