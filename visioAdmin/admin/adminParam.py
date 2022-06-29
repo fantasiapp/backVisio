@@ -155,7 +155,8 @@ class AdminParam:
 # Synonyms
 
   def paramSynonymsInit(self):
-      return Synonyms.getDictValues()
+    print("ici")
+    return Synonyms.getDictValues()
 
   def fillupSynonym(self, dictSynonymJson):
     inversePretty = {value:key for key, value in Synonyms.prettyPrint.items()}

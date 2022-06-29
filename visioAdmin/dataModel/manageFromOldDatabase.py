@@ -366,4 +366,17 @@ class ManageFromOldDatabase:
     print("end")
     return {"test":False}
 
-manageFromOldDatabase = ManageFromOldDatabase()
+def __computeDepIdFinition(self):
+    depFinition = self.__depFinition
+    listDepIdFinition = {}
+    for currentYear in [True, False]:
+      if not currentYear:
+        decal = len(depFinition)
+        depFinition = {id + decal:value for id, value in depFinition.items()}
+      dictDep = {dep.name:dep.id for dep in Dep.objects.filter(currentYear=currentYear)}
+      for idFinition, listDep in depFinition.items():
+        listDepStr = {str(dep) if dep > 9 else f"0{str(dep)}" for dep in listDep}
+        listDepId = [dictDep[depName] for depName in listDepStr]
+        for idDep in listDepId:
+          listDepIdFinition[idDep] = idFinition
+    return listDepIdFinition
