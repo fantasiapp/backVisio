@@ -155,11 +155,11 @@ class AdminParam:
 # Synonyms
 
   def paramSynonymsInit(self):
-    pdvList = Pdv.objects.filter(sale=True, redistributed=True, currentYear=False)
+    pdvList = Pdv.objects.filter(currentYear=False)
     with open("./visioAdmin/dataFile/Json/saleRedistributed.csv", 'w') as writer:
       for pdv in pdvList:
-        if Pdv.objects.filter(code=pdv.code, currentYear=True):
-          print(f"{pdv.name}; {pdv.code}; {'Oui' if pdv.redistributed else 'Non'}; {'Oui' if pdv.sale else 'Non'}")
+        if Pdv.objects.filter(code=pdv.code, currentYear=True) and (not pdv.sale or not pdv.redistributed):
+          print(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}")
           writer.write(f"{pdv.name}; {pdv.code}; {'Oui' if pdv.redistributed else 'Non'}; {'Oui' if pdv.sale else 'Non'}\r\n")
     return Synonyms.getDictValues()
 
