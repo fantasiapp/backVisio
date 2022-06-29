@@ -161,7 +161,7 @@ class AdminParam:
         # if Pdv.objects.filter(code=pdv.code, currentYear=True) and (not pdv.sale or not pdv.redistributed):
         if (not pdv.sale or not pdv.redistributed):
           print(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}")
-          writer.write(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}\r\n")
+          writer.write(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}; {pdv.agent}; {pdv.drv}\r\n")
     return Synonyms.getDictValues()
 
   def fillupSynonym(self, dictSynonymJson):
