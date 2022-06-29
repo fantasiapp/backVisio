@@ -4,7 +4,7 @@ from django.contrib import auth
 from django.http import JsonResponse
 from django import forms
 from django.contrib.auth.models import User
-from .dataModel.manageFromOldDatabase import manageFromOldDatabase
+# from .dataModel.manageFromOldDatabase import ManageFromOldDatabase
 from .admin.adminParam import AdminParam
 from .admin.adminUpdate import AdminUpdate
 from .admin.adminConsult import AdminConsult
