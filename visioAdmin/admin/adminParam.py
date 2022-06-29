@@ -155,7 +155,9 @@ class AdminParam:
 # Synonyms
 
   def paramSynonymsInit(self):
-    print("ici")
+    pdvList = Pdv.objects.filter(sale=True, redistributed=True, currentYear=False)
+    for pdv in pdvList:
+      print(pdv.name, pdv.code)
     return Synonyms.getDictValues()
 
   def fillupSynonym(self, dictSynonymJson):
