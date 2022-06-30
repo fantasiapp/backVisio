@@ -218,14 +218,14 @@ class AdminParam:
       print("Point de vente redistribué\r\n")
       for value in dictValue["Point de vente redistribué"].values():
         print(value)
-        if value[5] == "Oui":
-          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}\r\n")
+        if value[6] == "Oui":
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
       writer.write("Ne vend pas de plaque\r\n")
       print("Ne vend pas de plaque")
       for value in dictValue["Ne vend pas de plaque"].values():
         print(value)
         if value[5] == "Oui":
-          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}\r\n")
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
 
     return {"titles":titles, "values":dictValue}
 
