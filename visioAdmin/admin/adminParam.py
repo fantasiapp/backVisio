@@ -189,7 +189,7 @@ class AdminParam:
     if target:
       titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Valeur modifiée":15, "Ancienne valeur":12, "Nouvelle valeur":12}
     rawData = {target.pdv:self.__buildValidateLine(target) for target in Target.objects.all() if self.__testValidateLine(target.pdv)}
-    dictValue = {"Point de vente redistribué":{}, "Ne vend pas de plaque":{}, "Bassin":{}}
+    dictValue = {"Point de vente redistribué":{}, "Ne vend pas de plaque":{}, "Bassin":{}, "Point de vente redistribué  finition":{}}
     for pdv, value in rawData.items():
       newValue = json.loads(json.dumps(value[:5]))
       if value[9]:
