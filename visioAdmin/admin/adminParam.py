@@ -214,14 +214,14 @@ class AdminParam:
     print("buildValidate", dictValue["Point de vente redistribué"])
     print("buildValidate", dictValue["Ne vend pas de plaque"])
     with open("./visioAdmin/dataFile/Json/selected.csv", 'w') as writer:
-      writer.write("Point de vente redistribué")
+      writer.write("Point de vente redistribué\r\n")
       for value in dictValue["Point de vente redistribué"].values():
         if value[5] == "Oui":
-          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[5]}\r\n")
-      writer.write("Ne vend pas de plaque")
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}\r\n")
+      writer.write("Ne vend pas de plaque\r\n")
       for value in dictValue["Ne vend pas de plaque"].values():
         if value[5] == "Oui":
-          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[5]}\r\n")
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}\r\n")
 
     return {"titles":titles, "values":dictValue}
 
