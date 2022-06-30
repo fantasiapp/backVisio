@@ -213,9 +213,15 @@ class AdminParam:
         dictValue["Bassin"][pdv.id] = newValue
     print("buildValidate", dictValue["Point de vente redistribué"])
     print("buildValidate", dictValue["Ne vend pas de plaque"])
-      # with open("./visioAdmin/dataFile/Json/saleRedistributedActual.csv", 'w') as writer:
-          
-      #     writer.write(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}; {pdv.agent}; {pdv.drv}\r\n")
+    with open("./visioAdmin/dataFile/Json/selected.csv", 'w') as writer:
+      writer.write("Point de vente redistribué")
+      for value in dictValue["Point de vente redistribué"].values():
+        if value[5] == "Oui":
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[5]}\r\n")
+      writer.write("Ne vend pas de plaque")
+      for value in dictValue["Ne vend pas de plaque"].values():
+        if value[5] == "Oui":
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[5]}\r\n")
 
     return {"titles":titles, "values":dictValue}
 
