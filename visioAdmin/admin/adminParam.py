@@ -224,7 +224,7 @@ class AdminParam:
       print("Ne vend pas de plaque")
       for value in dictValue["Ne vend pas de plaque"].values():
         print(value)
-        if value[5] == "Oui":
+        if value[6] == "Oui":
           writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
 
     return {"titles":titles, "values":dictValue}
