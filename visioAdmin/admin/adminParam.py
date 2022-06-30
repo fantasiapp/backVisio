@@ -211,6 +211,12 @@ class AdminParam:
       if value[11] and value[11] != pdv.bassin.name:
         newValue += [pdv.bassin.name.replace("Négoce_", ""), value[11]]
         dictValue["Bassin"][pdv.id] = newValue
+    print("buildValidate", dictValue["Point de vente redistribué"])
+    print("buildValidate", dictValue["Ne vend pas de plaque"])
+      # with open("./visioAdmin/dataFile/Json/saleRedistributedActual.csv", 'w') as writer:
+          
+      #     writer.write(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}; {pdv.agent}; {pdv.drv}\r\n")
+
     return {"titles":titles, "values":dictValue}
 
   def __buildValidateLine(self, target):
