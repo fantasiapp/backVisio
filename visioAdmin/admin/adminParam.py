@@ -237,9 +237,6 @@ class AdminParam:
 
     return {"titles":titles, "values":dictValue}
 
-  def extraFunction(self):
-    print("ici")
-
 
   def __buildValidateLine(self, target):
     pdvId = target.pdv.id
