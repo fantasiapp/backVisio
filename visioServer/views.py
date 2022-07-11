@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.authtoken.models import Token
-import jwt
+# import jwt
 from .modelStructure.dataDashboard import DataDashboard
 from visioServer.models import UserProfile, ParamVisio, LogClient
 from django.utils import timezone
