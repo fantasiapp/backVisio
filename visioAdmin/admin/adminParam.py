@@ -156,6 +156,9 @@ class AdminParam:
 
   def paramSynonymsInit(self):
     self.extraFunction()
+    return Synonyms.getDictValues()
+
+  def extraFunction(self):
     # pdvList = Pdv.objects.filter(currentYear=True)
     # with open("./visioAdmin/dataFile/Json/saleRedistributedActual.csv", 'w') as writer:
     #   for pdv in pdvList:
@@ -163,14 +166,11 @@ class AdminParam:
     #     if (not pdv.sale or not pdv.redistributed):
     #       print(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}")
     #       writer.write(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}; {pdv.agent}; {pdv.drv}\r\n")
-    return Synonyms.getDictValues()
-
-  def extraFunction(self):
-    agent = AgentSave.objects.get(id=4)
-    pdvList = PdvSave.objects.filter(currentYear=True, agent=agent)
+    agent = Agent.objects.get(id=4)
+    pdvList = Pdv.objects.filter(currentYear=True, agent=agent)
     saleList, now = [], timezone.now()
     for pdv in pdvList:
-      salesList = SalesSave.objects.filter(pdv=pdv)
+      salesList = Sales.objects.filter(pdv=pdv)
       for sale in salesList:
         sale.date = now
         sale.save()
@@ -225,19 +225,19 @@ class AdminParam:
         newValue += [pdv.bassin.name.replace("Négoce_", ""), value[11]]
         dictValue["Bassin"][pdv.id] = newValue
 
-    # with open("./visioAdmin/dataFile/Json/selected.csv", 'w') as writer:
-    #   writer.write("Point de vente redistribué\r\n")
-    #   print("Point de vente redistribué\r\n")
-    #   for value in dictValue["Point de vente redistribué"].values():
-    #     print(value)
-    #     if value[6] == "Oui":
-    #       writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
-    #   writer.write("Ne vend pas de plaque\r\n")
-    #   print("Ne vend pas de plaque")
-    #   for value in dictValue["Ne vend pas de plaque"].values():
-    #     print(value)
-    #     if value[6] == "Oui":
-    #       writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
+    with open("./visioAdmin/dataFile/Json/selected.csv", 'a') as writer:
+      writer.write("Point de vente redistribué\r\n")
+      print("Point de vente redistribué\r\n")
+      for value in dictValue["Point de vente redistribué"].values():
+        print(value)
+        if value[6] == "Oui":
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
+      writer.write("Ne vend pas de plaque\r\n")
+      print("Ne vend pas de plaque")
+      for value in dictValue["Ne vend pas de plaque"].values():
+        print(value)
+        if value[6] == "Oui":
+          writer.write(f"{value[4]}; {value[2]}; {value[1]}; {value[0]}; {value[3]}\r\n")
 
     return {"titles":titles, "values":dictValue}
 
