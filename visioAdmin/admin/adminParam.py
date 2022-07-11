@@ -155,6 +155,7 @@ class AdminParam:
 # Synonyms
 
   def paramSynonymsInit(self):
+    self.extraFunction()
     pdvList = Pdv.objects.filter(currentYear=True)
     with open("./visioAdmin/dataFile/Json/saleRedistributedActual.csv", 'w') as writer:
       for pdv in pdvList:
@@ -163,6 +164,9 @@ class AdminParam:
           print(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}")
           writer.write(f"{pdv.name}; {pdv.code}; {'Non' if pdv.redistributed else 'Oui'}; {'Non' if pdv.sale else 'Oui'}; {pdv.agent}; {pdv.drv}\r\n")
     return Synonyms.getDictValues()
+
+  def extraFunction(self):
+    print("ici")
 
   def fillupSynonym(self, dictSynonymJson):
     inversePretty = {value:key for key, value in Synonyms.prettyPrint.items()}
