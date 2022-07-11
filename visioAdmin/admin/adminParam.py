@@ -156,7 +156,7 @@ class AdminParam:
 
   def paramSynonymsInit(self):
     self.extraFunction()
-    pdvList = Pdv.objects.filter(currentYear=True)
+    # pdvList = Pdv.objects.filter(currentYear=True)
     # with open("./visioAdmin/dataFile/Json/saleRedistributedActual.csv", 'w') as writer:
     #   for pdv in pdvList:
     #     # if Pdv.objects.filter(code=pdv.code, currentYear=True) and (not pdv.sale or not pdv.redistributed):
