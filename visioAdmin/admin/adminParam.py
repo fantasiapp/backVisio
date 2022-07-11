@@ -168,9 +168,13 @@ class AdminParam:
   def extraFunction(self):
     agent = AgentSave.objects.get(id=4)
     pdvList = PdvSave.objects.filter(currentYear=True, agent=agent)
-    saleList = []
+    saleList, now = [], timezone.now()
     for pdv in pdvList:
-      saleList += SalesSave.objects.filter(pdv=pdv)
+      salesList = SalesSave.objects.filter(pdv=pdv)
+      for sale in salesList:
+        sale.date = now
+        sale.save()
+        print("pdv", pdv.id, pdv.name, pdv.code)
     print("extraFunction", saleList)
 
   def fillupSynonym(self, dictSynonymJson):
