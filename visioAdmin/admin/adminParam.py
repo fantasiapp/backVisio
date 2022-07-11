@@ -166,7 +166,12 @@ class AdminParam:
     return Synonyms.getDictValues()
 
   def extraFunction(self):
-    print("ici")
+    agent = AgentSave.objects.get(id=4)
+    pdvList = PdvSave.objects.filter(currentYear=True, agent=agent)
+    saleList = []
+    for pdv in pdvList:
+      saleList += SalesSave.objects.filter(pdv=pdv)
+    print("extraFunction", saleList)
 
   def fillupSynonym(self, dictSynonymJson):
     inversePretty = {value:key for key, value in Synonyms.prettyPrint.items()}
@@ -189,7 +194,6 @@ class AdminParam:
 
 # Validation of targets
   def buildValidate(self, target=False):
-    self.extraFunction()
     titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Ancienne valeur":12, "Nouvelle valeur":12}
     if target:
       titles = {"Drv":10, "Agent":15, "Pdv Code":7, "Date":8, "Pdv":28, "Valeur modifiée":15, "Ancienne valeur":12, "Nouvelle valeur":12}
